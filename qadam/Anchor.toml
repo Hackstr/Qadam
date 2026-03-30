@@ -8,6 +8,9 @@ skip-lint = false
 [programs.localnet]
 qadam = "4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj"
 
+[programs.devnet]
+qadam = "4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj"
+
 [registry]
 url = "https://api.apr.dev"
 

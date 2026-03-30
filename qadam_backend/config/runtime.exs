@@ -16,8 +16,29 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
+# ═══════════════════════════════════════════
+# Qadam runtime config (all environments)
+# ═══════════════════════════════════════════
+
 if System.get_env("PHX_SERVER") do
   config :qadam_backend, QadamBackendWeb.Endpoint, server: true
+end
+
+# Solana
+config :qadam_backend,
+  solana_rpc_url: System.get_env("SOLANA_RPC_URL") || "https://api.devnet.solana.com",
+  solana_ws_url: System.get_env("SOLANA_WS_URL") || "wss://api.devnet.solana.com",
+  solana_program_id: System.get_env("SOLANA_PROGRAM_ID"),
+  admin_wallet: System.get_env("ADMIN_WALLET"),
+  claude_api_key: System.get_env("CLAUDE_API_KEY")
+
+# JWT secret
+if jwt_secret = System.get_env("JWT_SECRET") do
+  config :joken,
+    default_signer: [
+      signer_alg: "HS256",
+      key_octet: jwt_secret
+    ]
 end
 
 if config_env() == :prod do

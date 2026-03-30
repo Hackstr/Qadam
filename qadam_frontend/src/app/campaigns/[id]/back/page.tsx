@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { getCampaign } from "@/lib/api";
+import { useQadamProgram } from "@/hooks/use-qadam-program";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +26,7 @@ export default function BackCampaignPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { connected, publicKey } = useWallet();
-  const { connection } = useConnection();
+  const { backCampaign: backCampaignTx } = useQadamProgram();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -62,12 +63,12 @@ export default function BackCampaignPage() {
 
     setLoading(true);
     try {
-      // TODO: Build and send Anchor transaction via wallet adapter
-      // const tx = await program.methods.backCampaign(new BN(amountLamports))...
-      alert("Backing transaction would be sent here. Connect to Anchor program to enable.");
+      const sig = await backCampaignTx(campaign.solana_pubkey, amountNum);
+      console.log("Backed:", sig);
       router.push(`/campaigns/${id}`);
     } catch (err) {
       console.error("Backing failed:", err);
+      alert(`Backing failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }

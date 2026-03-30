@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useQadamProgram } from "@/hooks/use-qadam-program";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,7 +19,7 @@ interface MilestoneInput {
 }
 
 export default function CreateCampaignPage() {
-  const { connected } = useWallet();
+  const { connected, createCampaign: createCampaignTx } = useQadamProgram();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -57,13 +58,23 @@ export default function CreateCampaignPage() {
     if (!connected) return;
     setLoading(true);
     try {
-      // TODO: Build Anchor transactions:
-      // 1. create_campaign
-      // 2. add_milestone × N (bundled in single tx)
-      alert("Campaign creation would happen here. Connect to Anchor program to enable.");
+      const nonce = Date.now(); // Unique nonce per campaign
+      const result = await createCampaignTx({
+        title,
+        nonce,
+        milestonesCount: milestones.length,
+        goalSol: goalNum,
+        tokensPerLamport: parseInt(tokensPerLamport) || 100,
+        milestones: milestones.map((m) => ({
+          amountSol: parseFloat(m.amount) || 0,
+          deadline: new Date(m.deadline),
+        })),
+      });
+      console.log("Campaign created:", result);
       router.push("/dashboard");
     } catch (err) {
       console.error("Creation failed:", err);
+      alert(`Creation failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }
