@@ -5,7 +5,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { getCampaigns } from "@/lib/api";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2, Plus, Send } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -65,7 +65,17 @@ export default function DashboardPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {myCampaigns.map((campaign) => (
-            <CampaignCard key={campaign.id} campaign={campaign} />
+            <div key={campaign.id} className="space-y-2">
+              <CampaignCard campaign={campaign} />
+              {campaign.status === "active" && campaign.milestones_approved < campaign.milestones_count && (
+                <Link href={`/dashboard/${campaign.id}/submit`}>
+                  <Button variant="outline" size="sm" className="w-full gap-2">
+                    <Send className="h-3.5 w-3.5" />
+                    Submit Evidence
+                  </Button>
+                </Link>
+              )}
+            </div>
           ))}
         </div>
       )}

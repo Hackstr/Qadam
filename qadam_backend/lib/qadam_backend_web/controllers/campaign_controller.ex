@@ -53,6 +53,7 @@ defmodule QadamBackendWeb.CampaignController do
     campaign_json(c)
     |> Map.put(:pitch_video_url, c.pitch_video_url)
     |> Map.put(:token_mint_address, c.token_mint_address)
+    |> Map.put(:tokens_per_lamport, c.tokens_per_lamport)
     |> Map.put(:milestones, Enum.map(c.milestones || [], &milestone_json/1))
   end
 

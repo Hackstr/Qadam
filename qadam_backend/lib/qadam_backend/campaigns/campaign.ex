@@ -20,6 +20,7 @@ defmodule QadamBackend.Campaigns.Campaign do
     field :status, :string, default: "draft"
     field :milestones_count, :integer
     field :milestones_approved, :integer, default: 0
+    field :tokens_per_lamport, :integer, default: 100
     field :featured, :boolean, default: false
 
     has_many :milestones, QadamBackend.Milestones.Milestone
@@ -31,7 +32,7 @@ defmodule QadamBackend.Campaigns.Campaign do
   @required_fields ~w(solana_pubkey creator_wallet title goal_lamports milestones_count status)a
   @optional_fields ~w(description category cover_image_url pitch_video_url
                       raised_lamports backers_count token_mint_address
-                      milestones_approved featured)a
+                      tokens_per_lamport milestones_approved featured)a
 
   def changeset(campaign, attrs) do
     campaign
