@@ -12,7 +12,7 @@ defmodule QadamBackend.Workers.AIVerificationWorker do
     max_attempts: 3,
     unique: [period: 3600, keys: [:milestone_id]]
 
-  alias QadamBackend.{Milestones, Campaigns, Repo}
+  alias QadamBackend.{Milestones, Repo}
   alias QadamBackend.AI.AiDecision
   alias QadamBackend.Claude.{Client, PromptBuilder}
   alias QadamBackend.Evidence.HashVerifier

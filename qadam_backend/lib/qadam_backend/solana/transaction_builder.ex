@@ -40,7 +40,7 @@ defmodule QadamBackend.Solana.TransactionBuilder do
   @doc """
   Sign and broadcast mark_under_human_review transaction.
   """
-  def sign_and_broadcast_human_review(campaign_pubkey, milestone_index, ai_decision_hash) do
+  def sign_and_broadcast_human_review(_campaign_pubkey, _milestone_index, _ai_decision_hash) do
     with {:ok, %{blockhash: _blockhash}} <- RPC.get_latest_blockhash() do
       # Placeholder — same pattern as release
       {:ok, %{signature: "placeholder_human_review_tx"}}

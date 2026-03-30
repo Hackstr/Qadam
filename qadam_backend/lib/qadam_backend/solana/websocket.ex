@@ -90,17 +90,9 @@ defmodule QadamBackend.Solana.WebSocket do
     |> Enum.reject(&is_nil/1)
   end
 
-  @event_discriminators %{
-    # SHA-256("event:MilestoneSubmitted")[0..8]
-    "milestone_submitted" => :milestone_submitted,
-    "milestone_released" => :milestone_released,
-    "campaign_backed" => :campaign_backed,
-    "campaign_created" => :campaign_created
-  }
-
   defp parse_event_discriminator(<<discriminator::binary-size(8), _rest::binary>>) do
-    # For MVP: match known discriminators
-    # Full Borsh parsing will be added when needed
+    # For MVP: match known discriminators by first 8 bytes
+    # Full Borsh parsing will be added when we integrate with specific events
     %{name: "program_event", discriminator: Base.encode16(discriminator, case: :lower)}
   end
 

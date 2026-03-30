@@ -4,6 +4,8 @@ defmodule QadamBackendWeb.CampaignController do
   alias QadamBackend.Campaigns
   alias QadamBackend.Backers
 
+  action_fallback QadamBackendWeb.FallbackController
+
   def index(conn, params) do
     campaigns = Campaigns.list_campaigns(
       status: params["status"],
@@ -16,7 +18,7 @@ defmodule QadamBackendWeb.CampaignController do
 
   def show(conn, %{"id" => id}) do
     case Campaigns.get_campaign_with_milestones(id) do
-      nil -> conn |> put_status(:not_found) |> json(%{error: "not_found"})
+      nil -> {:error, :not_found}
       campaign -> json(conn, %{data: campaign_detail_json(campaign)})
     end
   end
