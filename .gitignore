@@ -1,0 +1,29 @@
+# OS
+.DS_Store
+
+# Anchor / Solana
+qadam/.anchor
+qadam/target
+qadam/test-ledger
+qadam/node_modules
+qadam/.yarn
+**/*.rs.bk
+
+# Elixir (future)
+qadam_backend/_build
+qadam_backend/deps
+qadam_backend/.elixir_ls
+
+# Frontend (future)
+qadam_frontend/node_modules
+qadam_frontend/.next
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea
+.vscode
+*.swp
