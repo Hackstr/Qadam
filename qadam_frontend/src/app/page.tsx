@@ -1,65 +1,143 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Shield, Cpu, Coins, Eye } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="flex flex-col">
+      {/* Hero */}
+      <section className="container mx-auto px-4 py-20 md:py-32 text-center">
+        <Badge variant="secondary" className="mb-6">
+          Powered by Solana &middot; Verified by AI
+        </Badge>
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl mx-auto leading-tight">
+          Crowdfunding where{" "}
+          <span className="text-amber-500">progress</span> unlocks funding
+        </h1>
+        <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          Backers&apos; SOL stays in escrow. AI verifies each milestone. Creators
+          get paid only for real progress. Backers become co-owners through
+          tokens.
+        </p>
+        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="/campaigns">
+            <Button size="lg" className="gap-2 bg-[#0F1724] hover:bg-[#1a2538]">
+              Explore Campaigns
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Link href="/create">
+            <Button size="lg" variant="outline" className="gap-2">
+              Start a Campaign
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="bg-muted/30 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">How Qadam Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            {[
+              { step: "1", title: "Create Campaign", desc: "Define your project, milestones, and funding goal" },
+              { step: "2", title: "Backers Fund", desc: "SOL goes to smart contract escrow, not to creator" },
+              { step: "3", title: "AI Verifies", desc: "Submit evidence, Claude AI evaluates milestone completion" },
+              { step: "4", title: "Funds Release", desc: "Approved? SOL transfers to creator automatically" },
+            ].map((item) => (
+              <Card key={item.step} className="text-center">
+                <CardContent className="pt-6">
+                  <div className="w-10 h-10 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center mx-auto mb-4">
+                    {item.step}
+                  </div>
+                  <h3 className="font-semibold mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Value props */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Why Qadam?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                <Shield className="h-6 w-6 text-amber-500" />
+              </div>
+              <h3 className="font-semibold mb-2">Milestone Escrow</h3>
+              <p className="text-sm text-muted-foreground">Funds can&apos;t leave without proof of progress. Smart contract enforces it.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                <Cpu className="h-6 w-6 text-amber-500" />
+              </div>
+              <h3 className="font-semibold mb-2">AI Verification</h3>
+              <p className="text-sm text-muted-foreground">Claude AI evaluates evidence objectively. Instant, fair, transparent.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                <Coins className="h-6 w-6 text-amber-500" />
+              </div>
+              <h3 className="font-semibold mb-2">Token Equity</h3>
+              <p className="text-sm text-muted-foreground">Backers receive project tokens. Not just donors — co-owners.</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                <Eye className="h-6 w-6 text-amber-500" />
+              </div>
+              <h3 className="font-semibold mb-2">On-chain Transparency</h3>
+              <p className="text-sm text-muted-foreground">Every decision, every transaction — publicly verifiable on Solana.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="bg-[#0F1724] text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto text-center">
+            <div>
+              <p className="text-3xl font-bold text-amber-500">2.5%</p>
+              <p className="text-sm text-gray-400 mt-1">Platform fee</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-amber-500">&lt; 60s</p>
+              <p className="text-sm text-gray-400 mt-1">AI verification</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-amber-500">0%</p>
+              <p className="text-sm text-gray-400 mt-1">For early creators</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-amber-500">100%</p>
+              <p className="text-sm text-gray-400 mt-1">On-chain</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-20 text-center">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-4">Ready to build?</h2>
+          <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+            Whether you&apos;re a creator seeking funding or a backer looking for
+            early-stage opportunities — Qadam is for you.
           </p>
+          <Link href="/campaigns">
+            <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+              Get Started
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
     </div>
   );
 }
