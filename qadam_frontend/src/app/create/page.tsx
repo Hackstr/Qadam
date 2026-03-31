@@ -26,7 +26,10 @@ export default function CreateCampaignPage() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Apps");
   const [goal, setGoal] = useState("");
-  const [tokensPerLamport, setTokensPerLamport] = useState("100");
+  const [tokenName, setTokenName] = useState("");
+  const [tokenSymbol, setTokenSymbol] = useState("");
+  const [totalSupply, setTotalSupply] = useState("1000000");
+  const [backerPercent, setBackerPercent] = useState("20");
   const [milestones, setMilestones] = useState<MilestoneInput[]>([
     { title: "", description: "", amount: "", deadline: "" },
   ]);
@@ -53,6 +56,13 @@ export default function CreateCampaignPage() {
   const goalNum = parseFloat(goal) || 0;
   const amountsMatch = Math.abs(totalMilestoneAmount - goalNum) < 0.001;
 
+  // Calculate token rate from supply/percent/goal
+  const supplyNum = parseInt(totalSupply) || 0;
+  const percentNum = parseInt(backerPercent) || 0;
+  const backerTokens = Math.floor(supplyNum * percentNum / 100);
+  const tokensPerSol = goalNum > 0 ? Math.floor(backerTokens / goalNum) : 0;
+  const securityDeposit = goalNum * 0.005;
+
   const handleCreate = async () => {
     if (!connected) return;
     setLoading(true);
@@ -63,7 +73,7 @@ export default function CreateCampaignPage() {
         nonce,
         milestonesCount: milestones.length,
         goalSol: goalNum,
-        tokensPerLamport: parseInt(tokensPerLamport) || 100,
+        tokensPerLamport: tokensPerSol || 100,
         milestones: milestones.map((m) => ({
           amountSol: parseFloat(m.amount) || 0,
           deadline: new Date(m.deadline),
@@ -201,23 +211,88 @@ export default function CreateCampaignPage() {
         {/* Token config */}
         <Card>
           <CardHeader>
-            <CardTitle>Token Configuration</CardTitle>
+            <CardTitle>Project Token</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Backers receive your project tokens as co-owners. You control the name, supply, and allocation.
+            </p>
           </CardHeader>
-          <CardContent>
-            <div>
-              <label className="text-sm font-medium mb-1 block">Tokens per SOL (base rate)</label>
-              <Input
-                type="number"
-                value={tokensPerLamport}
-                onChange={(e) => setTokensPerLamport(e.target.value)}
-                placeholder="100"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Tier 1 (Genesis): {tokensPerLamport} tokens/SOL &middot; Tier 2 (Early): {Math.floor(Number(tokensPerLamport) * 0.67)} tokens/SOL &middot; Tier 3: {Math.floor(Number(tokensPerLamport) * 0.5)} tokens/SOL
-              </p>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Token Name</label>
+                <Input
+                  value={tokenName}
+                  onChange={(e) => setTokenName(e.target.value)}
+                  placeholder="e.g. MyApp Token"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Symbol</label>
+                <Input
+                  value={tokenSymbol}
+                  onChange={(e) => setTokenSymbol(e.target.value.toUpperCase())}
+                  placeholder="e.g. MYAPP"
+                  maxLength={10}
+                />
+              </div>
             </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Total Supply</label>
+                <Input
+                  type="number"
+                  value={totalSupply}
+                  onChange={(e) => setTotalSupply(e.target.value)}
+                  placeholder="1,000,000"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">% for Backers</label>
+                <Input
+                  type="number"
+                  value={backerPercent}
+                  onChange={(e) => setBackerPercent(e.target.value)}
+                  placeholder="20"
+                  min={1}
+                  max={100}
+                />
+              </div>
+            </div>
+
+            {/* Auto-calculated preview */}
+            {goalNum > 0 && tokensPerSol > 0 && (
+              <div className="p-4 bg-muted/50 rounded-lg text-sm space-y-1.5">
+                <p className="font-medium mb-2">Token Distribution Preview</p>
+                <p>
+                  <span className="inline-block w-3 h-3 rounded-full bg-green-500 mr-2" />
+                  Genesis Tier: <strong>{tokensPerSol.toLocaleString()} {tokenSymbol || "TOKEN"}/SOL</strong> (1.0x)
+                </p>
+                <p>
+                  <span className="inline-block w-3 h-3 rounded-full bg-yellow-500 mr-2" />
+                  Early Tier: <strong>{Math.floor(tokensPerSol * 0.67).toLocaleString()} {tokenSymbol || "TOKEN"}/SOL</strong> (0.67x)
+                </p>
+                <p>
+                  <span className="inline-block w-3 h-3 rounded-full bg-gray-400 mr-2" />
+                  Standard: <strong>{Math.floor(tokensPerSol * 0.5).toLocaleString()} {tokenSymbol || "TOKEN"}/SOL</strong> (0.5x)
+                </p>
+                <p className="text-muted-foreground pt-2 border-t mt-2">
+                  Total for backers: {backerTokens.toLocaleString()} {tokenSymbol || "TOKEN"} ({backerPercent}% of {supplyNum.toLocaleString()})
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Security deposit warning */}
+        {goalNum > 0 && (
+          <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm">
+            <span className="text-amber-500 mt-0.5">&#9432;</span>
+            <div>
+              <p className="font-medium text-amber-800">Security Deposit: {securityDeposit.toFixed(4)} SOL</p>
+              <p className="text-amber-700">0.5% of your goal. Returned progressively as milestones are approved.</p>
+            </div>
+          </div>
+        )}
 
         {/* Submit */}
         {!connected ? (

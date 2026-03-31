@@ -1,14 +1,39 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { getReviewQueue, decideMilestone } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Check, X } from "lucide-react";
+import { Loader2, Check, X, ShieldAlert } from "lucide-react";
+
+const ADMIN_WALLET = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 export default function AdminReviewPage() {
+  const { publicKey, connected } = useWallet();
   const queryClient = useQueryClient();
+
+  // Auth guard
+  const isAdmin = connected && publicKey && publicKey.toBase58() === ADMIN_WALLET;
+  if (!connected) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <ShieldAlert className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <h1 className="text-2xl font-bold mb-2">Admin Access Required</h1>
+        <p className="text-muted-foreground">Connect your admin wallet to access the review queue.</p>
+      </div>
+    );
+  }
+  if (!isAdmin) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <ShieldAlert className="h-12 w-12 mx-auto text-red-500 mb-4" />
+        <h1 className="text-2xl font-bold mb-2">Unauthorized</h1>
+        <p className="text-muted-foreground">This wallet does not have admin access.</p>
+      </div>
+    );
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ["review-queue"],

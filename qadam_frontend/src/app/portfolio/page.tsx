@@ -3,14 +3,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { getPortfolio } from "@/lib/api";
+import { useQadamProgram } from "@/hooks/use-qadam-program";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatSol, TIER_LABELS } from "@/lib/constants";
-import { Loader2, Wallet, TrendingUp } from "lucide-react";
+import { Loader2, Wallet, TrendingUp, Gift, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
 export default function PortfolioPage() {
   const { connected } = useWallet();
+  const { claimTokens, claimRefund, txStatus } = useQadamProgram();
 
   const { data, isLoading } = useQuery({
     queryKey: ["portfolio"],
@@ -86,10 +89,13 @@ export default function PortfolioPage() {
         <div className="space-y-3">
           {positions.map((pos, idx) => {
             const tierInfo = TIER_LABELS[pos.tier as 1 | 2 | 3];
+            const hasUnclaimedTokens = pos.tokens_claimed < pos.tokens_allocated;
+            const canRefund = pos.campaign_status === "refunded" && !pos.refund_claimed;
+
             return (
-              <Link key={idx} href={`/campaigns/${pos.campaign_id}`}>
-                <Card className="hover:shadow-sm transition-shadow cursor-pointer">
-                  <CardContent className="p-4 flex items-center justify-between">
+              <Card key={idx} className="hover:shadow-sm transition-shadow">
+                <CardContent className="p-4">
+                  <Link href={`/campaigns/${pos.campaign_id}`} className="flex items-center justify-between">
                     <div>
                       <p className="font-semibold">{pos.campaign_title || "Campaign"}</p>
                       <div className="flex items-center gap-2 mt-1">
@@ -104,12 +110,48 @@ export default function PortfolioPage() {
                     <div className="text-right">
                       <p className="font-semibold">{formatSol(pos.amount_lamports)}</p>
                       <p className="text-xs text-muted-foreground">
-                        {pos.tokens_claimed.toLocaleString()} / {pos.tokens_allocated.toLocaleString()} tokens claimed
+                        {pos.tokens_claimed.toLocaleString()} / {pos.tokens_allocated.toLocaleString()} tokens
                       </p>
                     </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                  </Link>
+
+                  {/* Action buttons */}
+                  {(hasUnclaimedTokens || canRefund) && (
+                    <div className="flex gap-2 mt-3 pt-3 border-t">
+                      {hasUnclaimedTokens && pos.campaign_status !== "refunded" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="gap-1.5"
+                          disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            claimTokens(pos.campaign_id);
+                          }}
+                        >
+                          <Gift className="h-3.5 w-3.5" />
+                          Claim Tokens
+                        </Button>
+                      )}
+                      {canRefund && (
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="gap-1.5"
+                          disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            claimRefund(pos.campaign_id);
+                          }}
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                          Claim Refund
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             );
           })}
         </div>
