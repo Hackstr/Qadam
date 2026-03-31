@@ -48,5 +48,9 @@ defmodule QadamBackendWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+
+  # CORS must be before Router to handle OPTIONS preflight
+  plug CORSPlug, origin: ["http://localhost:3000", "http://127.0.0.1:3000"]
+
   plug QadamBackendWeb.Router
 end
