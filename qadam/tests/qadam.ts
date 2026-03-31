@@ -604,11 +604,196 @@ describe("qadam", () => {
         .rpc();
 
       const campaign = await program.account.campaign.fetch(campaignPda3);
-      expect(campaign.status).to.deep.equal({ completed: {} });
+      expect(campaign.status).to.deep.equal({ cancelled: {} });
       expect(campaign.vaultBalance.toNumber()).to.equal(0);
 
       const balanceAfter = await connection.getBalance(creator.publicKey);
       expect(balanceAfter).to.be.greaterThan(balanceBefore);
+    });
+
+    it("creator can close cancelled campaign", async () => {
+      await program.methods
+        .closeCampaign()
+        .accounts({
+          creator: creator.publicKey,
+          campaign: campaignPda3,
+        })
+        .signers([creator])
+        .rpc();
+
+      const info = await connection.getAccountInfo(campaignPda3);
+      expect(info).to.be.null;
+    });
+  });
+
+  // ═══════════════════════════════════════════
+  // TEST 6: NEGATIVE CASES (security)
+  // ═══════════════════════════════════════════
+
+  describe("6. Negative Cases", () => {
+    let campaignPda6: PublicKey;
+    let vaultPda6: PublicKey;
+    let mintPda6: PublicKey;
+    const nonce6 = new anchor.BN(6);
+
+    before(async () => {
+      // Create a fresh campaign for negative tests
+      [campaignPda6] = PublicKey.findProgramAddressSync(
+        [Buffer.from("campaign"), creator.publicKey.toBuffer(), nonce6.toArrayLike(Buffer, "le", 8)],
+        program.programId
+      );
+      [vaultPda6] = PublicKey.findProgramAddressSync(
+        [Buffer.from("vault"), campaignPda6.toBuffer()],
+        program.programId
+      );
+      [mintPda6] = PublicKey.findProgramAddressSync(
+        [Buffer.from("mint"), campaignPda6.toBuffer()],
+        program.programId
+      );
+
+      await program.methods
+        .createCampaign("Security Test", nonce6, 2, new anchor.BN(2 * LAMPORTS_PER_SOL), tokensPerLamport)
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaignVault: vaultPda6,
+          tokenMint: mintPda6,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .signers([creator])
+        .rpc();
+
+      const now = Math.floor(Date.now() / 1000);
+      for (let i = 0; i < 2; i++) {
+        const [mPda] = PublicKey.findProgramAddressSync(
+          [Buffer.from("milestone"), campaignPda6.toBuffer(), Buffer.from([i])],
+          program.programId
+        );
+        await program.methods
+          .addMilestone(new anchor.BN(LAMPORTS_PER_SOL), new anchor.BN(now + 86400 * (i + 1)))
+          .accounts({
+            creator: creator.publicKey,
+            config: configPda,
+            campaign: campaignPda6,
+            milestone: mPda,
+          })
+          .signers([creator])
+          .rpc();
+      }
+
+      // Backer1 backs
+      const [bp] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda6.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+      await program.methods
+        .backCampaign(new anchor.BN(2 * LAMPORTS_PER_SOL))
+        .accounts({
+          backer: backer1.publicKey,
+          config: configPda,
+          campaign: campaignPda6,
+          campaignVault: vaultPda6,
+          backerPosition: bp,
+        })
+        .signers([backer1])
+        .rpc();
+    });
+
+    it("non-AI agent cannot call release_milestone", async () => {
+      // First submit evidence
+      const [mPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("milestone"), campaignPda6.toBuffer(), Buffer.from([0])],
+        program.programId
+      );
+      const hash = Buffer.alloc(32); hash.fill(99);
+
+      await program.methods
+        .submitMilestone(0, Array.from(hash))
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaign: campaignPda6,
+          milestone: mPda,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Random backer tries to release — should fail
+      try {
+        await program.methods
+          .releaseMilestone(0, Array.from(hash))
+          .accounts({
+            authority: backer1.publicKey,
+            config: configPda,
+            campaign: campaignPda6,
+            milestone: mPda,
+            campaignVault: vaultPda6,
+            creator: creator.publicKey,
+            qadamTreasury: qadamTreasury.publicKey,
+          })
+          .signers([backer1])
+          .rpc();
+        expect.fail("Should have thrown UnauthorizedSigner");
+      } catch (err: any) {
+        expect(err.error.errorCode.code).to.equal("UnauthorizedSigner");
+      }
+    });
+
+    it("non-admin cannot call set_paused", async () => {
+      try {
+        await program.methods
+          .setPaused(true)
+          .accounts({ admin: backer1.publicKey, config: configPda })
+          .signers([backer1])
+          .rpc();
+        expect.fail("Should have thrown Unauthorized");
+      } catch (err: any) {
+        expect(err.error.errorCode.code).to.equal("Unauthorized");
+      }
+    });
+
+    it("cancel_campaign fails when campaign has backers", async () => {
+      try {
+        await program.methods
+          .cancelCampaign()
+          .accounts({
+            creator: creator.publicKey,
+            campaign: campaignPda6,
+            campaignVault: vaultPda6,
+          })
+          .signers([creator])
+          .rpc();
+        expect.fail("Should have thrown CampaignHasBackers");
+      } catch (err: any) {
+        expect(err.error.errorCode.code).to.equal("CampaignHasBackers");
+      }
+    });
+
+    it("claim_tokens fails when no milestones approved", async () => {
+      const [bp] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda6.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+      const backerAta = getAssociatedTokenAddressSync(mintPda6, backer1.publicKey);
+
+      try {
+        await program.methods
+          .claimTokens()
+          .accounts({
+            backer: backer1.publicKey,
+            config: configPda,
+            campaign: campaignPda6,
+            backerPosition: bp,
+            tokenMint: mintPda6,
+            backerTokenAccount: backerAta,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .signers([backer1])
+          .rpc();
+        expect.fail("Should have thrown NothingToClaim");
+      } catch (err: any) {
+        expect(err.error.errorCode.code).to.equal("NothingToClaim");
+      }
     });
   });
 });

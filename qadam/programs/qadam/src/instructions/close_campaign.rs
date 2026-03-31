@@ -7,14 +7,18 @@ pub fn handler(ctx: Context<CloseCampaign>) -> Result<()> {
 
     require!(
         campaign.status == CampaignStatus::Completed
-        || campaign.status == CampaignStatus::Refunded,
+        || campaign.status == CampaignStatus::Refunded
+        || campaign.status == CampaignStatus::Cancelled,
         QadamError::CampaignStillActive
     );
 
-    require!(
-        campaign.positions_closed == campaign.backer_count,
-        QadamError::PositionsNotClosed
-    );
+    // Cancelled campaigns have no backers, skip positions check
+    if campaign.status != CampaignStatus::Cancelled {
+        require!(
+            campaign.positions_closed == campaign.backer_count,
+            QadamError::PositionsNotClosed
+        );
+    }
 
     // Campaign account closed by Anchor's close constraint → rent goes to creator
     Ok(())

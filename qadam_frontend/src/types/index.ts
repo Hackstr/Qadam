@@ -22,7 +22,7 @@ export interface Campaign {
   inserted_at: string;
 }
 
-export type CampaignStatus = "draft" | "active" | "completed" | "refunded" | "paused";
+export type CampaignStatus = "draft" | "active" | "completed" | "refunded" | "paused" | "cancelled";
 
 export interface Milestone {
   id: string;

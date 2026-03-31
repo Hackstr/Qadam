@@ -41,7 +41,7 @@ pub fn handler(ctx: Context<CancelCampaign>) -> Result<()> {
         campaign.security_deposit_remaining = 0;
     }
 
-    campaign.status = CampaignStatus::Completed; // Mark as done so it can be closed
+    campaign.status = CampaignStatus::Cancelled;
 
     Ok(())
 }

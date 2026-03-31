@@ -63,4 +63,6 @@ pub enum CampaignStatus {
     Refunded,
     /// Admin paused this specific campaign
     Paused,
+    /// Creator cancelled (no backers) — deposit returned
+    Cancelled,
 }

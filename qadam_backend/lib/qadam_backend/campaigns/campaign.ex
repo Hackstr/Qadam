@@ -38,7 +38,7 @@ defmodule QadamBackend.Campaigns.Campaign do
     campaign
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
-    |> validate_inclusion(:status, ~w(draft active completed refunded paused))
+    |> validate_inclusion(:status, ~w(draft active completed refunded paused cancelled))
     |> unique_constraint(:solana_pubkey)
   end
 end

@@ -39,7 +39,7 @@ Qadam/
 - **Vote cap 20%** per position to prevent whale dominance
 - **Vault = SystemAccount PDA** holding native SOL
 
-### 17 instructions
+### 18 instructions
 
 Admin: `initialize_config`, `set_paused`
 Campaign: `create_campaign`, `add_milestone`, `cancel_campaign`
