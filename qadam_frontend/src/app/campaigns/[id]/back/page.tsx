@@ -66,9 +66,9 @@ export default function BackCampaignPage() {
       const sig = await backCampaignTx(campaign.solana_pubkey, amountNum);
       console.log("Backed:", sig);
       router.push(`/campaigns/${id}`);
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.message === "cancelled") return;
       console.error("Backing failed:", err);
-      alert(`Backing failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }

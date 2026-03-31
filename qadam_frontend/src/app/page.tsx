@@ -8,10 +8,11 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero */}
-      <section className="container mx-auto px-4 py-20 md:py-32 text-center">
-        <Badge variant="secondary" className="mb-6">
+      <section className="container mx-auto px-4 pt-16 pb-12 md:pt-24 md:pb-16 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm font-medium mb-6">
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
           Powered by Solana &middot; Verified by AI
-        </Badge>
+        </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl mx-auto leading-tight">
           Crowdfunding where{" "}
           <span className="text-amber-500">progress</span> unlocks funding
@@ -37,25 +38,30 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section className="bg-muted/30 py-20">
+      <section className="bg-muted/30 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">How Qadam Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 max-w-5xl mx-auto">
             {[
               { step: "1", title: "Create Campaign", desc: "Define your project, milestones, and funding goal" },
               { step: "2", title: "Backers Fund", desc: "SOL goes to smart contract escrow, not to creator" },
-              { step: "3", title: "AI Verifies", desc: "Submit evidence, Claude AI evaluates milestone completion" },
+              { step: "3", title: "AI Verifies", desc: "Submit evidence, Claude AI evaluates completion" },
               { step: "4", title: "Funds Release", desc: "Approved? SOL transfers to creator automatically" },
-            ].map((item) => (
-              <Card key={item.step} className="text-center">
-                <CardContent className="pt-6">
-                  <div className="w-10 h-10 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center mx-auto mb-4">
-                    {item.step}
-                  </div>
-                  <h3 className="font-semibold mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.desc}</p>
-                </CardContent>
-              </Card>
+            ].map((item, idx) => (
+              <div key={item.step} className="flex items-center gap-4">
+                <Card className="text-center w-56 flex-shrink-0">
+                  <CardContent className="pt-6 pb-5">
+                    <div className="w-10 h-10 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center mx-auto mb-3">
+                      {item.step}
+                    </div>
+                    <h3 className="font-semibold mb-1.5">{item.title}</h3>
+                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+                  </CardContent>
+                </Card>
+                {idx < 3 && (
+                  <ArrowRight className="h-5 w-5 text-amber-500 hidden md:block flex-shrink-0" />
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -111,8 +117,8 @@ export default function Home() {
               <p className="text-sm text-gray-400 mt-1">AI verification</p>
             </div>
             <div>
-              <p className="text-3xl font-bold text-amber-500">0%</p>
-              <p className="text-sm text-gray-400 mt-1">For early creators</p>
+              <p className="text-3xl font-bold text-amber-500">Free</p>
+              <p className="text-sm text-gray-400 mt-1">For first 20 creators</p>
             </div>
             <div>
               <p className="text-3xl font-bold text-amber-500">100%</p>

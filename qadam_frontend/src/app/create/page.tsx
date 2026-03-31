@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useQadamProgram } from "@/hooks/use-qadam-program";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +18,7 @@ interface MilestoneInput {
 }
 
 export default function CreateCampaignPage() {
-  const { connected, createCampaign: createCampaignTx } = useQadamProgram();
+  const { connected, createCampaign: createCampaignTx, txStatus } = useQadamProgram();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -72,9 +71,9 @@ export default function CreateCampaignPage() {
       });
       console.log("Campaign created:", result);
       router.push("/dashboard");
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.message === "cancelled") return; // User rejected — toast already shown
       console.error("Creation failed:", err);
-      alert(`Creation failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }
@@ -214,7 +213,7 @@ export default function CreateCampaignPage() {
                 placeholder="100"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Tier 1 backers get {tokensPerLamport}x, Tier 2 get {Math.floor(Number(tokensPerLamport) * 0.67)}x, Tier 3 get {Math.floor(Number(tokensPerLamport) * 0.5)}x
+                Tier 1 (Genesis): {tokensPerLamport} tokens/SOL &middot; Tier 2 (Early): {Math.floor(Number(tokensPerLamport) * 0.67)} tokens/SOL &middot; Tier 3: {Math.floor(Number(tokensPerLamport) * 0.5)} tokens/SOL
               </p>
             </div>
           </CardContent>
@@ -228,7 +227,10 @@ export default function CreateCampaignPage() {
         ) : (
           <Button
             onClick={handleCreate}
-            disabled={!title || !goal || !amountsMatch || loading}
+            disabled={
+              !title || !goal || !amountsMatch || loading ||
+              milestones.some((m) => !m.title || !m.amount || !m.deadline)
+            }
             className="w-full gap-2 bg-[#0F1724] hover:bg-[#1a2538]"
             size="lg"
           >
