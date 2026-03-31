@@ -35,41 +35,24 @@ export default function PortfolioPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-2">My Portfolio</h1>
-      <p className="text-muted-foreground mb-8">Track your backed campaigns and token positions.</p>
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <h1 className="text-2xl font-bold tracking-tight mb-1">Portfolio</h1>
+      <p className="text-sm text-muted-foreground mb-8">Your backed campaigns and token positions.</p>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <Card>
-          <CardContent className="p-5 flex items-center gap-3">
-            <Wallet className="h-8 w-8 text-amber-500" />
-            <div>
-              <p className="text-2xl font-bold">{formatSol(totalBacked)}</p>
-              <p className="text-sm text-muted-foreground">Total Backed</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5 flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-green-500" />
-            <div>
-              <p className="text-2xl font-bold">{totalTokens.toLocaleString()}</p>
-              <p className="text-sm text-muted-foreground">Tokens Allocated</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5 flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold">
-              {positions.length}
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{positions.length}</p>
-              <p className="text-sm text-muted-foreground">Campaigns</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Stats — clean minimal */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="bg-white border border-black/[0.06] rounded-2xl p-5">
+          <p className="text-2xl font-bold tabular-nums">{formatSol(totalBacked)}</p>
+          <p className="text-xs text-muted-foreground mt-1">Total Backed</p>
+        </div>
+        <div className="bg-white border border-black/[0.06] rounded-2xl p-5">
+          <p className="text-2xl font-bold tabular-nums">{totalTokens.toLocaleString()}</p>
+          <p className="text-xs text-muted-foreground mt-1">Tokens Allocated</p>
+        </div>
+        <div className="bg-white border border-black/[0.06] rounded-2xl p-5">
+          <p className="text-2xl font-bold tabular-nums">{positions.length}</p>
+          <p className="text-xs text-muted-foreground mt-1">Campaigns</p>
+        </div>
       </div>
 
       {/* Positions */}
