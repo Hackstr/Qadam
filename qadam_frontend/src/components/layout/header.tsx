@@ -1,20 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useWallet } from "@solana/wallet-adapter-react";
 
-// Wallet button must be client-only (no SSR)
 const WalletMultiButton = dynamic(
-  () =>
-    import("@solana/wallet-adapter-react-ui").then(
-      (mod) => mod.WalletMultiButton
-    ),
+  () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
   { ssr: false }
 );
 
+const NAV_LINKS = [
+  { href: "/campaigns", label: "Discover", public: true },
+  { href: "/create", label: "Create", public: false },
+  { href: "/dashboard", label: "My Campaigns", public: false },
+  { href: "/portfolio", label: "My Backed", public: false },
+  { href: "/analytics", label: "Analytics", public: false },
+];
+
 export function Header() {
   const { connected } = useWallet();
+  const pathname = usePathname();
+
+  const visibleLinks = NAV_LINKS.filter((l) => l.public || connected);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 pointer-events-none">
@@ -27,41 +35,26 @@ export function Header() {
           <span className="text-base font-bold tracking-tight">Qadam</span>
         </Link>
 
-        {/* Divider */}
         <div className="w-px h-5 bg-black/[0.08]" />
 
         {/* Nav links */}
-        <Link
-          href="/campaigns"
-          className="px-3 py-1.5 rounded-full text-sm text-muted-foreground hover:text-foreground hover:bg-black/[0.04] transition-colors"
-        >
-          Discover
-        </Link>
+        {visibleLinks.map((link) => {
+          const isActive = pathname === link.href;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
+                isActive
+                  ? "bg-black/[0.06] text-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04]"
+              }`}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
 
-        {connected && (
-          <>
-            <Link
-              href="/create"
-              className="px-3 py-1.5 rounded-full text-sm text-muted-foreground hover:text-foreground hover:bg-black/[0.04] transition-colors"
-            >
-              Create
-            </Link>
-            <Link
-              href="/dashboard"
-              className="px-3 py-1.5 rounded-full text-sm text-muted-foreground hover:text-foreground hover:bg-black/[0.04] transition-colors"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/portfolio"
-              className="px-3 py-1.5 rounded-full text-sm text-muted-foreground hover:text-foreground hover:bg-black/[0.04] transition-colors"
-            >
-              Portfolio
-            </Link>
-          </>
-        )}
-
-        {/* Divider */}
         <div className="w-px h-5 bg-black/[0.08]" />
 
         {/* Wallet */}
