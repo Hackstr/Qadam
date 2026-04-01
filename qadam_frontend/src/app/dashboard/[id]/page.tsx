@@ -1,8 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { getCampaign } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getCampaign, getCampaignUpdates, postCampaignUpdate } from "@/lib/api";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -122,6 +126,84 @@ export default function CampaignManagePage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Updates */}
+      <UpdatesSection campaignId={id} />
     </div>
+  );
+}
+
+function UpdatesSection({ campaignId }: { campaignId: string }) {
+  const queryClient = useQueryClient();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const { data } = useQuery({
+    queryKey: ["campaign-updates", campaignId],
+    queryFn: () => getCampaignUpdates(campaignId),
+  });
+
+  const postMutation = useMutation({
+    mutationFn: () => postCampaignUpdate(campaignId, { title, content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["campaign-updates", campaignId] });
+      setTitle("");
+      setContent("");
+      toast.success("Update posted");
+    },
+    onError: () => toast.error("Failed to post update"),
+  });
+
+  const updates = data?.data || [];
+
+  return (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle>Campaign Updates</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Post form */}
+        <div className="border border-black/[0.06] rounded-xl p-4 space-y-3">
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Update title"
+            maxLength={200}
+          />
+          <Textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="Share progress with your backers..."
+            rows={3}
+          />
+          <Button
+            onClick={() => postMutation.mutate()}
+            disabled={!title.trim() || !content.trim() || postMutation.isPending}
+            size="sm"
+          >
+            Post Update
+          </Button>
+        </div>
+
+        {/* Existing updates */}
+        {updates.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No updates yet. Keep your backers informed.</p>
+        ) : (
+          <div className="space-y-3">
+            {updates.map((update) => (
+              <div key={update.id} className="border-l-2 border-amber-500 pl-4 py-2">
+                <div className="flex items-center justify-between mb-1">
+                  <h4 className="font-semibold text-sm">{update.title}</h4>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(update.inserted_at).toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{update.content}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

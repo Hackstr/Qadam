@@ -68,6 +68,15 @@ export interface BackerPosition {
   backed_at?: string;
 }
 
+export interface CampaignUpdate {
+  id: string;
+  campaign_id: string;
+  author_wallet: string;
+  title: string;
+  content: string;
+  inserted_at: string;
+}
+
 export interface ExtensionVote {
   voter_wallet: string;
   voting_power: number;

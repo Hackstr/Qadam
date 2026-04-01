@@ -4,7 +4,7 @@ defmodule QadamBackend.Campaigns do
   """
   import Ecto.Query
   alias QadamBackend.Repo
-  alias QadamBackend.Campaigns.Campaign
+  alias QadamBackend.Campaigns.{Campaign, CampaignUpdate}
 
   def list_campaigns(opts \\ []) do
     Campaign
@@ -53,4 +53,19 @@ defmodule QadamBackend.Campaigns do
 
   defp maybe_limit(query, nil), do: query
   defp maybe_limit(query, limit), do: limit(query, ^limit)
+
+  # Campaign Updates
+
+  def list_updates_for_campaign(campaign_id) do
+    CampaignUpdate
+    |> where([u], u.campaign_id == ^campaign_id)
+    |> order_by(desc: :inserted_at)
+    |> Repo.all()
+  end
+
+  def create_update(attrs) do
+    %CampaignUpdate{}
+    |> CampaignUpdate.changeset(attrs)
+    |> Repo.insert()
+  end
 end

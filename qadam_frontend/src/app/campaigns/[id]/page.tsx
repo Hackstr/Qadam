@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { getCampaign, getCampaignBackers } from "@/lib/api";
+import { getCampaign, getCampaignBackers, getCampaignUpdates } from "@/lib/api";
 import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +51,12 @@ export default function CampaignDetailPage() {
     enabled: !!id,
   });
 
+  const { data: updatesData } = useQuery({
+    queryKey: ["campaign-updates", id],
+    queryFn: () => getCampaignUpdates(id),
+    enabled: !!id,
+  });
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-32">
@@ -76,6 +82,7 @@ export default function CampaignDetailPage() {
     : campaign.backers_count < TIER_2_MAX_BACKERS ? 2 : 3;
   const tierInfo = TIER_LABELS[tier as 1 | 2 | 3];
   const backers = backersData?.data || [];
+  const updates = updatesData?.data || [];
   const cover = CATEGORY_COVERS[campaign.category || ""] || DEFAULT_COVER;
   const CoverIcon = cover.icon;
 
@@ -152,6 +159,7 @@ export default function CampaignDetailPage() {
               <TabsList>
                 <TabsTrigger value="milestones">Milestones</TabsTrigger>
                 <TabsTrigger value="backers">Backers ({campaign.backers_count})</TabsTrigger>
+                <TabsTrigger value="updates">Updates ({updates.length})</TabsTrigger>
               </TabsList>
 
               <TabsContent value="milestones" className="mt-6">
@@ -189,6 +197,28 @@ export default function CampaignDetailPage() {
                             Tier {backer.tier} · {backer.tokens_allocated.toLocaleString()} tokens
                           </p>
                         </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="updates" className="mt-6">
+                {updates.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">No updates yet from the creator.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {updates.map((update) => (
+                      <div key={update.id} className="border border-black/[0.06] rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-sm">{update.title}</h4>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(update.inserted_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                          {update.content}
+                        </p>
                       </div>
                     ))}
                   </div>

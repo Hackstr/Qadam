@@ -34,6 +34,9 @@ defmodule QadamBackendWeb.Router do
     get "/campaigns/:id/backers", CampaignController, :backers
     get "/campaigns/:campaign_id/milestones", MilestoneController, :index
     get "/milestones/:id", MilestoneController, :show
+
+    # Campaign updates (public read)
+    get "/campaigns/:campaign_id/updates", UpdateController, :index
   end
 
   # ═══════════════════════════════════════════
@@ -52,6 +55,9 @@ defmodule QadamBackendWeb.Router do
 
     # Creator: submit evidence
     post "/campaigns/:campaign_id/milestones/:index/evidence", MilestoneController, :submit_evidence
+
+    # Creator: post update
+    post "/campaigns/:campaign_id/updates", UpdateController, :create
   end
 
   # ═══════════════════════════════════════════

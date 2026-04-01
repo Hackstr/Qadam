@@ -1,4 +1,4 @@
-import type { Campaign, Milestone, BackerPosition, User } from "@/types";
+import type { Campaign, Milestone, BackerPosition, User, CampaignUpdate as CampaignUpdateType } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
@@ -105,6 +105,24 @@ export async function submitEvidence(
       body: JSON.stringify(evidence),
     }
   );
+}
+
+// ═══════════════════════════════════════════
+// CAMPAIGN UPDATES
+// ═══════════════════════════════════════════
+
+export async function getCampaignUpdates(campaignId: string) {
+  return fetchApi<{ data: CampaignUpdateType[] }>(`/campaigns/${campaignId}/updates`);
+}
+
+export async function postCampaignUpdate(
+  campaignId: string,
+  update: { title: string; content: string }
+) {
+  return fetchApi<{ data: CampaignUpdateType }>(`/campaigns/${campaignId}/updates`, {
+    method: "POST",
+    body: JSON.stringify(update),
+  });
 }
 
 // ═══════════════════════════════════════════
