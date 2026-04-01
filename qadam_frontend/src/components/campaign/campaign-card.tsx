@@ -116,8 +116,8 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
           </div>
         </div>
 
-        {/* Hover arrow */}
-        <ArrowUpRight className="absolute top-3 right-3 h-4 w-4 text-white/0 group-hover:text-white/60 transition-all" />
+        {/* Hover indicator — bottom right to avoid status pill collision */}
+        <ArrowUpRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground/0 group-hover:text-muted-foreground/30 transition-all" />
       </div>
     </Link>
   );

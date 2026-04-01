@@ -169,9 +169,9 @@ export default function CampaignDetailPage() {
                   </Link>
 
                   {/* Token preview */}
-                  {(campaign as any).tokens_per_lamport && (
+                  {campaign.tokens_per_lamport && (
                     <div className="mt-3 p-3 bg-muted/40 rounded-lg text-xs text-muted-foreground">
-                      <p>Back 1 SOL &rarr; receive <strong className="text-foreground">{((campaign as any).tokens_per_lamport).toLocaleString()} tokens</strong></p>
+                      <p>Back 1 SOL &rarr; receive <strong className="text-foreground">{(campaign.tokens_per_lamport).toLocaleString()} tokens</strong></p>
                       <p className="mt-0.5">Current tier: <span className={tierInfo.color}>{tierInfo.name} ({tierInfo.ratio})</span></p>
                     </div>
                   )}
@@ -187,19 +187,19 @@ export default function CampaignDetailPage() {
                 <CardTitle className="text-sm">Project Token</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {(campaign as any).tokens_per_lamport && (
+                {campaign.tokens_per_lamport && (
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Genesis (1.0x)</span>
-                      <span className="font-medium">{((campaign as any).tokens_per_lamport).toLocaleString()} / SOL</span>
+                      <span className="font-medium">{(campaign.tokens_per_lamport).toLocaleString()} / SOL</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Early (0.67x)</span>
-                      <span className="font-medium">{Math.floor((campaign as any).tokens_per_lamport * 0.67).toLocaleString()} / SOL</span>
+                      <span className="font-medium">{Math.floor(campaign.tokens_per_lamport * 0.67).toLocaleString()} / SOL</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Standard (0.5x)</span>
-                      <span className="font-medium">{Math.floor((campaign as any).tokens_per_lamport * 0.5).toLocaleString()} / SOL</span>
+                      <span className="font-medium">{Math.floor(campaign.tokens_per_lamport * 0.5).toLocaleString()} / SOL</span>
                     </div>
                   </div>
                 )}

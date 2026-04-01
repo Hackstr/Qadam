@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     title: "Qadam — Crowdfunding where progress unlocks funding",
     description: "Back projects on Solana. AI verifies milestones. Backers become co-owners through tokens.",
     type: "website",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Qadam — Build step by step" }],
   },
   twitter: {
     card: "summary_large_image",

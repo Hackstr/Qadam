@@ -58,7 +58,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* How it works — modern connected steps */}
+      {/* How It Works — modern connected steps */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -68,7 +68,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-4">
           <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-14">
-            How it works
+            How It Works
           </motion.h2>
 
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-0">
@@ -167,7 +167,7 @@ export default function Home() {
         className="py-20 text-center"
       >
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to build?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Build?</h2>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             Whether you&apos;re a creator seeking funding or a backer looking for
             early-stage opportunities.
