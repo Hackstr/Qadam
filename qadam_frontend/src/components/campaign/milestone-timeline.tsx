@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatSol } from "@/lib/constants";
 import type { Milestone } from "@/types";
-import { Check, Clock, AlertCircle, Loader2, Eye, X } from "lucide-react";
+import { Check, Clock, AlertCircle, Loader2, Eye, X, Scale } from "lucide-react";
 
 const statusConfig: Record<string, { icon: typeof Check; color: string; label: string }> = {
   pending: { icon: Clock, color: "text-gray-400", label: "Pending" },
@@ -17,7 +18,13 @@ const statusConfig: Record<string, { icon: typeof Check; color: string; label: s
   failed: { icon: X, color: "text-red-500", label: "Failed" },
 };
 
-export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
+interface MilestoneTimelineProps {
+  milestones: Milestone[];
+  showAppeal?: boolean;
+  onAppeal?: (milestoneId: string) => void;
+}
+
+export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: MilestoneTimelineProps) {
   return (
     <div className="space-y-4">
       {milestones.map((milestone, idx) => {
@@ -62,6 +69,19 @@ export function MilestoneTimeline({ milestones }: { milestones: Milestone[] }) {
                   <p className="font-medium text-xs mb-1">AI Decision:</p>
                   <p className="text-muted-foreground">{milestone.ai_explanation}</p>
                 </div>
+              )}
+
+              {/* Appeal button for rejected milestones (creator view) */}
+              {showAppeal && milestone.status === "rejected" && onAppeal && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-2 gap-1.5 text-amber-600 border-amber-200 hover:bg-amber-50"
+                  onClick={() => onAppeal(milestone.id)}
+                >
+                  <Scale className="h-3.5 w-3.5" />
+                  Request Human Review
+                </Button>
               )}
 
               <p className="text-xs text-muted-foreground mt-2">

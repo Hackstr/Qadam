@@ -37,6 +37,9 @@ defmodule QadamBackendWeb.Router do
 
     # Campaign updates (public read)
     get "/campaigns/:campaign_id/updates", UpdateController, :index
+
+    # Governance votes (public read)
+    get "/campaigns/:campaign_id/votes", GovernanceController, :active_votes
   end
 
   # ═══════════════════════════════════════════
@@ -58,6 +61,9 @@ defmodule QadamBackendWeb.Router do
 
     # Creator: post update
     post "/campaigns/:campaign_id/updates", UpdateController, :create
+
+    # Governance: check my vote
+    get "/milestones/:milestone_id/my-vote", GovernanceController, :my_vote
   end
 
   # ═══════════════════════════════════════════

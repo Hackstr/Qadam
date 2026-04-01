@@ -120,7 +120,14 @@ export default function CampaignManagePage() {
         </CardHeader>
         <CardContent>
           {campaign.milestones && campaign.milestones.length > 0 ? (
-            <MilestoneTimeline milestones={campaign.milestones} />
+            <MilestoneTimeline
+              milestones={campaign.milestones}
+              showAppeal
+              onAppeal={(milestoneId) => {
+                // TODO: call request_human_review via Anchor when connected
+                toast.info("Human review request would be sent on-chain. Connect to Anchor program.");
+              }}
+            />
           ) : (
             <p className="text-muted-foreground">No milestones</p>
           )}

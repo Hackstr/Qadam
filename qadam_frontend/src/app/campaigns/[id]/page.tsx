@@ -341,6 +341,14 @@ export default function CampaignDetailPage() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Governance vote link */}
+            <Link href={`/campaigns/${campaign.id}/vote`}>
+              <div className="border border-black/[0.06] rounded-xl p-4 text-center hover:border-black/[0.12] transition-colors cursor-pointer">
+                <p className="text-sm font-medium">Governance</p>
+                <p className="text-xs text-muted-foreground mt-0.5">View or cast votes on milestone extensions</p>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
