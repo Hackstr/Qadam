@@ -73,3 +73,18 @@ export interface ExtensionVote {
   voting_power: number;
   vote_approve: boolean;
 }
+
+export interface User {
+  id: string;
+  wallet_address: string;
+  display_name?: string;
+  email?: string;
+  avatar_url?: string;
+  notify_milestone_approved: boolean;
+  notify_milestone_rejected: boolean;
+  notify_governance_vote: boolean;
+  notify_refund_available: boolean;
+  notify_campaign_updates: boolean;
+  github_username?: string;
+  github_verified: boolean;
+}

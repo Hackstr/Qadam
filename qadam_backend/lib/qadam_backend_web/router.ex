@@ -43,6 +43,10 @@ defmodule QadamBackendWeb.Router do
   scope "/api", QadamBackendWeb do
     pipe_through [:api, :authenticated]
 
+    # User account
+    get "/me", UserController, :me
+    put "/me", UserController, :update
+
     # Backer portfolio
     get "/portfolio", BackerController, :portfolio
 

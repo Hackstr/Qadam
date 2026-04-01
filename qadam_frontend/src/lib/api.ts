@@ -1,4 +1,4 @@
-import type { Campaign, Milestone, BackerPosition } from "@/types";
+import type { Campaign, Milestone, BackerPosition, User } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
@@ -73,6 +73,17 @@ export async function verifySignature(pubkey: string, signature: string, message
 // ═══════════════════════════════════════════
 // AUTHENTICATED API
 // ═══════════════════════════════════════════
+
+export async function getMe() {
+  return fetchApi<{ data: User }>("/me");
+}
+
+export async function updateMe(data: Partial<User>) {
+  return fetchApi<{ data: User }>("/me", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
 
 export async function getPortfolio() {
   return fetchApi<{ data: BackerPosition[] }>("/portfolio");
