@@ -6,8 +6,8 @@ import { Check, Clock, AlertCircle, Loader2, Eye, X } from "lucide-react";
 const statusConfig: Record<string, { icon: typeof Check; color: string; label: string }> = {
   pending: { icon: Clock, color: "text-gray-400", label: "Pending" },
   grace_period: { icon: AlertCircle, color: "text-yellow-500", label: "Grace Period" },
-  submitted: { icon: Loader2, color: "text-blue-500", label: "Submitted" },
-  ai_processing: { icon: Loader2, color: "text-blue-500", label: "AI Processing" },
+  submitted: { icon: Loader2, color: "text-blue-500", label: "AI Verifying..." },
+  ai_processing: { icon: Loader2, color: "text-blue-500", label: "AI Verifying..." },
   under_human_review: { icon: Eye, color: "text-purple-500", label: "Human Review" },
   approved: { icon: Check, color: "text-green-500", label: "Approved" },
   rejected: { icon: X, color: "text-red-500", label: "Rejected" },

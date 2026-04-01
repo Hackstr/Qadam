@@ -37,14 +37,16 @@ export default function CampaignsPage() {
         </p>
       </div>
 
-      {/* Filters — pill style matching navbar */}
-      <div className="flex flex-wrap items-center gap-1.5 mb-8 bg-black/[0.02] rounded-full p-1 w-fit">
-        {STATUSES.map((s) => (
-          <button
-            key={s.label}
-            onClick={() => setStatus(s.value)}
-            className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all ${
-              status === s.value
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-4 mb-8">
+        {/* Status pills */}
+        <div className="flex items-center gap-1 bg-black/[0.02] rounded-full p-1">
+          {STATUSES.map((s) => (
+            <button
+              key={s.label}
+              onClick={() => setStatus(s.value)}
+              className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-all ${
+                status === s.value
                 ? "bg-white text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
@@ -52,23 +54,27 @@ export default function CampaignsPage() {
             {s.label}
           </button>
         ))}
-        <div className="w-px h-4 bg-black/[0.08] mx-1" />
-        {CATEGORIES.map((cat) => {
-          const catValue = cat === "All" ? undefined : cat;
-          return (
-            <button
-              key={cat}
-              onClick={() => setCategory(catValue)}
-              className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${
-                category === catValue
-                  ? "bg-white text-foreground shadow-sm font-medium"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {cat}
-            </button>
-          );
-        })}
+        </div>
+
+        {/* Category pills */}
+        <div className="flex items-center gap-1 bg-black/[0.02] rounded-full p-1">
+          {CATEGORIES.map((cat) => {
+            const catValue = cat === "All" ? undefined : cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setCategory(catValue)}
+                className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${
+                  category === catValue
+                    ? "bg-white text-foreground shadow-sm font-medium"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {cat}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Grid */}

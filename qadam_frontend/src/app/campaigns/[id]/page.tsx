@@ -159,13 +159,23 @@ export default function CampaignDetailPage() {
               </div>
 
               {campaign.status === "active" && (
-                <Link href={`/campaigns/${campaign.id}/back`}>
-                  <Button className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white" size="lg">
-                    <Wallet className="h-4 w-4" />
-                    Back This Project
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
+                <>
+                  <Link href={`/campaigns/${campaign.id}/back`}>
+                    <Button className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white" size="lg">
+                      <Wallet className="h-4 w-4" />
+                      Back This Project
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+
+                  {/* Token preview */}
+                  {(campaign as any).tokens_per_lamport && (
+                    <div className="mt-3 p-3 bg-muted/40 rounded-lg text-xs text-muted-foreground">
+                      <p>Back 1 SOL &rarr; receive <strong className="text-foreground">{((campaign as any).tokens_per_lamport).toLocaleString()} tokens</strong></p>
+                      <p className="mt-0.5">Current tier: <span className={tierInfo.color}>{tierInfo.name} ({tierInfo.ratio})</span></p>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
@@ -174,12 +184,30 @@ export default function CampaignDetailPage() {
           {campaign.token_mint_address && (
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm">Token</CardTitle>
+                <CardTitle className="text-sm">Project Token</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="font-mono text-xs break-all text-muted-foreground">
-                  {campaign.token_mint_address}
-                </p>
+              <CardContent className="space-y-2">
+                {(campaign as any).tokens_per_lamport && (
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Genesis (1.0x)</span>
+                      <span className="font-medium">{((campaign as any).tokens_per_lamport).toLocaleString()} / SOL</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Early (0.67x)</span>
+                      <span className="font-medium">{Math.floor((campaign as any).tokens_per_lamport * 0.67).toLocaleString()} / SOL</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Standard (0.5x)</span>
+                      <span className="font-medium">{Math.floor((campaign as any).tokens_per_lamport * 0.5).toLocaleString()} / SOL</span>
+                    </div>
+                  </div>
+                )}
+                <div className="pt-2 border-t">
+                  <p className="font-mono text-[10px] break-all text-muted-foreground/60">
+                    {campaign.token_mint_address}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
