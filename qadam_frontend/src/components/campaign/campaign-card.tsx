@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { formatSol, formatPercent, TIER_LABELS, TIER_1_MAX_BACKERS, TIER_2_MAX_BACKERS } from "@/lib/constants";
 import type { Campaign } from "@/types";
-import { Users, CheckCircle2, Circle, ArrowUpRight } from "lucide-react";
+import { Users, CheckCircle2, Circle, ArrowUpRight, Smartphone, Gamepad2, BarChart3, Wrench, Globe, Rocket, type LucideIcon } from "lucide-react";
 
 function getCurrentTier(backersCount: number): 1 | 2 | 3 {
   if (backersCount < TIER_1_MAX_BACKERS) return 1;
@@ -18,37 +18,29 @@ const statusDot: Record<string, string> = {
   cancelled: "bg-gray-400",
 };
 
-// Category-based gradient covers when no image
-const categoryGradient: Record<string, string> = {
-  Apps: "from-blue-600 to-indigo-900",
-  Games: "from-purple-600 to-fuchsia-900",
-  SaaS: "from-emerald-600 to-teal-900",
-  Tools: "from-orange-500 to-red-800",
-  Infrastructure: "from-slate-600 to-zinc-900",
+// Category covers — per DESIGN_SYSTEM.md
+const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
+  Apps:           { from: "#1E3A8A", to: "#3B82F6", icon: Smartphone },
+  Games:          { from: "#5B21B6", to: "#A855F7", icon: Gamepad2 },
+  SaaS:           { from: "#065F46", to: "#10B981", icon: BarChart3 },
+  Tools:          { from: "#92400E", to: "#F59E0B", icon: Wrench },
+  Infrastructure: { from: "#1E293B", to: "#475569", icon: Globe },
 };
-
-// Category icons (emoji as simple visual)
-const categoryEmoji: Record<string, string> = {
-  Apps: "📱",
-  Games: "🎮",
-  SaaS: "📊",
-  Tools: "🔧",
-  Infrastructure: "🌐",
-};
+const DEFAULT_COVER = { from: "#374151", to: "#6B7280", icon: Rocket };
 
 export function CampaignCard({ campaign }: { campaign: Campaign }) {
   const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
   const tier = getCurrentTier(campaign.backers_count);
   const tierInfo = TIER_LABELS[tier];
-  const gradient = categoryGradient[campaign.category || ""] || "from-gray-600 to-gray-900";
-  const emoji = categoryEmoji[campaign.category || ""] || "🚀";
+  const cover = CATEGORY_COVERS[campaign.category || ""] || DEFAULT_COVER;
+  const CoverIcon = cover.icon;
 
   return (
     <Link href={`/campaigns/${campaign.id}`} className="group block">
       <div className="relative bg-white border border-black/[0.06] rounded-2xl overflow-hidden hover:border-black/[0.12] hover:shadow-[0_4px_24px_rgba(0,0,0,0.08)] transition-all duration-200 h-full flex flex-col">
-        {/* Cover — image or gradient */}
+        {/* Cover — image or category gradient with Lucide icon */}
         {campaign.cover_image_url ? (
-          <div className="h-32 overflow-hidden">
+          <div className="h-36 overflow-hidden">
             <img
               src={campaign.cover_image_url}
               alt={campaign.title}
@@ -56,10 +48,13 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
             />
           </div>
         ) : (
-          <div className={`h-32 bg-gradient-to-br ${gradient} flex items-center justify-center relative`}>
-            <span className="text-4xl opacity-60">{emoji}</span>
+          <div
+            className="h-36 flex items-center justify-center relative"
+            style={{ background: `linear-gradient(135deg, ${cover.from}, ${cover.to})` }}
+          >
+            <CoverIcon className="h-10 w-10 text-white/80" />
             {/* Category label on cover */}
-            <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-widest text-white/70">
+            <span className="absolute top-3 left-3 text-[10px] font-medium uppercase tracking-widest text-white/60">
               {campaign.category || "Project"}
             </span>
             {/* Status pill on cover */}

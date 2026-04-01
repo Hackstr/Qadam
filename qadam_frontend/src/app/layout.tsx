@@ -20,6 +20,16 @@ export const metadata: Metadata = {
   title: "Qadam — Build step by step",
   description:
     "Decentralized crowdfunding on Solana with AI milestone verification. Backers become co-owners through tokens.",
+  openGraph: {
+    title: "Qadam — Crowdfunding where progress unlocks funding",
+    description: "Back projects on Solana. AI verifies milestones. Backers become co-owners through tokens.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Qadam — Build step by step",
+    description: "Decentralized crowdfunding on Solana with AI milestone verification.",
+  },
 };
 
 export default function RootLayout({

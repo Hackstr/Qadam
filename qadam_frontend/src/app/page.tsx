@@ -8,9 +8,9 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero */}
-      <section className="container mx-auto px-4 pt-16 pb-12 md:pt-24 md:pb-16 text-center">
+      <section className="container mx-auto px-4 pt-12 pb-6 md:pt-20 md:pb-8 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm font-medium mb-6">
-          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
           Powered by Solana &middot; Verified by AI
         </div>
         <h1 className="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl mx-auto leading-tight">
@@ -23,15 +23,15 @@ export default function Home() {
           tokens.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/campaigns">
-            <Button size="lg" className="gap-2 bg-[#0F1724] hover:bg-[#1a2538]">
-              Explore Campaigns
+          <Link href="/create">
+            <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+              Start a Campaign
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <Link href="/create">
+          <Link href="/campaigns">
             <Button size="lg" variant="outline" className="gap-2">
-              Start a Campaign
+              Explore Campaigns
             </Button>
           </Link>
         </div>
@@ -136,9 +136,9 @@ export default function Home() {
             Whether you&apos;re a creator seeking funding or a backer looking for
             early-stage opportunities — Qadam is for you.
           </p>
-          <Link href="/campaigns">
+          <Link href="/create">
             <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
-              Get Started
+              Start a Campaign
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
