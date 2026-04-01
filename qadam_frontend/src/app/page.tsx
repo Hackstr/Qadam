@@ -50,7 +50,7 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/campaigns">
-              <Button size="lg" variant="outline" className="gap-2">
+              <Button size="lg" variant="outline" className="gap-2 border-black/[0.15]">
                 Explore Campaigns
               </Button>
             </Link>
@@ -81,16 +81,14 @@ export default function Home() {
               <motion.div key={step.title} variants={fadeUp} className="relative flex flex-col items-center text-center px-4">
                 {/* Connecting line */}
                 {idx < 3 && (
-                  <div className="hidden md:block absolute top-6 left-[calc(50%+24px)] w-[calc(100%-48px)] h-px bg-black/[0.08]" />
+                  <div className="hidden md:block absolute top-3.5 left-[calc(50%+20px)] w-[calc(100%-40px)] h-px bg-black/[0.08]" />
                 )}
 
-                {/* Icon */}
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
-                  step.highlight
-                    ? "bg-amber-500 text-white"
-                    : "bg-black/[0.04] text-foreground"
-                }`}>
-                  <step.icon className="h-5 w-5" />
+                {/* Icon — no container box, clean */}
+                <div className="mb-4">
+                  <step.icon className={`h-7 w-7 ${
+                    step.highlight ? "text-amber-500" : "text-muted-foreground"
+                  }`} />
                 </div>
 
                 <h3 className="font-semibold text-sm mb-1">{step.title}</h3>
@@ -107,7 +105,7 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={stagger}
-        className="bg-muted/30 py-16 md:py-20"
+        className="bg-zinc-50 py-16 md:py-20"
       >
         <div className="container mx-auto px-4 max-w-3xl">
           <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-12">
@@ -180,7 +178,7 @@ export default function Home() {
               </Button>
             </Link>
             <Link href="/campaigns">
-              <Button size="lg" variant="outline" className="gap-2">
+              <Button size="lg" variant="outline" className="gap-2 border-black/[0.15]">
                 Explore Campaigns
               </Button>
             </Link>
