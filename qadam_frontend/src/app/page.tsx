@@ -1,149 +1,192 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Shield, Cpu, Coins, Eye } from "lucide-react";
+import {
+  ArrowRight,
+  Shield,
+  Cpu,
+  Coins,
+  Eye,
+  PenLine,
+  Users,
+  ScanSearch,
+  Banknote,
+} from "lucide-react";
+
+const fadeUp: any = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
+const stagger: any = {
+  visible: { transition: { staggerChildren: 0.1 } },
+};
 
 export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero */}
-      <section className="container mx-auto px-4 pt-12 pb-6 md:pt-20 md:pb-8 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm font-medium mb-6">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-          Powered by Solana &middot; Verified by AI
-        </div>
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl mx-auto leading-tight">
-          Crowdfunding where{" "}
-          <span className="text-amber-500">progress</span> unlocks funding
-        </h1>
-        <p className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-          Backers&apos; SOL stays in escrow. AI verifies each milestone. Creators
-          get paid only for real progress. Backers become co-owners through
-          tokens.
-        </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/create">
-            <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
-              Start a Campaign
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Link href="/campaigns">
-            <Button size="lg" variant="outline" className="gap-2">
-              Explore Campaigns
-            </Button>
-          </Link>
-        </div>
+      <section className="container mx-auto px-4 pt-12 pb-4 md:pt-20 md:pb-6 text-center">
+        <motion.div initial="hidden" animate="visible" variants={stagger}>
+          <motion.div variants={fadeUp} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm font-medium mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            Powered by Solana &middot; Verified by AI
+          </motion.div>
+          <motion.h1 variants={fadeUp} className="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl mx-auto leading-tight">
+            Crowdfunding where{" "}
+            <span className="text-amber-500">progress</span> unlocks funding
+          </motion.h1>
+          <motion.p variants={fadeUp} className="mt-6 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            SOL stays in escrow. AI verifies each milestone.
+            Creators get paid for real progress. Backers become co-owners.
+          </motion.p>
+          <motion.div variants={fadeUp} className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/create">
+              <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+                Start a Campaign
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/campaigns">
+              <Button size="lg" variant="outline" className="gap-2">
+                Explore Campaigns
+              </Button>
+            </Link>
+          </motion.div>
+        </motion.div>
       </section>
 
-      {/* How it works */}
-      <section className="bg-muted/30 py-16">
+      {/* How it works — modern connected steps */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={stagger}
+        className="py-16 md:py-20"
+      >
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">How Qadam Works</h2>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-4 max-w-5xl mx-auto">
+          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-14">
+            How it works
+          </motion.h2>
+
+          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-0">
             {[
-              { step: "1", title: "Create Campaign", desc: "Define your project, milestones, and funding goal" },
-              { step: "2", title: "Backers Fund", desc: "SOL goes to smart contract escrow, not to creator" },
-              { step: "3", title: "AI Verifies", desc: "Submit evidence, Claude AI evaluates completion" },
-              { step: "4", title: "Funds Release", desc: "Approved? SOL transfers to creator automatically" },
-            ].map((item, idx) => (
-              <div key={item.step} className="flex items-center gap-4">
-                <Card className="text-center w-56 flex-shrink-0">
-                  <CardContent className="pt-6 pb-5">
-                    <div className="w-10 h-10 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center mx-auto mb-3">
-                      {item.step}
-                    </div>
-                    <h3 className="font-semibold mb-1.5">{item.title}</h3>
-                    <p className="text-xs text-muted-foreground">{item.desc}</p>
-                  </CardContent>
-                </Card>
+              { icon: PenLine, title: "Create", desc: "Define project, milestones, and funding goal" },
+              { icon: Users, title: "Fund", desc: "Backers send SOL to smart contract escrow" },
+              { icon: ScanSearch, title: "Verify", desc: "AI evaluates evidence of milestone completion", highlight: true },
+              { icon: Banknote, title: "Release", desc: "Approved? SOL transfers to creator automatically" },
+            ].map((step, idx) => (
+              <motion.div key={step.title} variants={fadeUp} className="relative flex flex-col items-center text-center px-4">
+                {/* Connecting line */}
                 {idx < 3 && (
-                  <ArrowRight className="h-5 w-5 text-amber-500 hidden md:block flex-shrink-0" />
+                  <div className="hidden md:block absolute top-6 left-[calc(50%+24px)] w-[calc(100%-48px)] h-px bg-black/[0.08]" />
                 )}
-              </div>
+
+                {/* Icon */}
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${
+                  step.highlight
+                    ? "bg-amber-500 text-white"
+                    : "bg-black/[0.04] text-foreground"
+                }`}>
+                  <step.icon className="h-5 w-5" />
+                </div>
+
+                <h3 className="font-semibold text-sm mb-1">{step.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{step.desc}</p>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Value props */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Qadam?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-                <Shield className="h-6 w-6 text-amber-500" />
-              </div>
-              <h3 className="font-semibold mb-2">Milestone Escrow</h3>
-              <p className="text-sm text-muted-foreground">Funds can&apos;t leave without proof of progress. Smart contract enforces it.</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-                <Cpu className="h-6 w-6 text-amber-500" />
-              </div>
-              <h3 className="font-semibold mb-2">AI Verification</h3>
-              <p className="text-sm text-muted-foreground">Claude AI evaluates evidence objectively. Instant, fair, transparent.</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-                <Coins className="h-6 w-6 text-amber-500" />
-              </div>
-              <h3 className="font-semibold mb-2">Token Equity</h3>
-              <p className="text-sm text-muted-foreground">Backers receive project tokens. Not just donors — co-owners.</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
-                <Eye className="h-6 w-6 text-amber-500" />
-              </div>
-              <h3 className="font-semibold mb-2">On-chain Transparency</h3>
-              <p className="text-sm text-muted-foreground">Every decision, every transaction — publicly verifiable on Solana.</p>
-            </div>
+      {/* Why Qadam — horizontal feature rows */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={stagger}
+        className="bg-muted/30 py-16 md:py-20"
+      >
+        <div className="container mx-auto px-4 max-w-3xl">
+          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-12">
+            Why Qadam
+          </motion.h2>
+
+          <div className="space-y-8">
+            {[
+              { icon: Shield, title: "Milestone Escrow", desc: "Funds physically cannot leave without proof of progress. The smart contract enforces it — no trust required." },
+              { icon: Cpu, title: "AI Verification", desc: "Claude AI evaluates evidence objectively in under 60 seconds. Instant, fair, transparent decisions." },
+              { icon: Coins, title: "Token Equity", desc: "Backers receive project tokens proportional to their contribution. Not donors — co-owners with governance rights." },
+              { icon: Eye, title: "On-chain Transparency", desc: "Every decision, every transaction, every AI verdict — publicly verifiable on Solana. Nothing hidden." },
+            ].map((feature) => (
+              <motion.div key={feature.title} variants={fadeUp} className="flex gap-5 items-start">
+                <feature.icon className="h-7 w-7 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold mb-1">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Stats */}
-      <section className="bg-[#0F1724] text-white py-16">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={stagger}
+        className="bg-[#0F1724] text-white py-14"
+      >
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto text-center">
-            <div>
-              <p className="text-3xl font-bold text-amber-500">2.5%</p>
-              <p className="text-sm text-gray-400 mt-1">Platform fee</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-amber-500">&lt; 60s</p>
-              <p className="text-sm text-gray-400 mt-1">AI verification</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-amber-500">Free</p>
-              <p className="text-sm text-gray-400 mt-1">For first 20 creators</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-amber-500">100%</p>
-              <p className="text-sm text-gray-400 mt-1">On-chain</p>
-            </div>
+            {[
+              { value: "2.5%", label: "Platform fee" },
+              { value: "< 60s", label: "AI verification" },
+              { value: "Free", label: "For first 20 creators" },
+              { value: "100%", label: "On-chain" },
+            ].map((stat) => (
+              <motion.div key={stat.label} variants={fadeUp}>
+                <p className="text-3xl font-bold text-amber-500 tabular-nums">{stat.value}</p>
+                <p className="text-sm text-gray-400 mt-1">{stat.label}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* CTA */}
-      <section className="py-20 text-center">
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeUp}
+        className="py-20 text-center"
+      >
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-4">Ready to build?</h2>
-          <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to build?</h2>
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             Whether you&apos;re a creator seeking funding or a backer looking for
-            early-stage opportunities — Qadam is for you.
+            early-stage opportunities.
           </p>
-          <Link href="/create">
-            <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
-              Start a Campaign
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/create">
+              <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+                Start a Campaign
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/campaigns">
+              <Button size="lg" variant="outline" className="gap-2">
+                Explore Campaigns
+              </Button>
+            </Link>
+          </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

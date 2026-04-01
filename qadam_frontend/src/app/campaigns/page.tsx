@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { useState, useMemo } from "react";
 
-const CATEGORIES = ["All", "Apps", "Games", "SaaS", "Tools", "Infrastructure"];
+const CATEGORIES = ["Apps", "Games", "SaaS", "Tools", "Infrastructure"];
 const STATUSES = [
   { label: "Active", value: "active" },
   { label: "Completed", value: "completed" },
@@ -58,22 +58,19 @@ export default function CampaignsPage() {
 
         {/* Category pills */}
         <div className="flex items-center gap-1 bg-black/[0.02] rounded-full p-1">
-          {CATEGORIES.map((cat) => {
-            const catValue = cat === "All" ? undefined : cat;
-            return (
+          {CATEGORIES.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setCategory(catValue)}
+                onClick={() => setCategory(category === cat ? undefined : cat)}
                 className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${
-                  category === catValue
+                  category === cat
                     ? "bg-white text-foreground shadow-sm font-medium"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {cat}
               </button>
-            );
-          })}
+          ))}
         </div>
       </div>
 
