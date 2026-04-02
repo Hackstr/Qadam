@@ -43,6 +43,9 @@ defmodule QadamBackendWeb.Router do
 
     # Public creator profile
     get "/profiles/:wallet", ProfileController, :show
+
+    # Analytics summary
+    get "/analytics/summary", AnalyticsController, :summary
   end
 
   # ═══════════════════════════════════════════

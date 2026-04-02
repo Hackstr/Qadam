@@ -51,10 +51,17 @@ defmodule QadamBackendWeb.CampaignController do
   end
 
   defp campaign_detail_json(c) do
+    # Look up creator display_name
+    creator_name = case QadamBackend.Accounts.get_user_by_wallet(c.creator_wallet) do
+      %{display_name: name} when is_binary(name) and name != "" -> name
+      _ -> nil
+    end
+
     campaign_json(c)
     |> Map.put(:pitch_video_url, c.pitch_video_url)
     |> Map.put(:token_mint_address, c.token_mint_address)
     |> Map.put(:tokens_per_lamport, c.tokens_per_lamport)
+    |> Map.put(:creator_display_name, creator_name)
     |> Map.put(:milestones, Enum.map(c.milestones || [], &milestone_json/1))
   end
 

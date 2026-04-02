@@ -135,8 +135,8 @@ export default function CampaignDetailPage() {
                   className="text-xs text-muted-foreground hover:text-amber-600 flex items-center gap-1 transition-colors"
                 >
                   by{" "}
-                  <span className="font-mono">
-                    {campaign.creator_wallet.slice(0, 4)}...{campaign.creator_wallet.slice(-4)}
+                  <span className={campaign.creator_display_name ? "font-medium" : "font-mono"}>
+                    {campaign.creator_display_name || `${campaign.creator_wallet.slice(0, 4)}...${campaign.creator_wallet.slice(-4)}`}
                   </span>
                 </Link>
               </div>

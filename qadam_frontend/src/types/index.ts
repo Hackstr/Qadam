@@ -16,6 +16,7 @@ export interface Campaign {
   backers_count: number;
   token_mint_address?: string;
   tokens_per_lamport?: number;
+  creator_display_name?: string;
   status: CampaignStatus;
   milestones_count: number;
   milestones_approved: number;

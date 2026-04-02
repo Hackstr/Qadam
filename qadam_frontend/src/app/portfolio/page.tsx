@@ -74,6 +74,7 @@ export default function PortfolioPage() {
             const tierInfo = TIER_LABELS[pos.tier as 1 | 2 | 3];
             const hasUnclaimedTokens = pos.tokens_claimed < pos.tokens_allocated;
             const canRefund = pos.campaign_status === "refunded" && !pos.refund_claimed;
+            const needsVote = pos.campaign_status === "active"; // voting may be open
 
             return (
               <Card key={idx} className="hover:shadow-sm transition-shadow">
@@ -99,7 +100,7 @@ export default function PortfolioPage() {
                   </Link>
 
                   {/* Action buttons */}
-                  {(hasUnclaimedTokens || canRefund) && (
+                  {(hasUnclaimedTokens || canRefund || needsVote) && (
                     <div className="flex gap-2 mt-3 pt-3 border-t">
                       {hasUnclaimedTokens && pos.campaign_status !== "refunded" && (
                         <Button
@@ -115,6 +116,14 @@ export default function PortfolioPage() {
                           <Gift className="h-3.5 w-3.5" />
                           Claim Tokens
                         </Button>
+                      )}
+                      {needsVote && (
+                        <Link href={`/campaigns/${pos.campaign_id}/vote`}>
+                          <Button size="sm" variant="outline" className="gap-1.5">
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            Vote
+                          </Button>
+                        </Link>
                       )}
                       {canRefund && (
                         <Button

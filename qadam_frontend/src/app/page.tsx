@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { getCampaigns } from "@/lib/api";
+import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight, Shield, Cpu, Coins, Eye,
@@ -199,6 +202,9 @@ export default function Home() {
         </div>
       </motion.section>
 
+      {/* Active Campaigns — real data */}
+      <ActiveCampaignsSection />
+
       {/* Stats */}
       <motion.section
         initial="hidden"
@@ -254,5 +260,42 @@ export default function Home() {
         </div>
       </motion.section>
     </div>
+  );
+}
+
+function ActiveCampaignsSection() {
+  const { data } = useQuery({
+    queryKey: ["landing-campaigns"],
+    queryFn: () => getCampaigns({ status: "active", sort: "trending", limit: 6 }),
+    retry: false,
+  });
+
+  const campaigns = data?.data || [];
+  if (campaigns.length === 0) return null;
+
+  return (
+    <motion.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      variants={stagger}
+      className="py-16"
+    >
+      <div className="container mx-auto px-4">
+        <motion.div variants={fadeUp} className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold">Active Campaigns</h2>
+          <Link href="/campaigns" className="text-sm text-amber-600 hover:text-amber-700 font-medium">
+            View all &rarr;
+          </Link>
+        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {campaigns.slice(0, 6).map((campaign) => (
+            <motion.div key={campaign.id} variants={fadeUp}>
+              <CampaignCard campaign={campaign} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </motion.section>
   );
 }
