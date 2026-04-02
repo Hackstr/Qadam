@@ -71,6 +71,7 @@ defmodule QadamBackendWeb.CampaignController do
       index: m.index,
       title: m.title,
       description: m.description,
+      acceptance_criteria: m.acceptance_criteria,
       amount_lamports: m.amount_lamports,
       deadline: m.deadline,
       status: m.status,

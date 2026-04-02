@@ -1,11 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getCampaigns } from "@/lib/api";
+import { getCampaigns, getAnalyticsSummary } from "@/lib/api";
 import { formatSol } from "@/lib/constants";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { motion } from "framer-motion";
-import { BarChart2, Users, TrendingUp, CheckCircle2, Zap } from "lucide-react";
+import { BarChart2, Users, TrendingUp, CheckCircle2, Zap, Target } from "lucide-react";
 
 const fadeUp: any = {
   hidden: { opacity: 0, y: 16 },
@@ -14,29 +14,30 @@ const fadeUp: any = {
 const stagger: any = { visible: { transition: { staggerChildren: 0.08 } } };
 
 export default function AnalyticsPage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["analytics-campaigns"],
-    queryFn: () => getCampaigns({ status: undefined, limit: 50 }),
+  // Use dedicated summary endpoint (scalable)
+  const { data: summaryData } = useQuery({
+    queryKey: ["analytics-summary"],
+    queryFn: getAnalyticsSummary,
     retry: false,
   });
 
-  const campaigns = data?.data || [];
-  const active = campaigns.filter((c) => c.status === "active");
-  const completed = campaigns.filter((c) => c.status === "completed");
-  const totalGmvLamports = campaigns.reduce((sum, c) => sum + c.raised_lamports, 0);
-  const totalBackers = campaigns.reduce((sum, c) => sum + c.backers_count, 0);
-  const totalMilestonesApproved = campaigns.reduce((sum, c) => sum + c.milestones_approved, 0);
-  const successRate = campaigns.length > 0
-    ? Math.round((completed.length / campaigns.length) * 100)
-    : 0;
+  // Recent campaigns for the grid
+  const { data: campaignsData, isLoading } = useQuery({
+    queryKey: ["analytics-recent"],
+    queryFn: () => getCampaigns({ sort: "newest", limit: 6 }),
+    retry: false,
+  });
+
+  const s = summaryData?.data;
+  const campaigns = campaignsData?.data || [];
 
   const stats = [
-    { icon: TrendingUp, label: "Total GMV", value: formatSol(totalGmvLamports), sub: "across all campaigns" },
-    { icon: BarChart2, label: "Campaigns", value: campaigns.length, sub: `${active.length} active · ${completed.length} completed` },
-    { icon: Users, label: "Total Backers", value: totalBackers.toLocaleString(), sub: "unique positions" },
-    { icon: CheckCircle2, label: "AI Approvals", value: totalMilestonesApproved, sub: "milestones released" },
-    { icon: Zap, label: "Avg Verification", value: "< 60s", sub: "Claude AI decision time" },
-    { icon: TrendingUp, label: "Success Rate", value: `${successRate}%`, sub: "campaigns completed" },
+    { icon: TrendingUp, label: "Total Raised", value: s ? formatSol(s.total_raised_lamports) : "---", sub: "across all campaigns" },
+    { icon: BarChart2, label: "Campaigns", value: s ? s.total_campaigns : "---", sub: s ? `${s.active_campaigns} active` : "" },
+    { icon: Users, label: "Backers", value: s ? s.total_backers.toLocaleString() : "---", sub: "unique positions" },
+    { icon: CheckCircle2, label: "Completed", value: s ? s.completed_campaigns : "---", sub: "campaigns delivered" },
+    { icon: Zap, label: "AI Speed", value: "< 60s", sub: "verification time" },
+    { icon: Target, label: "Success Rate", value: s ? `${s.success_rate}%` : "---", sub: "campaigns completed" },
   ];
 
   return (
@@ -44,7 +45,7 @@ export default function AnalyticsPage() {
       <motion.div initial="hidden" animate="visible" variants={stagger}>
         <motion.div variants={fadeUp} className="mb-10">
           <h1 className="text-2xl font-bold tracking-tight mb-1">Analytics</h1>
-          <p className="text-sm text-muted-foreground">Live platform statistics — how Qadam is growing.</p>
+          <p className="text-sm text-muted-foreground">Live platform statistics.</p>
         </motion.div>
 
         {/* Stats grid */}
@@ -76,7 +77,7 @@ export default function AnalyticsPage() {
             <p className="text-muted-foreground text-sm py-8 text-center">No campaigns yet</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {campaigns.slice(0, 6).map((campaign) => (
+              {campaigns.map((campaign) => (
                 <CampaignCard key={campaign.id} campaign={campaign} />
               ))}
             </div>

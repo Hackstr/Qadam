@@ -796,4 +796,108 @@ describe("qadam", () => {
       }
     });
   });
+
+  // ═══════════════════════════════════════════
+  // TEST 7: INCREASE BACKING
+  // ═══════════════════════════════════════════
+
+  describe("7. Increase Backing", () => {
+    let campaignPda7: PublicKey;
+    let vaultPda7: PublicKey;
+    let mintPda7: PublicKey;
+    const nonce7 = new anchor.BN(7);
+
+    before(async () => {
+      [campaignPda7] = PublicKey.findProgramAddressSync(
+        [Buffer.from("campaign"), creator.publicKey.toBuffer(), nonce7.toArrayLike(Buffer, "le", 8)],
+        program.programId
+      );
+      [vaultPda7] = PublicKey.findProgramAddressSync(
+        [Buffer.from("vault"), campaignPda7.toBuffer()],
+        program.programId
+      );
+      [mintPda7] = PublicKey.findProgramAddressSync(
+        [Buffer.from("mint"), campaignPda7.toBuffer()],
+        program.programId
+      );
+
+      await program.methods
+        .createCampaign("Increase Test", nonce7, 1, new anchor.BN(5 * LAMPORTS_PER_SOL), tokensPerLamport)
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaignVault: vaultPda7,
+          tokenMint: mintPda7,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .signers([creator])
+        .rpc();
+
+      const now = Math.floor(Date.now() / 1000);
+      const [mPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("milestone"), campaignPda7.toBuffer(), Buffer.from([0])],
+        program.programId
+      );
+      await program.methods
+        .addMilestone(new anchor.BN(5 * LAMPORTS_PER_SOL), new anchor.BN(now + 86400))
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaign: campaignPda7,
+          milestone: mPda,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Backer1 backs initially
+      const [bp] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda7.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+      await program.methods
+        .backCampaign(new anchor.BN(1 * LAMPORTS_PER_SOL))
+        .accounts({
+          backer: backer1.publicKey,
+          config: configPda,
+          campaign: campaignPda7,
+          campaignVault: vaultPda7,
+          backerPosition: bp,
+        })
+        .signers([backer1])
+        .rpc();
+    });
+
+    it("backer1 increases backing", async () => {
+      const [bp] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda7.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+
+      const positionBefore = await program.account.backerPosition.fetch(bp);
+      const tokensBefore = positionBefore.tokensAllocated.toNumber();
+
+      await program.methods
+        .increaseBacking(new anchor.BN(1 * LAMPORTS_PER_SOL))
+        .accounts({
+          backer: backer1.publicKey,
+          config: configPda,
+          campaign: campaignPda7,
+          campaignVault: vaultPda7,
+          backerPosition: bp,
+        })
+        .signers([backer1])
+        .rpc();
+
+      const positionAfter = await program.account.backerPosition.fetch(bp);
+      expect(positionAfter.lamportsBacked.toNumber()).to.equal(2 * LAMPORTS_PER_SOL);
+      expect(positionAfter.tokensAllocated.toNumber()).to.be.greaterThan(tokensBefore);
+      // Tier should stay the same (Tier 1)
+      expect(positionAfter.tier).to.equal(1);
+
+      const campaign = await program.account.campaign.fetch(campaignPda7);
+      expect(campaign.raisedLamports.toNumber()).to.equal(2 * LAMPORTS_PER_SOL);
+      // backer_count should NOT increment (same backer)
+      expect(campaign.backerCount).to.equal(1);
+    });
+  });
 });

@@ -74,7 +74,7 @@ export default function PortfolioPage() {
             const tierInfo = TIER_LABELS[pos.tier as 1 | 2 | 3];
             const hasUnclaimedTokens = pos.tokens_claimed < pos.tokens_allocated;
             const canRefund = pos.campaign_status === "refunded" && !pos.refund_claimed;
-            const needsVote = pos.campaign_status === "active"; // voting may be open
+            const needsVote = pos.campaign_status === "active"; // link to vote page where they can check
 
             return (
               <Card key={idx} className="hover:shadow-sm transition-shadow">
@@ -120,8 +120,7 @@ export default function PortfolioPage() {
                       {needsVote && (
                         <Link href={`/campaigns/${pos.campaign_id}/vote`}>
                           <Button size="sm" variant="outline" className="gap-1.5">
-                            <RotateCcw className="h-3.5 w-3.5" />
-                            Vote
+                            Governance
                           </Button>
                         </Link>
                       )}

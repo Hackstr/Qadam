@@ -150,6 +150,23 @@ export async function markNotificationsRead() {
 }
 
 // ═══════════════════════════════════════════
+// ANALYTICS
+// ═══════════════════════════════════════════
+
+interface AnalyticsSummary {
+  total_campaigns: number;
+  active_campaigns: number;
+  completed_campaigns: number;
+  total_raised_lamports: number;
+  total_backers: number;
+  success_rate: number;
+}
+
+export async function getAnalyticsSummary() {
+  return fetchApi<{ data: AnalyticsSummary }>("/analytics/summary");
+}
+
+// ═══════════════════════════════════════════
 // ADMIN
 // ═══════════════════════════════════════════
 
