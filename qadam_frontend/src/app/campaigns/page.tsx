@@ -19,11 +19,12 @@ const STATUSES = [
 export default function CampaignsPage() {
   const [status, setStatus] = useState<string | undefined>(undefined);
   const [category, setCategory] = useState<string | undefined>(undefined);
+  const [sort, setSort] = useState<string | undefined>(undefined);
   const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
-    queryKey: ["campaigns", status, category],
-    queryFn: () => getCampaigns({ status, category, limit: 50 }),
+    queryKey: ["campaigns", status, category, sort],
+    queryFn: () => getCampaigns({ status, category, sort, limit: 50 }),
     retry: false,
   });
 
@@ -98,10 +99,32 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      {/* Results count */}
-      {!isLoading && campaigns.length > 0 && (
-        <p className="text-xs text-muted-foreground mb-4">{campaigns.length} campaigns</p>
-      )}
+      {/* Sort + Results count */}
+      <div className="flex items-center justify-between mb-4">
+        {!isLoading && campaigns.length > 0 ? (
+          <p className="text-xs text-muted-foreground">{campaigns.length} campaigns</p>
+        ) : <div />}
+        <div className="flex items-center gap-1 text-xs">
+          <span className="text-muted-foreground mr-1">Sort:</span>
+          {[
+            { label: "Newest", value: undefined },
+            { label: "Trending", value: "trending" },
+            { label: "Most Backed", value: "most_backed" },
+          ].map((s) => (
+            <button
+              key={s.label}
+              onClick={() => setSort(s.value)}
+              className={`px-2 py-1 rounded-md transition-colors ${
+                sort === s.value
+                  ? "bg-black/[0.06] text-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* Grid */}
       {isLoading ? (

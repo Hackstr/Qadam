@@ -10,6 +10,7 @@ defmodule QadamBackendWeb.CampaignController do
     campaigns = Campaigns.list_campaigns(
       status: params["status"],
       category: params["category"],
+      sort: params["sort"],
       limit: parse_int(params["limit"], 50)
     )
 

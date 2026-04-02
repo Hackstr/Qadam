@@ -11,8 +11,16 @@ defmodule QadamBackend.Campaigns do
     |> filter_by_status(opts[:status])
     |> filter_by_category(opts[:category])
     |> filter_by_creator(opts[:creator_wallet])
-    |> order_by(desc: :inserted_at)
+    |> sort_by(opts[:sort])
     |> maybe_limit(opts[:limit])
+    |> Repo.all()
+  end
+
+  def list_featured(limit \\ 6) do
+    Campaign
+    |> where([c], c.featured == true and c.status == "active")
+    |> order_by(desc: :raised_lamports)
+    |> limit(^limit)
     |> Repo.all()
   end
 
@@ -50,6 +58,12 @@ defmodule QadamBackend.Campaigns do
 
   defp filter_by_creator(query, nil), do: query
   defp filter_by_creator(query, wallet), do: where(query, [c], c.creator_wallet == ^wallet)
+
+  defp sort_by(query, "trending"), do: order_by(query, desc: :raised_lamports)
+  defp sort_by(query, "newest"), do: order_by(query, desc: :inserted_at)
+  defp sort_by(query, "ending"), do: order_by(query, asc: :inserted_at)
+  defp sort_by(query, "most_backed"), do: order_by(query, desc: :backers_count)
+  defp sort_by(query, _), do: order_by(query, desc: :inserted_at)
 
   defp maybe_limit(query, nil), do: query
   defp maybe_limit(query, limit), do: limit(query, ^limit)

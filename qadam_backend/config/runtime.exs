@@ -32,6 +32,13 @@ config :qadam_backend,
   admin_wallet: System.get_env("ADMIN_WALLET"),
   claude_api_key: System.get_env("CLAUDE_API_KEY")
 
+# Email (Resend for production, Local adapter for dev)
+if resend_key = System.get_env("RESEND_API_KEY") do
+  config :qadam_backend, QadamBackend.Mailer,
+    adapter: Swoosh.Adapters.Resend,
+    api_key: resend_key
+end
+
 # JWT secret
 if jwt_secret = System.get_env("JWT_SECRET") do
   config :joken,

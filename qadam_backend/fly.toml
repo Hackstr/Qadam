@@ -1,0 +1,28 @@
+# Qadam Backend — Fly.io configuration
+# Deploy: fly launch (first time) or fly deploy
+
+app = "qadam-backend"
+primary_region = "ams"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PHX_HOST = "qadam-backend.fly.dev"
+  PORT = "4000"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 500
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512

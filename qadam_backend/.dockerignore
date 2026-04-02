@@ -1,0 +1,9 @@
+_build
+deps
+.elixir_ls
+.git
+.env
+.env.*
+!.env.example
+test
+node_modules
