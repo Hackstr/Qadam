@@ -900,4 +900,107 @@ describe("qadam", () => {
       expect(campaign.backerCount).to.equal(1);
     });
   });
+
+  // ═══════════════════════════════════════════
+  // TEST 8: MULTI-BACKER TIERS
+  // ═══════════════════════════════════════════
+
+  describe("8. Multi-Backer Tiers", () => {
+    let campaignPda8: PublicKey;
+    let vaultPda8: PublicKey;
+    let mintPda8: PublicKey;
+    const nonce8 = new anchor.BN(8);
+
+    before(async () => {
+      [campaignPda8] = PublicKey.findProgramAddressSync(
+        [Buffer.from("campaign"), creator.publicKey.toBuffer(), nonce8.toArrayLike(Buffer, "le", 8)],
+        program.programId
+      );
+      [vaultPda8] = PublicKey.findProgramAddressSync(
+        [Buffer.from("vault"), campaignPda8.toBuffer()],
+        program.programId
+      );
+      [mintPda8] = PublicKey.findProgramAddressSync(
+        [Buffer.from("mint"), campaignPda8.toBuffer()],
+        program.programId
+      );
+
+      await program.methods
+        .createCampaign("Tier Test", nonce8, 1, new anchor.BN(10 * LAMPORTS_PER_SOL), tokensPerLamport)
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaignVault: vaultPda8,
+          tokenMint: mintPda8,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .signers([creator])
+        .rpc();
+
+      const now = Math.floor(Date.now() / 1000);
+      const [mPda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("milestone"), campaignPda8.toBuffer(), Buffer.from([0])],
+        program.programId
+      );
+      await program.methods
+        .addMilestone(new anchor.BN(10 * LAMPORTS_PER_SOL), new anchor.BN(now + 86400))
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaign: campaignPda8,
+          milestone: mPda,
+        })
+        .signers([creator])
+        .rpc();
+    });
+
+    it("backer1 gets Tier 1, backer2 gets Tier 1 (both under 50)", async () => {
+      // Backer1
+      const [bp1] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda8.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+      await program.methods
+        .backCampaign(new anchor.BN(1 * LAMPORTS_PER_SOL))
+        .accounts({
+          backer: backer1.publicKey,
+          config: configPda,
+          campaign: campaignPda8,
+          campaignVault: vaultPda8,
+          backerPosition: bp1,
+        })
+        .signers([backer1])
+        .rpc();
+
+      // Backer2
+      const [bp2] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda8.toBuffer(), backer2.publicKey.toBuffer()],
+        program.programId
+      );
+      await program.methods
+        .backCampaign(new anchor.BN(1 * LAMPORTS_PER_SOL))
+        .accounts({
+          backer: backer2.publicKey,
+          config: configPda,
+          campaign: campaignPda8,
+          campaignVault: vaultPda8,
+          backerPosition: bp2,
+        })
+        .signers([backer2])
+        .rpc();
+
+      const pos1 = await program.account.backerPosition.fetch(bp1);
+      const pos2 = await program.account.backerPosition.fetch(bp2);
+
+      // Both Tier 1 (under 50 backers)
+      expect(pos1.tier).to.equal(1);
+      expect(pos2.tier).to.equal(1);
+
+      // Same amount → same tokens (Tier 1 = 1.0x)
+      expect(pos1.tokensAllocated.toNumber()).to.equal(pos2.tokensAllocated.toNumber());
+
+      const campaign = await program.account.campaign.fetch(campaignPda8);
+      expect(campaign.backerCount).to.equal(2);
+    });
+  });
 });
