@@ -40,6 +40,9 @@ defmodule QadamBackendWeb.Router do
 
     # Governance votes (public read)
     get "/campaigns/:campaign_id/votes", GovernanceController, :active_votes
+
+    # Public creator profile
+    get "/profiles/:wallet", ProfileController, :show
   end
 
   # ═══════════════════════════════════════════

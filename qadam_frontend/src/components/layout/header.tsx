@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { Bell as BellIcon } from "lucide-react";
 
 const WalletMultiButton = dynamic(
   () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
@@ -57,8 +58,18 @@ export function Header() {
 
         <div className="w-px h-5 bg-black/[0.08]" />
 
-        {/* Wallet */}
-        <div className="flex items-center">
+        {/* Notification bell + Wallet */}
+        <div className="flex items-center gap-1">
+          {connected && (
+            <button
+              className="relative p-2 rounded-full hover:bg-black/[0.04] transition-colors"
+              title="Notifications"
+            >
+              <BellIcon className="h-4 w-4 text-muted-foreground" />
+              {/* Unread dot — show when there are unread notifications */}
+              {/* <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-500" /> */}
+            </button>
+          )}
           <WalletMultiButton
             style={{
               backgroundColor: "#0F1724",

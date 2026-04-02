@@ -129,18 +129,15 @@ export default function CampaignDetailPage() {
                 <p className="text-muted-foreground mt-3 leading-relaxed">{campaign.description}</p>
               )}
               <div className="flex items-center gap-3 mt-3 flex-wrap">
-                <a
-                  href={getExplorerUrl(campaign.creator_wallet)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                <Link
+                  href={`/profile/${campaign.creator_wallet}`}
+                  className="text-xs text-muted-foreground hover:text-amber-600 flex items-center gap-1 transition-colors"
                 >
                   by{" "}
                   <span className="font-mono">
                     {campaign.creator_wallet.slice(0, 4)}...{campaign.creator_wallet.slice(-4)}
                   </span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
+                </Link>
                 <a
                   href={tweetUrl}
                   target="_blank"
