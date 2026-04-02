@@ -126,6 +126,28 @@ export async function postCampaignUpdate(
 }
 
 // ═══════════════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════════════
+
+interface NotificationItem {
+  id: string;
+  type: string;
+  title: string;
+  message?: string;
+  campaign_id?: string;
+  read: boolean;
+  inserted_at: string;
+}
+
+export async function getNotifications() {
+  return fetchApi<{ data: NotificationItem[]; unread_count: number }>("/notifications");
+}
+
+export async function markNotificationsRead() {
+  return fetchApi<{ ok: boolean }>("/notifications/mark-read", { method: "POST" });
+}
+
+// ═══════════════════════════════════════════
 // ADMIN
 // ═══════════════════════════════════════════
 

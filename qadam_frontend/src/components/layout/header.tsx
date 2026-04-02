@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getNotifications, markNotificationsRead } from "@/lib/api";
+import { useAuthStore } from "@/stores/auth-store";
 import { Bell as BellIcon } from "lucide-react";
 
 const WalletMultiButton = dynamic(
@@ -22,6 +25,17 @@ const NAV_LINKS = [
 export function Header() {
   const { connected } = useWallet();
   const pathname = usePathname();
+  const { isAuthenticated } = useAuthStore();
+  const queryClient = useQueryClient();
+
+  const { data: notifData } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: getNotifications,
+    enabled: connected && isAuthenticated(),
+    refetchInterval: 30000,
+    retry: false,
+  });
+  const unreadCount = notifData?.unread_count || 0;
 
   const visibleLinks = NAV_LINKS.filter((l) => l.public || connected);
 
@@ -64,10 +78,17 @@ export function Header() {
             <button
               className="relative p-2 rounded-full hover:bg-black/[0.04] transition-colors"
               title="Notifications"
+              onClick={async () => {
+                if (unreadCount > 0) {
+                  await markNotificationsRead();
+                  queryClient.invalidateQueries({ queryKey: ["notifications"] });
+                }
+              }}
             >
               <BellIcon className="h-4 w-4 text-muted-foreground" />
-              {/* Unread dot — show when there are unread notifications */}
-              {/* <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-amber-500" /> */}
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" />
+              )}
             </button>
           )}
           <WalletMultiButton

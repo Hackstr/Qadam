@@ -67,6 +67,10 @@ defmodule QadamBackendWeb.Router do
 
     # Governance: check my vote
     get "/milestones/:milestone_id/my-vote", GovernanceController, :my_vote
+
+    # Notifications
+    get "/notifications", NotificationController, :index
+    post "/notifications/mark-read", NotificationController, :mark_read
   end
 
   # ═══════════════════════════════════════════
