@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { getCampaign, getCampaignBackers, getCampaignUpdates } from "@/lib/api";
 import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
+import { ShareButtons } from "@/components/social/share-buttons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -138,16 +139,8 @@ export default function CampaignDetailPage() {
                     {campaign.creator_wallet.slice(0, 4)}...{campaign.creator_wallet.slice(-4)}
                   </span>
                 </Link>
-                <a
-                  href={tweetUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-muted-foreground hover:text-amber-600 flex items-center gap-1 transition-colors"
-                >
-                  <Share2 className="h-3 w-3" />
-                  Share on X
-                </a>
               </div>
+              <ShareButtons title={campaign.title} description={campaign.description} />
             </div>
 
             <Separator />

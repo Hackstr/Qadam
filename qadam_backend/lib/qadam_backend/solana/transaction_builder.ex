@@ -1,64 +1,92 @@
 defmodule QadamBackend.Solana.TransactionBuilder do
   @moduledoc """
   Builds and signs Solana transactions for the AI agent.
-  Critical rule: ALWAYS fetch fresh blockhash before signing. Never cache.
+  Uses a Node.js helper script for Anchor transaction serialization.
+  CRITICAL: Always fetches FRESH blockhash before signing.
   """
   alias QadamBackend.Solana.RPC
+  require Logger
 
   @doc """
   Sign and broadcast a release_milestone transaction.
-  Returns {:ok, signature} or {:error, reason}.
   """
   def sign_and_broadcast_release(campaign_pubkey, milestone_index, ai_decision_hash) do
-    # 1. ALWAYS fresh blockhash (never cached — they expire in ~60 seconds)
-    with {:ok, %{blockhash: blockhash}} <- RPC.get_latest_blockhash() do
-      # 2. Build the transaction
-      # NOTE: In production, this would construct the actual Solana transaction
-      # using the Anchor program IDL. For now, this is a placeholder that
-      # will be filled in when we integrate with @solana/web3.js via Port or NIF.
-      tx_data = %{
-        program_id: program_id(),
-        instruction: "release_milestone",
-        args: %{
-          milestone_index: milestone_index,
-          ai_decision_hash: ai_decision_hash
-        },
-        accounts: %{
-          campaign: campaign_pubkey
-        },
-        blockhash: blockhash
-      }
-
-      # 3. Sign with AI agent keypair
-      signed_tx = sign_transaction(tx_data)
-
-      # 4. Broadcast
-      RPC.send_transaction(signed_tx)
+    with {:ok, %{blockhash: blockhash}} <- RPC.get_latest_blockhash(),
+         {:ok, signed_tx} <- build_and_sign_tx("release_milestone", %{
+           campaign: campaign_pubkey,
+           milestone_index: milestone_index,
+           ai_decision_hash: ai_decision_hash,
+           blockhash: blockhash,
+         }),
+         {:ok, result} <- RPC.send_transaction(signed_tx) do
+      {:ok, result}
+    else
+      {:error, reason} ->
+        Logger.error("[TX] Release failed: #{inspect(reason)}")
+        {:error, reason}
     end
   end
 
   @doc """
   Sign and broadcast mark_under_human_review transaction.
   """
-  def sign_and_broadcast_human_review(_campaign_pubkey, _milestone_index, _ai_decision_hash) do
-    with {:ok, %{blockhash: _blockhash}} <- RPC.get_latest_blockhash() do
-      # Placeholder — same pattern as release
-      {:ok, %{signature: "placeholder_human_review_tx"}}
+  def sign_and_broadcast_human_review(campaign_pubkey, milestone_index, ai_decision_hash) do
+    with {:ok, %{blockhash: blockhash}} <- RPC.get_latest_blockhash(),
+         {:ok, signed_tx} <- build_and_sign_tx("mark_under_human_review", %{
+           campaign: campaign_pubkey,
+           milestone_index: milestone_index,
+           ai_decision_hash: ai_decision_hash,
+           blockhash: blockhash,
+         }),
+         {:ok, result} <- RPC.send_transaction(signed_tx) do
+      {:ok, result}
+    else
+      {:error, reason} ->
+        Logger.error("[TX] Human review failed: #{inspect(reason)}")
+        {:error, reason}
     end
   end
 
-  defp program_id do
-    Application.get_env(:qadam_backend, :solana_program_id)
+  defp build_and_sign_tx(instruction, params) do
+    keypair_path = System.get_env("AI_AGENT_KEYPAIR_PATH")
+    program_id = Application.get_env(:qadam_backend, :solana_program_id)
+    rpc_url = Application.get_env(:qadam_backend, :solana_rpc_url)
+
+    if is_nil(keypair_path) or is_nil(program_id) do
+      Logger.warning("[TX] AI_AGENT_KEYPAIR_PATH or SOLANA_PROGRAM_ID not set")
+      {:error, :missing_config}
+    else
+      args = Jason.encode!(%{
+        instruction: instruction,
+        params: params,
+        programId: program_id,
+        rpcUrl: rpc_url,
+        keypairPath: keypair_path,
+      })
+
+      script = sign_script_path()
+
+      if File.exists?(script) do
+        case System.cmd("node", [script, args], stderr_to_stdout: true) do
+          {output, 0} ->
+            case Jason.decode(String.trim(output)) do
+              {:ok, %{"signedTx" => signed_tx}} -> {:ok, signed_tx}
+              {:ok, %{"error" => error}} -> {:error, error}
+              _ -> {:error, {:invalid_output, output}}
+            end
+
+          {output, code} ->
+            Logger.error("[TX] Node script exit #{code}: #{output}")
+            {:error, {:script_failed, code}}
+        end
+      else
+        Logger.warning("[TX] Sign script not found at #{script}")
+        {:error, :script_not_found}
+      end
+    end
   end
 
-  defp sign_transaction(_tx_data) do
-    # TODO: Implement actual Ed25519 signing with AI agent keypair
-    # Options:
-    # 1. Use Erlang :crypto.sign(:eddsa, ...) directly
-    # 2. Shell out to a Node.js script using @solana/web3.js
-    # 3. Use a Rust NIF for Solana transaction serialization
-    #
-    # For hackathon: option 2 (Node.js script) is fastest to implement
-    "placeholder_signed_tx_base64"
+  defp sign_script_path do
+    Path.join(:code.priv_dir(:qadam_backend), "solana/sign_transaction.js")
   end
 end

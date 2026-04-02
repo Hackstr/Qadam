@@ -96,9 +96,9 @@ export default function SubmitEvidencePage() {
       });
 
       router.push("/dashboard");
-    } catch (err) {
+    } catch (err: any) {
+      if (err?.message === "cancelled") return;
       console.error("Submit failed:", err);
-      alert(`Submit failed: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setLoading(false);
     }

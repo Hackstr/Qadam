@@ -15,6 +15,8 @@ import {
   submitMilestoneTx,
   claimTokensTx,
   claimRefundTx,
+  voteOnExtensionTx,
+  requestExtensionTx,
 } from "@/lib/program";
 
 type TxStatus = "idle" | "building" | "signing" | "broadcasting" | "confirming" | "done" | "error";
@@ -153,6 +155,30 @@ export function useQadamProgram() {
     return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Claim refund");
   }, [program, publicKey, sendTransaction, connection]);
 
+  const voteOnExtension = useCallback(async (
+    campaignPubkey: string, milestoneIndex: number, approve: boolean
+  ) => {
+    if (!program || !publicKey) throw new Error("Wallet not connected");
+
+    setTxStatus("building");
+    const campaignPda = new PublicKey(campaignPubkey);
+    const tx = await voteOnExtensionTx(program, publicKey, campaignPda, milestoneIndex, approve);
+    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, approve ? "Vote extend" : "Vote refund");
+  }, [program, publicKey, sendTransaction, connection]);
+
+  const requestExtension = useCallback(async (
+    campaignPubkey: string, milestoneIndex: number, reasonHash: string, newDeadline: Date
+  ) => {
+    if (!program || !publicKey) throw new Error("Wallet not connected");
+
+    setTxStatus("building");
+    const campaignPda = new PublicKey(campaignPubkey);
+    const hashBytes = Array.from(Buffer.from(reasonHash, "hex"));
+    const deadlineBN = new BN(Math.floor(newDeadline.getTime() / 1000));
+    const tx = await requestExtensionTx(program, publicKey, campaignPda, milestoneIndex, hashBytes, deadlineBN);
+    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Request extension");
+  }, [program, publicKey, sendTransaction, connection]);
+
   return {
     program,
     connected: !!wallet,
@@ -163,5 +189,7 @@ export function useQadamProgram() {
     submitMilestone,
     claimTokens,
     claimRefund,
+    voteOnExtension,
+    requestExtension,
   };
 }

@@ -123,9 +123,10 @@ export default function CampaignManagePage() {
             <MilestoneTimeline
               milestones={campaign.milestones}
               showAppeal
-              onAppeal={(milestoneId) => {
-                // TODO: call request_human_review via Anchor when connected
-                toast.info("Human review request would be sent on-chain. Connect to Anchor program.");
+              onAppeal={() => {
+                // For rejected milestones, creator can re-submit with updated evidence
+                // This navigates to the evidence submission page
+                window.location.href = `/dashboard/${id}/submit`;
               }}
             />
           ) : (

@@ -237,3 +237,52 @@ export async function claimRefundTx(
     })
     .transaction();
 }
+
+export async function requestExtensionTx(
+  program: Program,
+  creator: PublicKey,
+  campaignPda: PublicKey,
+  milestoneIndex: number,
+  reasonHash: number[],
+  newDeadline: BN
+) {
+  const milestonePda = getMilestonePda(campaignPda, milestoneIndex);
+  const votingStatePda = getVotingStatePda(milestonePda);
+
+  return program.methods
+    .requestExtension(milestoneIndex, reasonHash, newDeadline)
+    .accounts({
+      creator,
+      config: getConfigPda(),
+      campaign: campaignPda,
+      milestone: milestonePda,
+      votingState: votingStatePda,
+    })
+    .transaction();
+}
+
+export async function voteOnExtensionTx(
+  program: Program,
+  voter: PublicKey,
+  campaignPda: PublicKey,
+  milestoneIndex: number,
+  approve: boolean
+) {
+  const milestonePda = getMilestonePda(campaignPda, milestoneIndex);
+  const backerPositionPda = getBackerPositionPda(campaignPda, voter);
+  const votingStatePda = getVotingStatePda(milestonePda);
+  const votePda = getVotePda(milestonePda, voter);
+
+  return program.methods
+    .voteOnExtension(milestoneIndex, approve)
+    .accounts({
+      voter,
+      config: getConfigPda(),
+      campaign: campaignPda,
+      milestone: milestonePda,
+      backerPosition: backerPositionPda,
+      votingState: votingStatePda,
+      extensionVote: votePda,
+    })
+    .transaction();
+}

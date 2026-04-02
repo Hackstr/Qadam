@@ -51,8 +51,8 @@ export default function BackCampaignPage() {
   const tier = campaign.backers_count < TIER_1_MAX_BACKERS ? 1 : campaign.backers_count < TIER_2_MAX_BACKERS ? 2 : 3;
   const tierInfo = TIER_LABELS[tier as 1 | 2 | 3];
 
-  // Estimated tokens
-  const tokensPerLamport = 100; // TODO: read from campaign
+  // Estimated tokens — read from campaign API, fallback to 100
+  const tokensPerLamport = campaign.tokens_per_lamport || 100;
   const baseTokens = amountLamports * tokensPerLamport;
   const tierMultiplier = tier === 1 ? 1 : tier === 2 ? 0.67 : 0.5;
   const estimatedTokens = Math.floor(baseTokens * tierMultiplier);

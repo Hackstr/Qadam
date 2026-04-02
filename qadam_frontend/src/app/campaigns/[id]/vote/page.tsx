@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useQadamProgram } from "@/hooks/use-qadam-program";
 import { getCampaign } from "@/lib/api";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -14,7 +15,7 @@ import Link from "next/link";
 export default function VotePage() {
   const { id } = useParams<{ id: string }>();
   const { connected } = useWallet();
-  const { txStatus } = useQadamProgram();
+  const { txStatus, voteOnExtension } = useQadamProgram();
 
   const { data: campaignData, isLoading } = useQuery({
     queryKey: ["campaign", id],
@@ -105,9 +106,12 @@ export default function VotePage() {
                     <Button
                       className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white"
                       disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
-                      onClick={() => {
-                        // TODO: call vote_on_extension via Anchor
-                        alert("Vote Extend — will connect to Anchor program");
+                      onClick={async () => {
+                        try {
+                          await voteOnExtension(campaign.solana_pubkey, milestone.index, true);
+                        } catch (err: any) {
+                          if (err?.message !== "cancelled") console.error(err);
+                        }
                       }}
                     >
                       <CheckCircle2 className="h-4 w-4" />
@@ -117,8 +121,12 @@ export default function VotePage() {
                       className="flex-1 gap-2"
                       variant="destructive"
                       disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
-                      onClick={() => {
-                        alert("Vote Refund — will connect to Anchor program");
+                      onClick={async () => {
+                        try {
+                          await voteOnExtension(campaign.solana_pubkey, milestone.index, false);
+                        } catch (err: any) {
+                          if (err?.message !== "cancelled") console.error(err);
+                        }
                       }}
                     >
                       <XCircle className="h-4 w-4" />
