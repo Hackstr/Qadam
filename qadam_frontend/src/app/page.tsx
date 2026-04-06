@@ -6,10 +6,11 @@ import { useQuery } from "@tanstack/react-query";
 import { getCampaigns } from "@/lib/api";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
+import { formatSol } from "@/lib/constants";
 import {
   ArrowRight, Shield, Cpu, Coins, Eye,
   PenLine, Users, ScanSearch, Banknote,
-  CheckCircle, Lock,
+  CheckCircle, Lock, ArrowDown,
 } from "lucide-react";
 
 const fadeUp: any = {
@@ -20,26 +21,42 @@ const stagger: any = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-// Mock campaign card for hero visual
+// Dot grid SVG pattern for hero background
+function DotGrid() {
+  return (
+    <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.04 }}>
+      <svg width="100%" height="100%">
+        <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+          <circle cx="1.5" cy="1.5" r="1" fill="currentColor" />
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#dots)" />
+      </svg>
+    </div>
+  );
+}
+
+// Hero campaign card mock
 function HeroCampaignMock() {
   return (
     <div className="relative select-none">
-      {/* Floating badge 1 — AI Verified */}
-      <div className="absolute -top-5 left-4 z-10 bg-amber-50 border border-amber-200 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-sm -rotate-[6deg]">
+      {/* Ambient glow */}
+      <div className="absolute -inset-8 bg-amber-500/[0.06] rounded-full blur-3xl" />
+
+      {/* Floating badge — AI Verified */}
+      <div className="absolute -top-6 left-2 z-10 bg-white/80 backdrop-blur-xl border border-white/60 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg -rotate-[6deg]">
         <CheckCircle className="h-3.5 w-3.5 text-amber-500" />
         <span className="text-[11px] font-semibold text-amber-700">AI Verified in 23s</span>
       </div>
 
-      {/* Floating badge 2 — Escrow */}
-      <div className="absolute -bottom-4 right-2 z-10 bg-[#0F1724]/90 text-white border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-md rotate-[4deg]">
+      {/* Floating badge — Escrow */}
+      <div className="absolute -bottom-5 right-0 z-10 bg-[#0F1724]/90 text-white border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg rotate-[4deg]">
         <Lock className="h-3.5 w-3.5 text-amber-400" />
         <span className="text-[11px] font-semibold">Escrow protected</span>
       </div>
 
       {/* Campaign card */}
-      <div className="bg-white border border-black/[0.06] rounded-2xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.10)] -rotate-[1deg]">
-        {/* Cover gradient */}
-        <div className="h-28 flex items-center justify-center relative" style={{ background: "linear-gradient(135deg, #1E3A8A, #3B82F6)" }}>
+      <div className="bg-white border border-black/[0.06] rounded-2xl overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.10)] -rotate-[1.5deg]">
+        <div className="h-32 flex items-center justify-center relative" style={{ background: "linear-gradient(135deg, #1E3A8A, #3B82F6)" }}>
           <Cpu className="h-10 w-10 text-white/70" />
           <span className="absolute top-3 left-3 text-[9px] font-medium uppercase tracking-widest text-white/50">Apps</span>
           <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/20 backdrop-blur-sm rounded-full px-2 py-0.5">
@@ -47,13 +64,12 @@ function HeroCampaignMock() {
             <span className="text-[9px] text-white/80">Active</span>
           </div>
         </div>
-        {/* Content */}
         <div className="p-4">
           <h3 className="font-semibold text-[14px] leading-snug mb-1">Nomad Finance App</h3>
           <p className="text-[11px] text-muted-foreground mb-3">Banking for remote workers. 40+ countries.</p>
           <div className="mb-2">
             <div className="flex justify-between text-[11px] mb-1">
-              <span className="font-semibold">37.50 SOL</span>
+              <span className="font-semibold tabular-nums">37.50 SOL</span>
               <span className="text-muted-foreground">of 50.00 SOL</span>
             </div>
             <div className="h-1 bg-black/[0.04] rounded-full overflow-hidden">
@@ -75,123 +91,139 @@ function HeroCampaignMock() {
 export default function Home() {
   return (
     <div className="flex flex-col">
-      {/* Hero — split layout */}
-      <section className="container mx-auto px-4 pt-16 pb-6 md:pt-24 md:pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-          {/* Left — text */}
-          <motion.div initial="hidden" animate="visible" variants={stagger}>
+      {/* Hero — dot grid + split layout */}
+      <section className="relative overflow-hidden">
+        <DotGrid />
+        <div className="container mx-auto px-4 pt-16 pb-8 md:pt-24 md:pb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+            {/* Left — text */}
+            <motion.div initial="hidden" animate="visible" variants={stagger}>
+              <motion.div
+                variants={fadeUp}
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm font-medium mb-6"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                Powered by Solana · Verified by AI
+              </motion.div>
+
+              <motion.h1
+                variants={fadeUp}
+                className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
+              >
+                Crowdfunding where{" "}
+                <span className="text-amber-500">progress</span>{" "}
+                unlocks funding
+              </motion.h1>
+
+              <motion.p
+                variants={fadeUp}
+                className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-md"
+              >
+                SOL stays in escrow. AI verifies each milestone.
+                Creators get paid for real progress. Backers become co-owners.
+              </motion.p>
+
+              <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
+                <Link href="/create">
+                  <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+                    Start a Campaign
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/campaigns">
+                  <Button size="lg" variant="outline" className="gap-2 border-black/[0.15]">
+                    Explore Campaigns
+                  </Button>
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* Right — campaign mock */}
             <motion.div
-              variants={fadeUp}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm font-medium mb-6"
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+              className="hidden lg:flex items-center justify-center py-8"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-              Powered by Solana · Verified by AI
+              <div className="relative w-full max-w-sm">
+                <HeroCampaignMock />
+              </div>
             </motion.div>
-
-            <motion.h1
-              variants={fadeUp}
-              className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-6"
-            >
-              Crowdfunding where{" "}
-              <span className="text-amber-500">progress</span>{" "}
-              unlocks funding
-            </motion.h1>
-
-            <motion.p
-              variants={fadeUp}
-              className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-md"
-            >
-              SOL stays in escrow. AI verifies each milestone.
-              Creators get paid for real progress. Backers become co-owners.
-            </motion.p>
-
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
-              <Link href="/create">
-                <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
-                  Start a Campaign
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/campaigns">
-                <Button size="lg" variant="outline" className="gap-2 border-black/[0.15]">
-                  Explore Campaigns
-                </Button>
-              </Link>
-            </motion.div>
-          </motion.div>
-
-          {/* Right — campaign mock + floating badges */}
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            className="hidden lg:flex items-center justify-center py-8"
-          >
-            {/* Placeholder for your image — replace div with <img> when ready */}
-            <div className="relative w-full max-w-sm">
-              {/* Image placeholder — Хаким поставит свою картинку сюда */}
-              {/* <img src="/your-image.png" alt="Qadam" className="w-full" /> */}
-              <HeroCampaignMock />
-            </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* How It Works — numbered cards */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={stagger}
-        className="py-16 md:py-20"
+        className="py-16 md:py-24"
       >
         <div className="container mx-auto px-4">
-          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-14">
+          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-16">
             How It Works
           </motion.h2>
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-0">
+
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
-              { icon: PenLine, title: "Create", desc: "Define project, milestones, and funding goal" },
-              { icon: Users, title: "Fund", desc: "Backers send SOL to smart contract escrow" },
-              { icon: ScanSearch, title: "Verify", desc: "AI evaluates evidence of milestone completion", highlight: true },
-              { icon: Banknote, title: "Release", desc: "Approved? SOL transfers to creator automatically" },
-            ].map((step, idx) => (
-              <motion.div key={step.title} variants={fadeUp} className="relative flex flex-col items-center text-center px-4">
-                {idx < 3 && (
-                  <div className="hidden md:block absolute top-3.5 left-[calc(50%+20px)] w-[calc(100%-40px)] h-px bg-black/[0.08]" />
-                )}
-                <div className="mb-4">
-                  <step.icon className={`h-7 w-7 ${step.highlight ? "text-amber-500" : "text-muted-foreground"}`} />
-                </div>
-                <h3 className="font-semibold text-sm mb-1">{step.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{step.desc}</p>
+              { num: "01", icon: PenLine, title: "Create", desc: "Define your project, milestones, and funding goal on Solana" },
+              { num: "02", icon: Users, title: "Fund", desc: "Backers send SOL directly to smart contract escrow" },
+              { num: "03", icon: ScanSearch, title: "AI Verifies", desc: "Claude AI evaluates evidence of milestone completion", highlight: true },
+              { num: "04", icon: Banknote, title: "Release", desc: "Approved? SOL transfers to creator automatically" },
+            ].map((step) => (
+              <motion.div
+                key={step.num}
+                variants={fadeUp}
+                className={`rounded-2xl p-6 border ${
+                  step.highlight
+                    ? "bg-amber-500 text-white border-amber-500"
+                    : "bg-white border-black/[0.06]"
+                }`}
+              >
+                <span className={`text-3xl font-bold block mb-4 ${step.highlight ? "text-white/40" : "text-amber-500/30"}`}>
+                  {step.num}
+                </span>
+                <step.icon className={`h-6 w-6 mb-3 ${step.highlight ? "text-white" : "text-foreground"}`} />
+                <h3 className={`font-semibold mb-1 ${step.highlight ? "text-white" : ""}`}>{step.title}</h3>
+                <p className={`text-sm leading-relaxed ${step.highlight ? "text-white/80" : "text-muted-foreground"}`}>
+                  {step.desc}
+                </p>
               </motion.div>
             ))}
           </div>
         </div>
       </motion.section>
 
-      {/* Why Qadam */}
+      {/* Why Qadam — 2-column grid */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={stagger}
-        className="bg-zinc-50 py-16 md:py-20"
+        className="bg-[#FAFAF8] py-16 md:py-24"
       >
-        <div className="container mx-auto px-4 max-w-3xl">
+        <div className="container mx-auto px-4 max-w-5xl">
           <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-12">
             Why Qadam
           </motion.h2>
-          <div className="space-y-8">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               { icon: Shield, title: "Milestone Escrow", desc: "Funds physically cannot leave without proof of progress. The smart contract enforces it — no trust required." },
               { icon: Cpu, title: "AI Verification", desc: "Claude AI evaluates evidence objectively in under 60 seconds. Instant, fair, transparent decisions." },
               { icon: Coins, title: "Token Equity", desc: "Backers receive project tokens proportional to their contribution. Not donors — co-owners with governance rights." },
               { icon: Eye, title: "On-chain Transparency", desc: "Every decision, every transaction, every AI verdict — publicly verifiable on Solana. Nothing hidden." },
             ].map((feature) => (
-              <motion.div key={feature.title} variants={fadeUp} className="flex gap-5 items-start">
-                <feature.icon className="h-7 w-7 text-amber-500 flex-shrink-0 mt-0.5" />
+              <motion.div
+                key={feature.title}
+                variants={fadeUp}
+                className="bg-white border border-black/[0.06] rounded-2xl p-6 flex gap-4 items-start"
+              >
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                  <feature.icon className="h-5 w-5 text-amber-500" />
+                </div>
                 <div>
                   <h3 className="font-semibold mb-1">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
@@ -202,7 +234,7 @@ export default function Home() {
         </div>
       </motion.section>
 
-      {/* Active Campaigns — real data */}
+      {/* Active Campaigns */}
       <ActiveCampaignsSection />
 
       {/* Stats */}
@@ -211,51 +243,65 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={stagger}
-        className="bg-[#0F1724] text-white py-14"
+        className="bg-[#0F1724] text-white py-16"
       >
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
             {[
-              { value: "2.5%", label: "Platform fee" },
-              { value: "< 60s", label: "AI verification" },
-              { value: "Free", label: "For first 20 creators" },
-              { value: "100%", label: "On-chain" },
+              { value: "2.5%", label: "Platform fee", sub: "vs 8-10% on Kickstarter" },
+              { value: "< 60s", label: "AI verification", sub: "Claude evaluates evidence" },
+              { value: "Free", label: "For first 20 creators", sub: "Zero commission forever" },
+              { value: "100%", label: "On-chain", sub: "Every tx verifiable" },
             ].map((stat) => (
               <motion.div key={stat.label} variants={fadeUp}>
-                <p className="text-3xl font-bold text-amber-500 tabular-nums">{stat.value}</p>
-                <p className="text-sm text-gray-400 mt-1">{stat.label}</p>
+                <p className="text-3xl md:text-4xl font-bold text-amber-500 tabular-nums">{stat.value}</p>
+                <p className="text-sm text-gray-300 mt-1">{stat.label}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{stat.sub}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </motion.section>
 
-      {/* CTA */}
+      {/* CTA — dual cards */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        variants={fadeUp}
-        className="py-20 text-center"
+        variants={stagger}
+        className="py-20"
       >
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Build?</h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            Whether you&apos;re a creator seeking funding or a backer looking for
-            early-stage opportunities.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/create">
-              <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
-                Start a Campaign
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/campaigns">
-              <Button size="lg" variant="outline" className="gap-2 border-black/[0.15]">
-                Explore Campaigns
-              </Button>
-            </Link>
+        <div className="container mx-auto px-4 max-w-4xl">
+          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-10">
+            Ready to Build?
+          </motion.h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Creator card */}
+            <motion.div variants={fadeUp} className="bg-[#0F1724] text-white rounded-2xl p-8">
+              <h3 className="text-xl font-bold mb-2">For Creators</h3>
+              <p className="text-sm text-gray-400 mb-6">
+                Launch your project. Set milestones. Get funded as you deliver.
+              </p>
+              <Link href="/create">
+                <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+                  Start a Campaign
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </motion.div>
+            {/* Backer card */}
+            <motion.div variants={fadeUp} className="bg-white border border-black/[0.06] rounded-2xl p-8">
+              <h3 className="text-xl font-bold mb-2">For Backers</h3>
+              <p className="text-sm text-muted-foreground mb-6">
+                Back projects you believe in. Get tokens. Become a co-owner.
+              </p>
+              <Link href="/campaigns">
+                <Button variant="outline" className="gap-2 border-black/[0.15]">
+                  Explore Campaigns
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            </motion.div>
           </div>
         </div>
       </motion.section>
@@ -273,6 +319,9 @@ function ActiveCampaignsSection() {
   const campaigns = data?.data || [];
   if (campaigns.length === 0) return null;
 
+  const totalRaised = campaigns.reduce((s, c) => s + c.raised_lamports, 0);
+  const totalBackers = campaigns.reduce((s, c) => s + c.backers_count, 0);
+
   return (
     <motion.section
       initial="hidden"
@@ -282,8 +331,13 @@ function ActiveCampaignsSection() {
       className="py-16"
     >
       <div className="container mx-auto px-4">
-        <motion.div variants={fadeUp} className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold">Active Campaigns</h2>
+        <motion.div variants={fadeUp} className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+          <div>
+            <h2 className="text-2xl font-bold">Live on Qadam</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              {campaigns.length} campaigns · {formatSol(totalRaised)} raised · {totalBackers} backers
+            </p>
+          </div>
           <Link href="/campaigns" className="text-sm text-amber-600 hover:text-amber-700 font-medium">
             View all &rarr;
           </Link>
