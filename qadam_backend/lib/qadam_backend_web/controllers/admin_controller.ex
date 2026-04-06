@@ -32,13 +32,30 @@ defmodule QadamBackendWeb.AdminController do
     })
   end
 
-  @doc "Admin makes human review decision"
+  @doc "Admin makes human review decision — updates DB + broadcasts Anchor tx"
   def decide(conn, %{"id" => id, "approved" => approved}) do
-    milestone = Milestones.get_milestone!(id)
+    milestone = Milestones.get_milestone!(id) |> QadamBackend.Repo.preload(:campaign)
     new_status = if approved, do: "approved", else: "rejected"
+    decision_hash = :crypto.strong_rand_bytes(32) |> Base.encode16(case: :lower)
 
     case Milestones.transition_state(milestone, new_status, %{decided_by: "admin"}) do
       {:ok, %{milestone: updated}} ->
+        # Broadcast Anchor transaction for admin_override_decision
+        if approved do
+          %{
+            milestone_id: updated.id,
+            instruction: "admin_override_decision",
+            ai_decision_hash: decision_hash
+          }
+          |> QadamBackend.Workers.TxBroadcastWorker.new()
+          |> Oban.insert()
+
+          # Update reputation
+          if milestone.campaign do
+            QadamBackend.Reputation.record_milestone_on_time(milestone.campaign.creator_wallet)
+          end
+        end
+
         json(conn, %{data: %{id: updated.id, status: updated.status}})
 
       {:error, reason} ->

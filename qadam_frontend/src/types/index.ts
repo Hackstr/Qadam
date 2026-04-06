@@ -58,8 +58,11 @@ export type MilestoneStatus =
 
 export interface BackerPosition {
   campaign_id: string;
+  campaign_pubkey?: string;
   campaign_title?: string;
   campaign_status?: CampaignStatus;
+  milestones_count?: number;
+  milestones_approved?: number;
   wallet_address: string;
   amount_lamports: number;
   tokens_allocated: number;

@@ -41,6 +41,13 @@ defmodule QadamBackend.Workers.TxBroadcastWorker do
             milestone.index,
             ai_decision_hash
           )
+
+        "admin_override_decision" ->
+          TransactionBuilder.sign_and_broadcast_release(
+            campaign.solana_pubkey,
+            milestone.index,
+            ai_decision_hash
+          )
       end
 
     case result do

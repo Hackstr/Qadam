@@ -12,8 +12,11 @@ defmodule QadamBackendWeb.BackerController do
       data: Enum.map(positions, fn p ->
         %{
           campaign_id: p.campaign_id,
+          campaign_pubkey: p.campaign && p.campaign.solana_pubkey,
           campaign_title: p.campaign && p.campaign.title,
           campaign_status: p.campaign && p.campaign.status,
+          milestones_count: p.campaign && p.campaign.milestones_count,
+          milestones_approved: p.campaign && p.campaign.milestones_approved,
           amount_lamports: p.amount_lamports,
           tokens_allocated: p.tokens_allocated,
           tokens_claimed: p.tokens_claimed,

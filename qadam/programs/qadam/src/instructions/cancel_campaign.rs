@@ -18,9 +18,10 @@ pub fn handler(ctx: Context<CancelCampaign>) -> Result<()> {
     // Can only cancel if no backers — otherwise use governance
     require!(campaign.backer_count == 0, QadamError::CampaignHasBackers);
 
-    // Return deposit from vault to creator
-    let deposit = campaign.vault_balance;
-    if deposit > 0 {
+    // Return ALL lamports from vault to creator (deposit + rent)
+    // This effectively closes the vault PDA
+    let vault_lamports = ctx.accounts.campaign_vault.lamports();
+    if vault_lamports > 0 {
         let campaign_key = campaign.key();
         let vault_seeds: &[&[u8]] = &[b"vault", campaign_key.as_ref(), &[ctx.bumps.campaign_vault]];
         let signer_seeds: &[&[&[u8]]] = &[vault_seeds];
@@ -34,7 +35,7 @@ pub fn handler(ctx: Context<CancelCampaign>) -> Result<()> {
                 },
                 signer_seeds,
             ),
-            deposit,
+            vault_lamports,
         )?;
 
         campaign.vault_balance = 0;
