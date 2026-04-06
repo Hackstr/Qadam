@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 const CATEGORIES = ["Apps", "Games", "SaaS", "Tools", "Infrastructure"];
 const STATUSES = [
@@ -21,25 +21,27 @@ export default function CampaignsPage() {
   const [category, setCategory] = useState<string | undefined>(undefined);
   const [sort, setSort] = useState<string | undefined>(undefined);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["campaigns", status, category, sort],
-    queryFn: () => getCampaigns({ status, category, sort, limit: 50 }),
+    queryKey: ["campaigns", status, category, sort, debouncedSearch],
+    queryFn: () => getCampaigns({
+      status,
+      category,
+      sort,
+      search: debouncedSearch || undefined,
+      limit: 50,
+    }),
     retry: false,
   });
 
-  const allCampaigns = data?.data || [];
-
-  // Client-side search filter
-  const campaigns = useMemo(() => {
-    if (!search.trim()) return allCampaigns;
-    const q = search.toLowerCase();
-    return allCampaigns.filter(
-      (c) =>
-        c.title.toLowerCase().includes(q) ||
-        (c.description && c.description.toLowerCase().includes(q))
-    );
-  }, [allCampaigns, search]);
+  const campaigns = data?.data || [];
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">

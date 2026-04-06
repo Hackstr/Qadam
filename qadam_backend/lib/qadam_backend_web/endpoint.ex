@@ -50,7 +50,9 @@ defmodule QadamBackendWeb.Endpoint do
   plug Plug.Session, @session_options
 
   # CORS must be before Router to handle OPTIONS preflight
-  plug CORSPlug, origin: "*"
+  # In production, set CORS_ORIGIN env var to restrict to your domain
+  plug CORSPlug,
+    origin: Application.compile_env(:qadam_backend, :cors_origin, "*")
 
   plug QadamBackendWeb.Router
 end

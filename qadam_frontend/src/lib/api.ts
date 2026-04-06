@@ -33,12 +33,14 @@ export async function getCampaigns(params?: {
   status?: string;
   category?: string;
   sort?: string;
+  search?: string;
   limit?: number;
 }) {
   const query = new URLSearchParams();
   if (params?.status) query.set("status", params.status);
   if (params?.category) query.set("category", params.category);
   if (params?.sort) query.set("sort", params.sort);
+  if (params?.search) query.set("search", params.search);
   if (params?.limit) query.set("limit", String(params.limit));
 
   const qs = query.toString();

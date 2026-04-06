@@ -46,6 +46,9 @@ defmodule QadamBackendWeb.Router do
 
     # Analytics summary
     get "/analytics/summary", AnalyticsController, :summary
+
+    # Webhook: trigger AI verification (public — called by frontend after on-chain tx)
+    post "/webhooks/milestone-submitted", WebhookController, :milestone_submitted
   end
 
   # ═══════════════════════════════════════════
@@ -70,9 +73,6 @@ defmodule QadamBackendWeb.Router do
 
     # Governance: check my vote
     get "/milestones/:milestone_id/my-vote", GovernanceController, :my_vote
-
-    # Webhook: trigger AI verification after on-chain submit
-    post "/webhooks/milestone-submitted", WebhookController, :milestone_submitted
 
     # Notifications
     get "/notifications", NotificationController, :index
