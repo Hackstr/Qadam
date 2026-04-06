@@ -95,6 +95,14 @@ export default function SubmitEvidencePage() {
         evidence_hash: evidenceHash,
       });
 
+      // 4. Trigger AI verification pipeline
+      try {
+        const { triggerMilestoneVerification } = await import("@/lib/api");
+        await triggerMilestoneVerification(campaign.id, currentMilestone.index);
+      } catch {
+        // Non-critical — webhook may fail if not authenticated
+      }
+
       router.push("/dashboard");
     } catch (err: any) {
       if (err?.message === "cancelled") return;

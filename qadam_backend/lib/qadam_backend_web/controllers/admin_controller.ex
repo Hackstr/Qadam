@@ -46,6 +46,18 @@ defmodule QadamBackendWeb.AdminController do
     end
   end
 
+  def set_featured(conn, %{"id" => id, "featured" => featured}) do
+    campaign = Campaigns.get_campaign!(id)
+
+    case Campaigns.update_campaign(campaign, %{featured: featured}) do
+      {:ok, updated} ->
+        json(conn, %{data: %{id: updated.id, featured: updated.featured}})
+
+      {:error, reason} ->
+        conn |> put_status(:unprocessable_entity) |> json(%{error: inspect(reason)})
+    end
+  end
+
   def health(conn, _params) do
     json(conn, %{status: "ok", timestamp: DateTime.utc_now()})
   end

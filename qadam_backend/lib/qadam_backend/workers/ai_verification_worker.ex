@@ -78,10 +78,14 @@ defmodule QadamBackend.Workers.AIVerificationWorker do
     # 5. Update milestone and enqueue next step
     ai_decision_hash = response_hash
 
+    campaign = milestone.campaign
+
     case parsed.decision do
       "approved" ->
         Milestones.transition_state(milestone, "approved", %{ai: true})
         enqueue_tx_broadcast(milestone, "release_milestone", ai_decision_hash)
+        # Update reputation
+        QadamBackend.Reputation.record_milestone_on_time(campaign.creator_wallet)
 
       "partial" ->
         Milestones.transition_state(milestone, "under_human_review", %{ai: true})
@@ -95,6 +99,7 @@ defmodule QadamBackend.Workers.AIVerificationWorker do
           decided_at: DateTime.utc_now()
         })
         Milestones.transition_state(milestone, "rejected", %{ai: true})
+        QadamBackend.Reputation.record_milestone_late(campaign.creator_wallet)
     end
 
     {:ok, parsed.decision}

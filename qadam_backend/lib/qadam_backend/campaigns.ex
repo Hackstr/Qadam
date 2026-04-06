@@ -11,6 +11,7 @@ defmodule QadamBackend.Campaigns do
     |> filter_by_status(opts[:status])
     |> filter_by_category(opts[:category])
     |> filter_by_creator(opts[:creator_wallet])
+    |> filter_by_search(opts[:search])
     |> sort_by(opts[:sort])
     |> maybe_limit(opts[:limit])
     |> Repo.all()
@@ -58,6 +59,13 @@ defmodule QadamBackend.Campaigns do
 
   defp filter_by_creator(query, nil), do: query
   defp filter_by_creator(query, wallet), do: where(query, [c], c.creator_wallet == ^wallet)
+
+  defp filter_by_search(query, nil), do: query
+  defp filter_by_search(query, ""), do: query
+  defp filter_by_search(query, term) do
+    search = "%#{term}%"
+    where(query, [c], ilike(c.title, ^search) or ilike(c.description, ^search))
+  end
 
   defp sort_by(query, "trending"), do: order_by(query, desc: :raised_lamports)
   defp sort_by(query, "newest"), do: order_by(query, desc: :inserted_at)

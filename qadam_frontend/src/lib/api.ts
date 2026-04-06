@@ -110,6 +110,17 @@ export async function submitEvidence(
 }
 
 // ═══════════════════════════════════════════
+// WEBHOOKS
+// ═══════════════════════════════════════════
+
+export async function triggerMilestoneVerification(campaignId: string, milestoneIndex: number) {
+  return fetchApi<{ ok: boolean; milestone_id: string }>("/webhooks/milestone-submitted", {
+    method: "POST",
+    body: JSON.stringify({ campaign_id: campaignId, milestone_index: milestoneIndex }),
+  });
+}
+
+// ═══════════════════════════════════════════
 // CAMPAIGN UPDATES
 // ═══════════════════════════════════════════
 

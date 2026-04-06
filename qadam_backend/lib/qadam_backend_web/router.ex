@@ -71,6 +71,9 @@ defmodule QadamBackendWeb.Router do
     # Governance: check my vote
     get "/milestones/:milestone_id/my-vote", GovernanceController, :my_vote
 
+    # Webhook: trigger AI verification after on-chain submit
+    post "/webhooks/milestone-submitted", WebhookController, :milestone_submitted
+
     # Notifications
     get "/notifications", NotificationController, :index
     post "/notifications/mark-read", NotificationController, :mark_read
@@ -85,6 +88,7 @@ defmodule QadamBackendWeb.Router do
 
     get "/review-queue", AdminController, :review_queue
     post "/milestones/:id/decide", AdminController, :decide
+    post "/campaigns/:id/feature", AdminController, :set_featured
   end
 
   # Dev routes

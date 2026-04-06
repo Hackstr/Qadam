@@ -11,6 +11,7 @@ defmodule QadamBackendWeb.CampaignController do
       status: params["status"],
       category: params["category"],
       sort: params["sort"],
+      search: params["search"],
       limit: parse_int(params["limit"], 50)
     )
 
