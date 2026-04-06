@@ -29,7 +29,7 @@ export default function CampaignsPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["campaigns", status, category, sort, debouncedSearch],
     queryFn: () => getCampaigns({
       status,
@@ -132,6 +132,11 @@ export default function CampaignsPage() {
       {isLoading ? (
         <div className="flex justify-center py-20">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : isError ? (
+        <div className="text-center py-20">
+          <p className="text-muted-foreground">Could not load campaigns.</p>
+          <p className="text-sm text-muted-foreground/60 mt-1">Make sure the backend is running on port 4000.</p>
         </div>
       ) : campaigns.length === 0 ? (
         <div className="text-center py-20">

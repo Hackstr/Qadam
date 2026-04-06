@@ -21,79 +21,13 @@ const stagger: any = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-// Dot grid SVG pattern for hero background
-function DotGrid() {
-  return (
-    <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.04 }}>
-      <svg width="100%" height="100%">
-        <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
-          <circle cx="1.5" cy="1.5" r="1" fill="currentColor" />
-        </pattern>
-        <rect width="100%" height="100%" fill="url(#dots)" />
-      </svg>
-    </div>
-  );
-}
 
-// Hero campaign card mock
-function HeroCampaignMock() {
-  return (
-    <div className="relative select-none">
-      {/* Ambient glow */}
-      <div className="absolute -inset-8 bg-amber-500/[0.06] rounded-full blur-3xl" />
-
-      {/* Floating badge — AI Verified */}
-      <div className="absolute -top-6 left-2 z-10 bg-white/80 backdrop-blur-xl border border-white/60 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg -rotate-[6deg]">
-        <CheckCircle className="h-3.5 w-3.5 text-amber-500" />
-        <span className="text-[11px] font-semibold text-amber-700">AI Verified in 23s</span>
-      </div>
-
-      {/* Floating badge — Escrow */}
-      <div className="absolute -bottom-5 right-0 z-10 bg-[#0F1724]/90 text-white border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg rotate-[4deg]">
-        <Lock className="h-3.5 w-3.5 text-amber-400" />
-        <span className="text-[11px] font-semibold">Escrow protected</span>
-      </div>
-
-      {/* Campaign card */}
-      <div className="bg-white border border-black/[0.06] rounded-2xl overflow-hidden shadow-[0_24px_80px_rgba(0,0,0,0.10)] -rotate-[1.5deg]">
-        <div className="h-32 flex items-center justify-center relative" style={{ background: "linear-gradient(135deg, #1E3A8A, #3B82F6)" }}>
-          <Cpu className="h-10 w-10 text-white/70" />
-          <span className="absolute top-3 left-3 text-[9px] font-medium uppercase tracking-widest text-white/50">Apps</span>
-          <div className="absolute top-3 right-3 flex items-center gap-1 bg-black/20 backdrop-blur-sm rounded-full px-2 py-0.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400" />
-            <span className="text-[9px] text-white/80">Active</span>
-          </div>
-        </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-[14px] leading-snug mb-1">Nomad Finance App</h3>
-          <p className="text-[11px] text-muted-foreground mb-3">Banking for remote workers. 40+ countries.</p>
-          <div className="mb-2">
-            <div className="flex justify-between text-[11px] mb-1">
-              <span className="font-semibold tabular-nums">37.50 SOL</span>
-              <span className="text-muted-foreground">of 50.00 SOL</span>
-            </div>
-            <div className="h-1 bg-black/[0.04] rounded-full overflow-hidden">
-              <div className="h-full bg-amber-500 rounded-full" style={{ width: "75%" }} />
-            </div>
-          </div>
-          <div className="flex items-center justify-between pt-2.5 border-t border-black/[0.04]">
-            <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-              <Users className="h-3 w-3" /> 42 backers
-            </span>
-            <span className="text-[11px] font-medium text-green-500">Genesis</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Hero — dot grid + split layout */}
       <section className="relative overflow-hidden">
-        <DotGrid />
         <div className="container mx-auto px-4 pt-16 pb-8 md:pt-24 md:pb-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
             {/* Left — text */}
@@ -138,15 +72,36 @@ export default function Home() {
               </motion.div>
             </motion.div>
 
-            {/* Right — campaign mock */}
+            {/* Right — illustration */}
             <motion.div
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-              className="hidden lg:flex items-center justify-center py-8"
+              className="hidden lg:flex items-center justify-center py-4"
             >
-              <div className="relative w-full max-w-sm">
-                <HeroCampaignMock />
+              <div className="relative w-full max-w-md">
+                {/* Ambient glow */}
+                <div className="absolute inset-0 -m-12 bg-amber-500/[0.05] rounded-full blur-3xl pointer-events-none" />
+
+                {/* Floating badge — AI Verified */}
+                <div className="absolute top-8 -left-4 z-10 bg-white/90 backdrop-blur-xl border border-white/60 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg -rotate-[6deg]">
+                  <CheckCircle className="h-3.5 w-3.5 text-amber-500" />
+                  <span className="text-[11px] font-semibold text-amber-700">AI Verified in 23s</span>
+                </div>
+
+                {/* Floating badge — Escrow */}
+                <div className="absolute bottom-12 -right-2 z-10 bg-[#0F1724]/90 text-white border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg rotate-[4deg]">
+                  <Lock className="h-3.5 w-3.5 text-amber-400" />
+                  <span className="text-[11px] font-semibold">Escrow protected</span>
+                </div>
+
+                {/* Illustration */}
+                <img
+                  src="/man-in-background.png"
+                  alt="Builder on Qadam"
+                  className="relative w-full h-auto object-contain select-none" style={{ mixBlendMode: "multiply" }}
+                  draggable={false}
+                />
               </div>
             </motion.div>
           </div>
@@ -202,7 +157,7 @@ export default function Home() {
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={stagger}
-        className="bg-[#FAFAF8] py-16 md:py-24"
+        className="py-16 md:py-24"
       >
         <div className="container mx-auto px-4 max-w-5xl">
           <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-12">

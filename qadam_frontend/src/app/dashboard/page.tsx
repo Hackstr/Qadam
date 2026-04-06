@@ -11,10 +11,10 @@ import Link from "next/link";
 export default function DashboardPage() {
   const { publicKey, connected } = useWallet();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["my-campaigns", publicKey?.toBase58()],
     queryFn: () => getCampaigns({ status: undefined }),
-    enabled: connected,
+    enabled: connected && !!publicKey,
   });
 
   // Filter to only show campaigns created by this wallet
@@ -51,6 +51,11 @@ export default function DashboardPage() {
       {isLoading ? (
         <div className="flex justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : isError ? (
+        <div className="text-center py-20">
+          <p className="text-muted-foreground">Could not load campaigns.</p>
+          <p className="text-sm text-muted-foreground/60 mt-1">Make sure the backend is running.</p>
         </div>
       ) : myCampaigns.length === 0 ? (
         <div className="text-center py-20">
