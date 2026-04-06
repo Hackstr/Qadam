@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { getCampaign } from "@/lib/api";
 import { useQadamProgram } from "@/hooks/use-qadam-program";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,9 +52,9 @@ export default function BackCampaignPage() {
   const tier = campaign.backers_count < TIER_1_MAX_BACKERS ? 1 : campaign.backers_count < TIER_2_MAX_BACKERS ? 2 : 3;
   const tierInfo = TIER_LABELS[tier as 1 | 2 | 3];
 
-  // Estimated tokens — read from campaign API, fallback to 100
-  const tokensPerLamport = campaign.tokens_per_lamport || 100;
-  const baseTokens = amountLamports * tokensPerLamport;
+  // Estimated tokens — tokens_per_lamport is actually "tokens per SOL" in seed data
+  const tokensPerSol = campaign.tokens_per_lamport || 100;
+  const baseTokens = amountNum * tokensPerSol;
   const tierMultiplier = tier === 1 ? 1 : tier === 2 ? 0.67 : 0.5;
   const estimatedTokens = Math.floor(baseTokens * tierMultiplier);
 
@@ -63,8 +64,19 @@ export default function BackCampaignPage() {
 
     setLoading(true);
     try {
+      // Validate pubkey is a real Solana address before calling Anchor
+      const { PublicKey } = await import("@solana/web3.js");
+      try {
+        new PublicKey(campaign.solana_pubkey);
+      } catch {
+        toast.error("This campaign doesn't have a valid on-chain address. It may be demo data.");
+        setLoading(false);
+        return;
+      }
+
       const sig = await backCampaignTx(campaign.solana_pubkey, amountNum);
       console.log("Backed:", sig);
+      toast.success("Backed successfully!");
       router.push(`/campaigns/${id}`);
     } catch (err: any) {
       if (err?.message === "cancelled") return;
