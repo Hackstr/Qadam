@@ -47,8 +47,10 @@ defmodule QadamBackendWeb.Router do
     # Analytics summary
     get "/analytics/summary", AnalyticsController, :summary
 
-    # Webhook: trigger AI verification (public — called by frontend after on-chain tx)
+    # Webhooks — sync on-chain events with PostgreSQL
     post "/webhooks/milestone-submitted", WebhookController, :milestone_submitted
+    post "/webhooks/sync-campaign", SyncController, :sync_campaign
+    post "/webhooks/sync-backing", SyncController, :sync_backing
   end
 
   # ═══════════════════════════════════════════

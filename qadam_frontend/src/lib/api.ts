@@ -112,6 +112,40 @@ export async function submitEvidence(
 }
 
 // ═══════════════════════════════════════════
+// SYNC — bridge on-chain events to PostgreSQL
+// ═══════════════════════════════════════════
+
+export async function syncCampaignCreation(data: {
+  solana_pubkey: string;
+  creator_wallet: string;
+  title: string;
+  description?: string;
+  category?: string;
+  goal_lamports: number;
+  milestones_count: number;
+  tokens_per_lamport: number;
+  milestones: { index: number; title: string; description?: string; amount_lamports: number; deadline: string; grace_deadline: string }[];
+}) {
+  return fetchApi<{ data: { id: string; solana_pubkey: string } }>("/webhooks/sync-campaign", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function syncBacking(data: {
+  campaign_pubkey: string;
+  backer_wallet: string;
+  amount_lamports: number;
+  tier: number;
+  tokens_allocated: number;
+}) {
+  return fetchApi<{ ok: boolean }>("/webhooks/sync-backing", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+// ═══════════════════════════════════════════
 // WEBHOOKS
 // ═══════════════════════════════════════════
 

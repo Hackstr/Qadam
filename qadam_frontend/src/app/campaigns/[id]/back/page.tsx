@@ -76,6 +76,19 @@ export default function BackCampaignPage() {
 
       const sig = await backCampaignTx(campaign.solana_pubkey, amountNum);
       console.log("Backed:", sig);
+
+      // Sync backing to PostgreSQL
+      try {
+        const { syncBacking } = await import("@/lib/api");
+        await syncBacking({
+          campaign_pubkey: campaign.solana_pubkey,
+          backer_wallet: publicKey!.toBase58(),
+          amount_lamports: Math.floor(amountNum * 1_000_000_000),
+          tier,
+          tokens_allocated: estimatedTokens,
+        });
+      } catch (e) { console.warn("Sync failed:", e); }
+
       toast.success("Backed successfully!");
       router.push(`/campaigns/${id}`);
     } catch (err: any) {

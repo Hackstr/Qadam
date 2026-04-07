@@ -18,7 +18,7 @@ interface MilestoneInput {
 }
 
 export default function CreateCampaignPage() {
-  const { connected, createCampaign: createCampaignTx, txStatus } = useQadamProgram();
+  const { connected, publicKey, createCampaign: createCampaignTx, txStatus } = useQadamProgram();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -79,7 +79,32 @@ export default function CreateCampaignPage() {
           deadline: new Date(m.deadline),
         })),
       });
-      console.log("Campaign created:", result);
+      console.log("Campaign on-chain:", result);
+
+      // Sync to PostgreSQL so it appears in Discover
+      try {
+        const { syncCampaignCreation } = await import("@/lib/api");
+        const SOL = 1_000_000_000;
+        await syncCampaignCreation({
+          solana_pubkey: result.campaignPda,
+          creator_wallet: publicKey!.toBase58(),
+          title,
+          description,
+          category,
+          goal_lamports: Math.floor(goalNum * SOL),
+          milestones_count: milestones.length,
+          tokens_per_lamport: tokensPerSol || 100,
+          milestones: milestones.map((m, idx) => ({
+            index: idx,
+            title: m.title,
+            description: m.description,
+            amount_lamports: Math.floor((parseFloat(m.amount) || 0) * SOL),
+            deadline: new Date(m.deadline).toISOString(),
+            grace_deadline: new Date(new Date(m.deadline).getTime() + 7 * 86400000).toISOString(),
+          })),
+        });
+      } catch (e) { console.warn("Sync failed:", e); }
+
       router.push("/dashboard");
     } catch (err: any) {
       if (err?.message === "cancelled") return; // User rejected — toast already shown
