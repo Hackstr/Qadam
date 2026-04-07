@@ -26,6 +26,36 @@ const stagger: any = {
 export default function Home() {
   return (
     <div className="flex flex-col">
+      {/* Marquee ticker */}
+      <div className="bg-amber-500 text-white overflow-hidden py-2 relative">
+        <div className="animate-marquee whitespace-nowrap flex gap-8">
+          {[...Array(2)].map((_, i) => (
+            <span key={i} className="flex gap-8 text-sm font-medium tracking-wide">
+              <span>DEVNET TESTING</span>
+              <span className="opacity-60">*</span>
+              <span>NATIONAL SOLANA HACKATHON</span>
+              <span className="opacity-60">*</span>
+              <span>AI-VERIFIED CROWDFUNDING</span>
+              <span className="opacity-60">*</span>
+              <span>MILESTONE ESCROW ON SOLANA</span>
+              <span className="opacity-60">*</span>
+              <span>BACKERS BECOME CO-OWNERS</span>
+              <span className="opacity-60">*</span>
+              <span>2.5% FEE ONLY ON SUCCESS</span>
+              <span className="opacity-60">*</span>
+              <span>DEVNET TESTING</span>
+              <span className="opacity-60">*</span>
+              <span>NATIONAL SOLANA HACKATHON</span>
+              <span className="opacity-60">*</span>
+              <span>AI-VERIFIED CROWDFUNDING</span>
+              <span className="opacity-60">*</span>
+              <span>MILESTONE ESCROW ON SOLANA</span>
+              <span className="opacity-60">*</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Hero — dot grid + split layout */}
       <section className="relative overflow-hidden">
         <div className="container mx-auto px-4 pt-16 pb-8 md:pt-24 md:pb-12">

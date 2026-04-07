@@ -1,0 +1,27 @@
+[Unit]
+Description=Qadam Backend (Phoenix)
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/qadam/qadam_backend
+Environment=MIX_ENV=prod
+Environment=PORT=4000
+Environment=PHX_SERVER=true
+Environment=PHX_HOST=qadam.duckdns.org
+Environment=DATABASE_URL=ecto://qadam:qadam_prod_2026@localhost/qadam_prod
+Environment=SECRET_KEY_BASE=CHANGE_ME_GENERATE_WITH_MIX_PHX_GEN_SECRET
+Environment=SOLANA_RPC_URL=https://api.devnet.solana.com
+Environment=SOLANA_WS_URL=wss://api.devnet.solana.com
+Environment=SOLANA_PROGRAM_ID=4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj
+Environment=JWT_SECRET=CHANGE_ME_RANDOM_32_CHARS_MINIMUM
+Environment=CORS_ORIGIN=https://qadam.duckdns.org
+ExecStart=/usr/bin/mix phx.server
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
