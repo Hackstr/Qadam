@@ -27,3 +27,4 @@ qadam_frontend/.next
 .idea
 .vscode
 *.swp
+.next
