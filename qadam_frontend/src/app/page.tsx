@@ -26,32 +26,25 @@ const stagger: any = {
 export default function Home() {
   return (
     <div className="flex flex-col">
-      {/* Diagonal ribbon ticker — from top-left corner */}
-      <div className="absolute top-[52px] left-0 right-0 z-30 pointer-events-none overflow-hidden h-[200px]">
+      {/* Ticker ribbon — sits between header and hero, full width, slight angle */}
+      <div className="overflow-hidden">
         <div
-          className="bg-amber-500 text-white py-1.5 shadow-lg pointer-events-auto"
-          style={{
-            transform: "rotate(-4deg)",
-            transformOrigin: "top left",
-            position: "absolute",
-            top: "40px",
-            left: "-20px",
-            width: "110%",
-          }}
+          className="bg-amber-500 text-white py-1.5"
+          style={{ transform: "rotate(-1deg)", margin: "0 -2%" , width: "104%" }}
         >
           <div className="animate-marquee whitespace-nowrap flex gap-6">
-            {[...Array(3)].map((_, i) => (
-              <span key={i} className="flex gap-6 text-[11px] font-medium tracking-widest uppercase">
+            {[...Array(4)].map((_, i) => (
+              <span key={i} className="flex gap-6 text-[10px] font-medium tracking-widest uppercase">
                 <span>Devnet Testing</span>
-                <span className="opacity-40">-</span>
+                <span className="opacity-40">*</span>
                 <span className="font-extrabold">National Solana Hackathon</span>
-                <span className="opacity-40">-</span>
+                <span className="opacity-40">*</span>
                 <span>AI-Verified Crowdfunding</span>
-                <span className="opacity-40">-</span>
+                <span className="opacity-40">*</span>
                 <span>Milestone Escrow</span>
-                <span className="opacity-40">-</span>
+                <span className="opacity-40">*</span>
                 <span>Backers Become Co-Owners</span>
-                <span className="opacity-40">-</span>
+                <span className="opacity-40">*</span>
               </span>
             ))}
           </div>
@@ -224,26 +217,30 @@ export default function Home() {
       {/* Active Campaigns */}
       <ActiveCampaignsSection />
 
-      {/* Stats */}
+      {/* Stats — light, with border cards */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={stagger}
-        className="bg-[#0F1724] text-white py-16"
+        className="py-16"
       >
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {[
               { value: "2.5%", label: "Platform fee", sub: "vs 8-10% on Kickstarter" },
               { value: "< 60s", label: "AI verification", sub: "Claude evaluates evidence" },
-              { value: "Free", label: "For first 20 creators", sub: "Zero commission forever" },
+              { value: "Free", label: "First 20 creators", sub: "Zero commission forever" },
               { value: "100%", label: "On-chain", sub: "Every tx verifiable" },
             ].map((stat) => (
-              <motion.div key={stat.label} variants={fadeUp}>
+              <motion.div
+                key={stat.label}
+                variants={fadeUp}
+                className="text-center border border-black/[0.06] rounded-2xl py-8 px-4"
+              >
                 <p className="text-3xl md:text-4xl font-bold text-amber-500 tabular-nums">{stat.value}</p>
-                <p className="text-sm text-gray-300 mt-1">{stat.label}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{stat.sub}</p>
+                <p className="text-sm font-medium text-foreground mt-2">{stat.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{stat.sub}</p>
               </motion.div>
             ))}
           </div>
