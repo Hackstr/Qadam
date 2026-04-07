@@ -26,11 +26,18 @@ const stagger: any = {
 export default function Home() {
   return (
     <div className="flex flex-col">
-      {/* Diagonal marquee ticker */}
-      <div className="relative z-30 -mb-4">
+      {/* Diagonal ribbon ticker — from top-left corner */}
+      <div className="absolute top-[52px] left-0 right-0 z-30 pointer-events-none overflow-hidden h-[200px]">
         <div
-          className="bg-amber-500 text-white py-1.5 shadow-md"
-          style={{ transform: "rotate(-1.5deg) scale(1.02)" }}
+          className="bg-amber-500 text-white py-1.5 shadow-lg pointer-events-auto"
+          style={{
+            transform: "rotate(-4deg)",
+            transformOrigin: "top left",
+            position: "absolute",
+            top: "40px",
+            left: "-20px",
+            width: "110%",
+          }}
         >
           <div className="animate-marquee whitespace-nowrap flex gap-6">
             {[...Array(3)].map((_, i) => (
