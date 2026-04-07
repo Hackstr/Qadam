@@ -26,33 +26,43 @@ const stagger: any = {
 export default function Home() {
   return (
     <div className="flex flex-col">
-      {/* Marquee ticker */}
-      <div className="bg-amber-500 text-white overflow-hidden py-2 relative">
-        <div className="animate-marquee whitespace-nowrap flex gap-8">
-          {[...Array(2)].map((_, i) => (
-            <span key={i} className="flex gap-8 text-sm font-medium tracking-wide">
-              <span>DEVNET TESTING</span>
-              <span className="opacity-60">*</span>
-              <span>NATIONAL SOLANA HACKATHON</span>
-              <span className="opacity-60">*</span>
-              <span>AI-VERIFIED CROWDFUNDING</span>
-              <span className="opacity-60">*</span>
-              <span>MILESTONE ESCROW ON SOLANA</span>
-              <span className="opacity-60">*</span>
-              <span>BACKERS BECOME CO-OWNERS</span>
-              <span className="opacity-60">*</span>
-              <span>2.5% FEE ONLY ON SUCCESS</span>
-              <span className="opacity-60">*</span>
-              <span>DEVNET TESTING</span>
-              <span className="opacity-60">*</span>
-              <span>NATIONAL SOLANA HACKATHON</span>
-              <span className="opacity-60">*</span>
-              <span>AI-VERIFIED CROWDFUNDING</span>
-              <span className="opacity-60">*</span>
-              <span>MILESTONE ESCROW ON SOLANA</span>
-              <span className="opacity-60">*</span>
-            </span>
-          ))}
+      {/* Diagonal marquee ticker */}
+      <div className="relative overflow-hidden h-0">
+        <div
+          className="absolute -left-4 top-16 z-40 bg-amber-500 text-white py-2 shadow-md"
+          style={{
+            transform: "rotate(-3deg)",
+            transformOrigin: "left center",
+            width: "120%",
+            marginLeft: "-10%",
+          }}
+        >
+          <div className="animate-marquee whitespace-nowrap flex gap-8">
+            {[...Array(2)].map((_, i) => (
+              <span key={i} className="flex gap-8 text-xs font-medium tracking-wider">
+                <span>DEVNET TESTING</span>
+                <span className="opacity-50">*</span>
+                <span className="font-bold underline underline-offset-2">NATIONAL SOLANA HACKATHON</span>
+                <span className="opacity-50">*</span>
+                <span>AI-VERIFIED CROWDFUNDING</span>
+                <span className="opacity-50">*</span>
+                <span>MILESTONE ESCROW ON SOLANA</span>
+                <span className="opacity-50">*</span>
+                <span>BACKERS BECOME CO-OWNERS</span>
+                <span className="opacity-50">*</span>
+                <span>DEVNET TESTING</span>
+                <span className="opacity-50">*</span>
+                <span className="font-bold underline underline-offset-2">NATIONAL SOLANA HACKATHON</span>
+                <span className="opacity-50">*</span>
+                <span>AI-VERIFIED CROWDFUNDING</span>
+                <span className="opacity-50">*</span>
+                <span>MILESTONE ESCROW ON SOLANA</span>
+                <span className="opacity-50">*</span>
+                <span>BACKERS BECOME CO-OWNERS</span>
+                <span className="opacity-50">*</span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
