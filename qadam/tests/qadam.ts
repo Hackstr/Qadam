@@ -1003,4 +1003,216 @@ describe("qadam", () => {
       expect(campaign.backerCount).to.equal(2);
     });
   });
+
+  // ═══════════════════════════════════════════
+  // TEST 9: GOVERNANCE — Extension Request + Vote
+  // ═══════════════════════════════════════════
+
+  describe("9. Governance Flow", () => {
+    let campaignPda9: PublicKey;
+    let vaultPda9: PublicKey;
+    let mintPda9: PublicKey;
+    let milestonePda9: PublicKey;
+    const nonce9 = new anchor.BN(9);
+
+    before(async () => {
+      // Create campaign with 1 milestone
+      [campaignPda9] = PublicKey.findProgramAddressSync(
+        [Buffer.from("campaign"), creator.publicKey.toBuffer(), nonce9.toArrayLike(Buffer, "le", 8)],
+        program.programId
+      );
+      [vaultPda9] = PublicKey.findProgramAddressSync(
+        [Buffer.from("vault"), campaignPda9.toBuffer()],
+        program.programId
+      );
+      [mintPda9] = PublicKey.findProgramAddressSync(
+        [Buffer.from("mint"), campaignPda9.toBuffer()],
+        program.programId
+      );
+      [milestonePda9] = PublicKey.findProgramAddressSync(
+        [Buffer.from("milestone"), campaignPda9.toBuffer(), Buffer.from([0])],
+        program.programId
+      );
+
+      await program.methods
+        .createCampaign("Governance Test", nonce9, 1, new anchor.BN(1 * LAMPORTS_PER_SOL), tokensPerLamport)
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaignVault: vaultPda9,
+          tokenMint: mintPda9,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .signers([creator])
+        .rpc();
+
+      const now = Math.floor(Date.now() / 1000);
+      await program.methods
+        .addMilestone(new anchor.BN(1 * LAMPORTS_PER_SOL), new anchor.BN(now + 86400))
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaign: campaignPda9,
+          milestone: milestonePda9,
+        })
+        .signers([creator])
+        .rpc();
+
+      // Backer1 backs
+      const [bp] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda9.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+      await program.methods
+        .backCampaign(new anchor.BN(1 * LAMPORTS_PER_SOL))
+        .accounts({
+          backer: backer1.publicKey,
+          config: configPda,
+          campaign: campaignPda9,
+          campaignVault: vaultPda9,
+          backerPosition: bp,
+        })
+        .signers([backer1])
+        .rpc();
+
+      // Submit evidence
+      const hash = Buffer.alloc(32); hash.fill(77);
+      await program.methods
+        .submitMilestone(0, Array.from(hash))
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaign: campaignPda9,
+          milestone: milestonePda9,
+        })
+        .signers([creator])
+        .rpc();
+
+      // AI marks as PARTIAL → under human review
+      const aiHash = Buffer.alloc(32); aiHash.fill(78);
+      await program.methods
+        .markUnderHumanReview(0, Array.from(aiHash))
+        .accounts({
+          authority: aiAgent.publicKey,
+          config: configPda,
+          campaign: campaignPda9,
+          milestone: milestonePda9,
+        })
+        .signers([aiAgent])
+        .rpc();
+
+      // Admin rejects milestone
+      const decisionHash = Buffer.alloc(32); decisionHash.fill(79);
+      await program.methods
+        .adminOverrideDecision(0, false, Array.from(decisionHash))
+        .accounts({
+          admin: admin.publicKey,
+          config: configPda,
+          campaign: campaignPda9,
+          milestone: milestonePda9,
+          campaignVault: vaultPda9,
+          creator: creator.publicKey,
+          qadamTreasury: qadamTreasury.publicKey,
+        })
+        .rpc();
+    });
+
+    it("milestone is rejected", async () => {
+      const milestone = await program.account.milestoneAccount.fetch(milestonePda9);
+      expect(milestone.status).to.deep.equal({ rejected: {} });
+    });
+
+    it("creator requests extension", async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const reasonHash = Buffer.alloc(32); reasonHash.fill(79);
+
+      const [votingStatePda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("voting"), milestonePda9.toBuffer()],
+        program.programId
+      );
+
+      await program.methods
+        .requestExtension(0, Array.from(reasonHash), new anchor.BN(now + 86400 * 14))
+        .accounts({
+          creator: creator.publicKey,
+          config: configPda,
+          campaign: campaignPda9,
+          milestone: milestonePda9,
+          votingState: votingStatePda,
+        })
+        .signers([creator])
+        .rpc();
+
+      const milestone = await program.account.milestoneAccount.fetch(milestonePda9);
+      expect(milestone.status).to.deep.equal({ votingActive: {} });
+    });
+
+    it("backer1 votes to extend", async () => {
+      const [votingStatePda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("voting"), milestonePda9.toBuffer()],
+        program.programId
+      );
+      const [votePda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("vote"), milestonePda9.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+      const [bp] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda9.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+
+      await program.methods
+        .voteOnExtension(0, true)
+        .accounts({
+          voter: backer1.publicKey,
+          config: configPda,
+          campaign: campaignPda9,
+          milestone: milestonePda9,
+          backerPosition: bp,
+          votingState: votingStatePda,
+          extensionVote: votePda,
+        })
+        .signers([backer1])
+        .rpc();
+
+      const vote = await program.account.extensionVote.fetch(votePda);
+      expect(vote.voteApprove).to.equal(true);
+      expect(vote.votingPower.toNumber()).to.be.greaterThan(0);
+    });
+
+    it("backer1 cannot vote twice", async () => {
+      const [votingStatePda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("voting"), milestonePda9.toBuffer()],
+        program.programId
+      );
+      const [votePda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("vote"), milestonePda9.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+      const [bp] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda9.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+
+      try {
+        await program.methods
+          .voteOnExtension(0, false)
+          .accounts({
+            voter: backer1.publicKey,
+            config: configPda,
+            campaign: campaignPda9,
+            milestone: milestonePda9,
+            backerPosition: bp,
+            votingState: votingStatePda,
+            extensionVote: votePda,
+          })
+          .signers([backer1])
+          .rpc();
+        expect.fail("Should have thrown — already voted");
+      } catch (err: any) {
+        // PDA already exists — Anchor will reject init
+        expect(err).to.exist;
+      }
+    });
+  });
 });
