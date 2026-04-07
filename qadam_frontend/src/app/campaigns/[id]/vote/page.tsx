@@ -14,7 +14,7 @@ import Link from "next/link";
 
 export default function VotePage() {
   const { id } = useParams<{ id: string }>();
-  const { connected } = useWallet();
+  const { connected, publicKey } = useWallet();
   const { txStatus, voteOnExtension } = useQadamProgram();
 
   const { data: campaignData, isLoading } = useQuery({
@@ -109,6 +109,14 @@ export default function VotePage() {
                       onClick={async () => {
                         try {
                           await voteOnExtension(campaign.solana_pubkey, milestone.index, true);
+                          const { syncVote } = await import("@/lib/api");
+                          syncVote({
+                            campaign_pubkey: campaign.solana_pubkey,
+                            milestone_index: milestone.index,
+                            wallet: publicKey!.toBase58(),
+                            approve: true,
+                            voting_power: 0,
+                          }).catch(() => {});
                         } catch (err: any) {
                           if (err?.message !== "cancelled") console.error(err);
                         }
@@ -124,6 +132,14 @@ export default function VotePage() {
                       onClick={async () => {
                         try {
                           await voteOnExtension(campaign.solana_pubkey, milestone.index, false);
+                          const { syncVote } = await import("@/lib/api");
+                          syncVote({
+                            campaign_pubkey: campaign.solana_pubkey,
+                            milestone_index: milestone.index,
+                            wallet: publicKey!.toBase58(),
+                            approve: false,
+                            voting_power: 0,
+                          }).catch(() => {});
                         } catch (err: any) {
                           if (err?.message !== "cancelled") console.error(err);
                         }

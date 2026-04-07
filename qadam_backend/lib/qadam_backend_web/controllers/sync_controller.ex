@@ -78,6 +78,54 @@ defmodule QadamBackendWeb.SyncController do
     end
   end
 
+  @doc "Sync token claim — update backer position after on-chain claim_tokens"
+  def sync_claim_tokens(conn, %{"campaign_pubkey" => pubkey, "wallet" => wallet, "tokens_claimed" => claimed}) do
+    case Campaigns.get_campaign_by_pubkey(pubkey) do
+      nil -> {:error, :not_found}
+      campaign ->
+        case Backers.get_position_by_campaign_and_wallet(campaign.id, wallet) do
+          nil -> {:error, :not_found}
+          position ->
+            Backers.update_position(position, %{tokens_claimed: claimed})
+            json(conn, %{ok: true})
+        end
+    end
+  end
+
+  @doc "Sync vote — record governance vote in DB"
+  def sync_vote(conn, %{"campaign_pubkey" => pubkey, "milestone_index" => idx, "wallet" => wallet, "approve" => approve, "voting_power" => power}) do
+    case Campaigns.get_campaign_by_pubkey(pubkey) do
+      nil -> {:error, :not_found}
+      campaign ->
+        milestone = QadamBackend.Milestones.get_milestone_by_campaign_and_index(campaign.id, idx)
+        if milestone do
+          QadamBackend.Repo.insert(%QadamBackend.Governance.ExtensionVote{
+            milestone_id: milestone.id,
+            voter_wallet: wallet,
+            voting_power: power,
+            vote_approve: approve,
+          }, on_conflict: :nothing)
+          json(conn, %{ok: true})
+        else
+          {:error, :not_found}
+        end
+    end
+  end
+
+  @doc "Sync refund claim"
+  def sync_refund(conn, %{"campaign_pubkey" => pubkey, "wallet" => wallet}) do
+    case Campaigns.get_campaign_by_pubkey(pubkey) do
+      nil -> {:error, :not_found}
+      campaign ->
+        case Backers.get_position_by_campaign_and_wallet(campaign.id, wallet) do
+          nil -> {:error, :not_found}
+          position ->
+            Backers.update_position(position, %{refund_claimed: true})
+            json(conn, %{ok: true})
+        end
+    end
+  end
+
   defp parse_datetime(nil), do: nil
   defp parse_datetime(str) when is_binary(str) do
     case DateTime.from_iso8601(str) do

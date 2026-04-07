@@ -145,6 +145,22 @@ export async function syncBacking(data: {
   });
 }
 
+export async function syncClaimTokens(data: {
+  campaign_pubkey: string; wallet: string; tokens_claimed: number;
+}) {
+  return fetchApi<{ ok: boolean }>("/webhooks/sync-claim-tokens", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function syncVote(data: {
+  campaign_pubkey: string; milestone_index: number; wallet: string; approve: boolean; voting_power: number;
+}) {
+  return fetchApi<{ ok: boolean }>("/webhooks/sync-vote", { method: "POST", body: JSON.stringify(data) });
+}
+
+export async function syncRefund(data: { campaign_pubkey: string; wallet: string }) {
+  return fetchApi<{ ok: boolean }>("/webhooks/sync-refund", { method: "POST", body: JSON.stringify(data) });
+}
+
 // ═══════════════════════════════════════════
 // WEBHOOKS
 // ═══════════════════════════════════════════

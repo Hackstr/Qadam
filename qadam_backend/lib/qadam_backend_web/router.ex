@@ -51,6 +51,9 @@ defmodule QadamBackendWeb.Router do
     post "/webhooks/milestone-submitted", WebhookController, :milestone_submitted
     post "/webhooks/sync-campaign", SyncController, :sync_campaign
     post "/webhooks/sync-backing", SyncController, :sync_backing
+    post "/webhooks/sync-claim-tokens", SyncController, :sync_claim_tokens
+    post "/webhooks/sync-vote", SyncController, :sync_vote
+    post "/webhooks/sync-refund", SyncController, :sync_refund
   end
 
   # ═══════════════════════════════════════════

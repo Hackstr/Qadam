@@ -110,7 +110,16 @@ export default function PortfolioPage() {
                           disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
                           onClick={(e) => {
                             e.preventDefault();
-                            claimTokens(pos.campaign_pubkey || pos.campaign_id);
+                            const pubkey = pos.campaign_pubkey || pos.campaign_id;
+                            claimTokens(pubkey).then(() => {
+                              import("@/lib/api").then(({ syncClaimTokens }) =>
+                                syncClaimTokens({
+                                  campaign_pubkey: pubkey,
+                                  wallet: pos.wallet_address,
+                                  tokens_claimed: pos.tokens_allocated,
+                                }).catch(() => {})
+                              );
+                            }).catch(() => {});
                           }}
                         >
                           <Gift className="h-3.5 w-3.5" />
@@ -132,7 +141,15 @@ export default function PortfolioPage() {
                           disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
                           onClick={(e) => {
                             e.preventDefault();
-                            claimRefund(pos.campaign_pubkey || pos.campaign_id);
+                            const pubkey = pos.campaign_pubkey || pos.campaign_id;
+                            claimRefund(pubkey).then(() => {
+                              import("@/lib/api").then(({ syncRefund }) =>
+                                syncRefund({
+                                  campaign_pubkey: pubkey,
+                                  wallet: pos.wallet_address,
+                                }).catch(() => {})
+                              );
+                            }).catch(() => {});
                           }}
                         >
                           <RotateCcw className="h-3.5 w-3.5" />
