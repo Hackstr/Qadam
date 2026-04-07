@@ -27,39 +27,24 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Diagonal marquee ticker */}
-      <div className="relative overflow-hidden h-0">
+      <div className="relative z-30 -mb-4">
         <div
-          className="absolute -left-4 top-16 z-40 bg-amber-500 text-white py-2 shadow-md"
-          style={{
-            transform: "rotate(-3deg)",
-            transformOrigin: "left center",
-            width: "120%",
-            marginLeft: "-10%",
-          }}
+          className="bg-amber-500 text-white py-1.5 shadow-md"
+          style={{ transform: "rotate(-1.5deg) scale(1.02)" }}
         >
-          <div className="animate-marquee whitespace-nowrap flex gap-8">
-            {[...Array(2)].map((_, i) => (
-              <span key={i} className="flex gap-8 text-xs font-medium tracking-wider">
-                <span>DEVNET TESTING</span>
-                <span className="opacity-50">*</span>
-                <span className="font-bold underline underline-offset-2">NATIONAL SOLANA HACKATHON</span>
-                <span className="opacity-50">*</span>
-                <span>AI-VERIFIED CROWDFUNDING</span>
-                <span className="opacity-50">*</span>
-                <span>MILESTONE ESCROW ON SOLANA</span>
-                <span className="opacity-50">*</span>
-                <span>BACKERS BECOME CO-OWNERS</span>
-                <span className="opacity-50">*</span>
-                <span>DEVNET TESTING</span>
-                <span className="opacity-50">*</span>
-                <span className="font-bold underline underline-offset-2">NATIONAL SOLANA HACKATHON</span>
-                <span className="opacity-50">*</span>
-                <span>AI-VERIFIED CROWDFUNDING</span>
-                <span className="opacity-50">*</span>
-                <span>MILESTONE ESCROW ON SOLANA</span>
-                <span className="opacity-50">*</span>
-                <span>BACKERS BECOME CO-OWNERS</span>
-                <span className="opacity-50">*</span>
+          <div className="animate-marquee whitespace-nowrap flex gap-6">
+            {[...Array(3)].map((_, i) => (
+              <span key={i} className="flex gap-6 text-[11px] font-medium tracking-widest uppercase">
+                <span>Devnet Testing</span>
+                <span className="opacity-40">-</span>
+                <span className="font-extrabold">National Solana Hackathon</span>
+                <span className="opacity-40">-</span>
+                <span>AI-Verified Crowdfunding</span>
+                <span className="opacity-40">-</span>
+                <span>Milestone Escrow</span>
+                <span className="opacity-40">-</span>
+                <span>Backers Become Co-Owners</span>
+                <span className="opacity-40">-</span>
               </span>
             ))}
           </div>
@@ -259,44 +244,34 @@ export default function Home() {
       </motion.section>
 
       {/* CTA — dual cards */}
+      {/* CTA — clean, centered */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        variants={stagger}
-        className="py-20"
+        variants={fadeUp}
+        className="py-24 text-center"
       >
-        <div className="container mx-auto px-4 max-w-4xl">
-          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-10">
-            Ready to Build?
-          </motion.h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Creator card */}
-            <motion.div variants={fadeUp} className="bg-[#0F1724] text-white rounded-2xl p-8">
-              <h3 className="text-xl font-bold mb-2">For Creators</h3>
-              <p className="text-sm text-gray-400 mb-6">
-                Launch your project. Set milestones. Get funded as you deliver.
-              </p>
-              <Link href="/create">
-                <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
-                  Start a Campaign
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </motion.div>
-            {/* Backer card */}
-            <motion.div variants={fadeUp} className="bg-white border border-black/[0.06] rounded-2xl p-8">
-              <h3 className="text-xl font-bold mb-2">For Backers</h3>
-              <p className="text-sm text-muted-foreground mb-6">
-                Back projects you believe in. Get tokens. Become a co-owner.
-              </p>
-              <Link href="/campaigns">
-                <Button variant="outline" className="gap-2 border-black/[0.15]">
-                  Explore Campaigns
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </motion.div>
+        <div className="container mx-auto px-4 max-w-2xl">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+            Ready to build?
+          </h2>
+          <p className="text-muted-foreground mb-10 text-lg">
+            Whether you are a creator seeking funding or a backer
+            looking for early-stage opportunities.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/create">
+              <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+                Start a Campaign
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/campaigns">
+              <Button size="lg" variant="outline" className="gap-2 border-black/[0.15]">
+                Explore Campaigns
+              </Button>
+            </Link>
           </div>
         </div>
       </motion.section>
