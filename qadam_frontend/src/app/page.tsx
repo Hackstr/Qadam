@@ -26,28 +26,23 @@ const stagger: any = {
 export default function Home() {
   return (
     <div className="flex flex-col">
-      {/* Ticker ribbon — sits between header and hero, full width, slight angle */}
-      <div className="overflow-hidden">
-        <div
-          className="bg-amber-500 text-white py-1.5"
-          style={{ transform: "rotate(-1deg)", margin: "0 -2%" , width: "104%" }}
-        >
-          <div className="animate-marquee whitespace-nowrap flex gap-6">
-            {[...Array(4)].map((_, i) => (
-              <span key={i} className="flex gap-6 text-[10px] font-medium tracking-widest uppercase">
-                <span>Devnet Testing</span>
-                <span className="opacity-40">*</span>
-                <span className="font-extrabold">National Solana Hackathon</span>
-                <span className="opacity-40">*</span>
-                <span>AI-Verified Crowdfunding</span>
-                <span className="opacity-40">*</span>
-                <span>Milestone Escrow</span>
-                <span className="opacity-40">*</span>
-                <span>Backers Become Co-Owners</span>
-                <span className="opacity-40">*</span>
-              </span>
-            ))}
-          </div>
+      {/* Ticker — clean horizontal bar */}
+      <div className="bg-amber-500 text-white py-2 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap flex gap-8">
+          {[...Array(4)].map((_, i) => (
+            <span key={i} className="flex gap-8 text-[11px] font-medium tracking-widest uppercase">
+              <span>Devnet Testing</span>
+              <span className="opacity-30">*</span>
+              <span className="font-extrabold">National Solana Hackathon</span>
+              <span className="opacity-30">*</span>
+              <span>AI-Verified Crowdfunding</span>
+              <span className="opacity-30">*</span>
+              <span>Milestone Escrow on Solana</span>
+              <span className="opacity-30">*</span>
+              <span>Backers Become Co-Owners</span>
+              <span className="opacity-30">*</span>
+            </span>
+          ))}
         </div>
       </div>
 
