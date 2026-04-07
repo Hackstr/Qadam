@@ -26,23 +26,25 @@ const stagger: any = {
 export default function Home() {
   return (
     <div className="flex flex-col">
-      {/* Ticker — clean horizontal bar */}
-      <div className="bg-amber-500 text-white py-2 overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap flex gap-8">
-          {[...Array(4)].map((_, i) => (
-            <span key={i} className="flex gap-8 text-[11px] font-medium tracking-widest uppercase">
-              <span>Devnet Testing</span>
-              <span className="opacity-30">*</span>
-              <span className="font-extrabold">National Solana Hackathon</span>
-              <span className="opacity-30">*</span>
-              <span>AI-Verified Crowdfunding</span>
-              <span className="opacity-30">*</span>
-              <span>Milestone Escrow on Solana</span>
-              <span className="opacity-30">*</span>
-              <span>Backers Become Co-Owners</span>
-              <span className="opacity-30">*</span>
-            </span>
-          ))}
+      {/* Ticker — slight diagonal, behind header */}
+      <div className="relative z-40 mt-16">
+        <div className="bg-amber-500 text-white py-2 -rotate-[1.5deg] scale-x-[1.15]">
+          <div className="animate-marquee whitespace-nowrap flex gap-8">
+            {[...Array(4)].map((_, i) => (
+              <span key={i} className="flex gap-8 text-[11px] font-medium tracking-widest uppercase">
+                <span>Devnet Testing</span>
+                <span className="opacity-30">*</span>
+                <span className="font-extrabold">National Solana Hackathon</span>
+                <span className="opacity-30">*</span>
+                <span>AI-Verified Crowdfunding</span>
+                <span className="opacity-30">*</span>
+                <span>Milestone Escrow on Solana</span>
+                <span className="opacity-30">*</span>
+                <span>Backers Become Co-Owners</span>
+                <span className="opacity-30">*</span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
