@@ -69,6 +69,7 @@ export interface BackerPosition {
   tokens_claimed: number;
   tier: 1 | 2 | 3;
   refund_claimed: boolean;
+  has_active_vote?: boolean;
   backed_at?: string;
 }
 
@@ -98,6 +99,42 @@ export interface User {
   notify_governance_vote: boolean;
   notify_refund_available: boolean;
   notify_campaign_updates: boolean;
+  email_verified?: boolean;
   github_username?: string;
   github_verified: boolean;
+}
+
+export interface AdminDashboard {
+  total_campaigns: number;
+  active_campaigns: number;
+  completed_campaigns: number;
+  total_raised_lamports: number;
+  total_backers: number;
+  pending_reviews: number;
+  success_rate: number;
+  ai_accuracy: number;
+  total_decisions: number;
+  needs_attention: AdminAttentionItem[];
+  recent_activity: AdminActivityItem[];
+}
+
+export interface AdminAttentionItem {
+  type: "needs_review" | "overdue" | "stuck_in_ai";
+  milestone_id: string;
+  milestone_index: number;
+  milestone_title?: string;
+  campaign_id: string;
+  campaign_title?: string;
+  submitted_at?: string;
+  deadline?: string;
+}
+
+export interface AdminActivityItem {
+  id: string;
+  from_state: string;
+  to_state: string;
+  metadata?: Record<string, any>;
+  timestamp: string;
+  campaign_title?: string;
+  milestone_index?: number;
 }

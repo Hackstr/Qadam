@@ -144,6 +144,22 @@ export function Header() {
               </Link>
             );
           })}
+          {connected && (
+            <>
+              <div className="border-t border-black/[0.06] my-1" />
+              <Link
+                href="/settings"
+                onClick={() => setMobileOpen(false)}
+                className={`px-4 py-2.5 rounded-xl text-sm transition-colors ${
+                  pathname === "/settings"
+                    ? "bg-black/[0.06] text-foreground font-medium"
+                    : "text-muted-foreground hover:bg-black/[0.04]"
+                }`}
+              >
+                Settings
+              </Link>
+            </>
+          )}
         </div>
       )}
     </header>

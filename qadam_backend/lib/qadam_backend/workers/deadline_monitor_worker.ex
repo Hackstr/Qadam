@@ -7,7 +7,7 @@ defmodule QadamBackend.Workers.DeadlineMonitorWorker do
 
   import Ecto.Query
   alias QadamBackend.{Repo, Milestones}
-  alias QadamBackend.Governance.ExtensionVote
+  alias QadamBackend.Workers.TxBroadcastWorker
   require Logger
 
   @impl Oban.Worker
@@ -38,9 +38,17 @@ defmodule QadamBackend.Workers.DeadlineMonitorWorker do
       end)
 
     Enum.each(expired_votes, fn milestone ->
-      Logger.info("[DeadlineMonitor] Voting expired for milestone #{milestone.id} — auto-extending")
-      # Default behavior: extend (benefit of doubt, same as on-chain logic)
-      Milestones.transition_state(milestone, "extended", %{reason: "voting_expired_auto_extend"})
+      Logger.info("[DeadlineMonitor] Voting expired for milestone #{milestone.id} — executing extension result on-chain")
+
+      # Enqueue on-chain execute_extension_result transaction
+      # The on-chain program determines outcome (extend or refund) based on votes
+      %{
+        milestone_id: milestone.id,
+        instruction: "execute_extension_result",
+        ai_decision_hash: nil
+      }
+      |> TxBroadcastWorker.new()
+      |> Oban.insert()
     end)
 
     :ok

@@ -53,7 +53,7 @@ export default function CampaignsPage() {
             Back projects you believe in. SOL stays in escrow until milestones are verified by AI.
           </p>
         </div>
-        <div className="relative w-64 flex-shrink-0">
+        <div className="relative w-full md:w-64 flex-shrink-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={search}

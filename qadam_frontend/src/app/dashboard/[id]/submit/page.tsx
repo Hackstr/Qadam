@@ -5,14 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getCampaign, submitEvidence } from "@/lib/api";
 import { useQadamProgram } from "@/hooks/use-qadam-program";
-import { calculateEvidenceHash } from "@/lib/evidence";
+import { calculateEvidenceHash, hashFile } from "@/lib/evidence";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatSol } from "@/lib/constants";
-import { ArrowLeft, Send, Loader2, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Send, Loader2, Plus, Trash2, Upload, FileText } from "lucide-react";
 import Link from "next/link";
 
 export default function SubmitEvidencePage() {
@@ -23,6 +23,8 @@ export default function SubmitEvidencePage() {
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState("");
   const [links, setLinks] = useState<string[]>([""]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadedFileUrls, setUploadedFileUrls] = useState<string[]>([]);
 
   const { data: campaignData } = useQuery({
     queryKey: ["campaign", id],
@@ -71,11 +73,27 @@ export default function SubmitEvidencePage() {
     try {
       const cleanLinks = links.filter((l) => l.trim());
 
-      // 1. Calculate evidence hash (client-side, matches backend)
+      // 1. Upload files and compute hashes
+      const fileHashes: string[] = [];
+      if (files.length > 0) {
+        const { uploadFile } = await import("@/lib/api");
+        const urls: string[] = [];
+        for (const file of files) {
+          const [hash, uploaded] = await Promise.all([
+            hashFile(file),
+            uploadFile(file),
+          ]);
+          fileHashes.push(hash);
+          urls.push(uploaded.url);
+        }
+        setUploadedFileUrls(urls);
+      }
+
+      // 2. Calculate evidence hash (client-side, matches backend)
       const evidenceHash = await calculateEvidenceHash({
         text,
         links: cleanLinks,
-        fileHashes: [], // No file uploads in v1
+        fileHashes,
         milestoneIndex: currentMilestone.index,
         campaignId: campaign.id,
       });
@@ -190,6 +208,43 @@ export default function SubmitEvidencePage() {
                   )}
                 </div>
               ))}
+            </div>
+            {/* Files */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-medium">Attachments</label>
+              </div>
+              <input
+                type="file"
+                multiple
+                accept="image/*,.pdf,.zip,.txt"
+                onChange={(e) => {
+                  const newFiles = Array.from(e.target.files || []);
+                  const valid = newFiles.filter((f) => f.size <= 5_000_000);
+                  if (valid.length < newFiles.length) {
+                    import("sonner").then(({ toast }) => toast.error("Some files exceeded 5MB limit"));
+                  }
+                  setFiles((prev) => [...prev, ...valid]);
+                }}
+                className="w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-amber-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-amber-700 hover:file:bg-amber-100"
+              />
+              {files.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {files.map((f, idx) => (
+                    <div key={idx} className="flex items-center justify-between text-sm bg-muted/50 rounded px-3 py-1.5">
+                      <span className="flex items-center gap-1.5 truncate">
+                        <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                        {f.name}
+                        <span className="text-xs text-muted-foreground">({(f.size / 1024).toFixed(0)} KB)</span>
+                      </span>
+                      <button onClick={() => setFiles(files.filter((_, i) => i !== idx))} className="text-red-400 hover:text-red-600">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">Screenshots, documents, APKs (max 5MB each). File hashes are included in evidence hash.</p>
             </div>
           </CardContent>
         </Card>

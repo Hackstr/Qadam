@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { getCampaigns } from "@/lib/api";
+import { getCampaigns, getAnalyticsSummary } from "@/lib/api";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
 import { formatSol } from "@/lib/constants";
@@ -64,7 +64,7 @@ export default function Home() {
 
               <motion.h1
                 variants={fadeUp}
-                className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
+                className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
               >
                 Crowdfunding where{" "}
                 <span className="text-amber-500">progress</span>{" "}
@@ -287,11 +287,19 @@ function ActiveCampaignsSection() {
     retry: false,
   });
 
+  const { data: analyticsData } = useQuery({
+    queryKey: ["analytics-summary"],
+    queryFn: getAnalyticsSummary,
+    retry: false,
+  });
+
   const campaigns = data?.data || [];
   if (campaigns.length === 0) return null;
 
-  const totalRaised = campaigns.reduce((s, c) => s + c.raised_lamports, 0);
-  const totalBackers = campaigns.reduce((s, c) => s + c.backers_count, 0);
+  const stats = analyticsData?.data;
+  const totalRaised = stats ? Number(stats.total_raised_lamports) : campaigns.reduce((s, c) => s + c.raised_lamports, 0);
+  const totalBackers = stats?.total_backers ?? campaigns.reduce((s, c) => s + c.backers_count, 0);
+  const activeCampaigns = stats?.active_campaigns ?? campaigns.length;
 
   return (
     <motion.section
@@ -306,7 +314,7 @@ function ActiveCampaignsSection() {
           <div>
             <h2 className="text-2xl font-bold">Live on Qadam</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {campaigns.length} campaigns · {formatSol(totalRaised)} raised · {totalBackers} backers
+              {activeCampaigns} campaigns · {formatSol(totalRaised)} raised · {totalBackers} backers
             </p>
           </div>
           <Link href="/campaigns" className="text-sm text-amber-600 hover:text-amber-700 font-medium">

@@ -65,6 +65,26 @@ defmodule QadamBackend.Emails do
     """)
   end
 
+  def email_verification(to_email, token) do
+    host = System.get_env("PHX_HOST") || "localhost:4000"
+    scheme = if host =~ "localhost", do: "http", else: "https"
+    url = "#{scheme}://#{host}/api/auth/verify-email?token=#{token}"
+
+    new()
+    |> to(to_email)
+    |> from(@from)
+    |> subject("Verify your email — Qadam")
+    |> text_body("""
+    Please verify your email address by clicking the link below:
+
+    #{url}
+
+    If you didn't request this, you can safely ignore this email.
+
+    — Qadam
+    """)
+  end
+
   def campaign_update(to_email, campaign_title, update_title, update_content) do
     new()
     |> to(to_email)

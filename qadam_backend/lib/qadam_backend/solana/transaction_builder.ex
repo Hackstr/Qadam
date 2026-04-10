@@ -47,6 +47,25 @@ defmodule QadamBackend.Solana.TransactionBuilder do
     end
   end
 
+  @doc """
+  Sign and broadcast execute_extension_result transaction.
+  """
+  def sign_and_broadcast_execute_extension(campaign_pubkey, milestone_index) do
+    with {:ok, %{blockhash: blockhash}} <- RPC.get_latest_blockhash(),
+         {:ok, signed_tx} <- build_and_sign_tx("execute_extension_result", %{
+           campaign: campaign_pubkey,
+           milestone_index: milestone_index,
+           blockhash: blockhash,
+         }),
+         {:ok, result} <- RPC.send_transaction(signed_tx) do
+      {:ok, result}
+    else
+      {:error, reason} ->
+        Logger.error("[TX] Execute extension failed: #{inspect(reason)}")
+        {:error, reason}
+    end
+  end
+
   defp build_and_sign_tx(instruction, params) do
     keypair_path = System.get_env("AI_AGENT_KEYPAIR_PATH")
     program_id = Application.get_env(:qadam_backend, :solana_program_id)

@@ -21,6 +21,11 @@ defmodule QadamBackend.Accounts do
     end
   end
 
+  def get_user_by_email_token(token) when is_binary(token) do
+    Repo.get_by(User, email_verification_token: token)
+  end
+  def get_user_by_email_token(_), do: nil
+
   def update_user(%User{} = user, attrs) do
     user
     |> User.changeset(attrs)

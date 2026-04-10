@@ -1,7 +1,9 @@
 defmodule QadamBackendWeb.BackerController do
   use QadamBackendWeb, :controller
 
-  alias QadamBackend.Backers
+  import Ecto.Query
+  alias QadamBackend.{Backers, Repo}
+  alias QadamBackend.Milestones.Milestone
 
   @doc "Backer's portfolio — all backed campaigns"
   def portfolio(conn, _params) do
@@ -22,9 +24,18 @@ defmodule QadamBackendWeb.BackerController do
           tokens_claimed: p.tokens_claimed,
           tier: p.tier,
           refund_claimed: p.refund_claimed,
+          wallet_address: p.wallet_address,
+          has_active_vote: has_active_vote?(p.campaign_id),
           backed_at: p.inserted_at
         }
       end)
     })
+  end
+
+  defp has_active_vote?(nil), do: false
+  defp has_active_vote?(campaign_id) do
+    Milestone
+    |> where([m], m.campaign_id == ^campaign_id and m.status == "voting_active")
+    |> Repo.exists?()
   end
 end

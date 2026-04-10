@@ -1214,5 +1214,52 @@ describe("qadam", () => {
         expect(err).to.exist;
       }
     });
+
+    it("execute_extension_result fails before voting deadline", async () => {
+      const [votingStatePda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("voting"), milestonePda9.toBuffer()],
+        program.programId
+      );
+
+      try {
+        await program.methods
+          .executeExtensionResult(0)
+          .accounts({
+            payer: admin.publicKey,
+            config: configPda,
+            campaign: campaignPda9,
+            milestone: milestonePda9,
+            votingState: votingStatePda,
+          })
+          .rpc();
+        expect.fail("Should have thrown — voting period not over");
+      } catch (err: any) {
+        expect(err).to.exist;
+      }
+    });
+
+    it("claim_refund fails when campaign is not refunded", async () => {
+      const [bp] = PublicKey.findProgramAddressSync(
+        [Buffer.from("backer"), campaignPda9.toBuffer(), backer1.publicKey.toBuffer()],
+        program.programId
+      );
+
+      try {
+        await program.methods
+          .claimRefund()
+          .accounts({
+            backer: backer1.publicKey,
+            config: configPda,
+            campaign: campaignPda9,
+            campaignVault: vaultPda9,
+            backerPosition: bp,
+          })
+          .signers([backer1])
+          .rpc();
+        expect.fail("Should have thrown — campaign is not refunded");
+      } catch (err: any) {
+        expect(err.toString()).to.include("NotRefunded");
+      }
+    });
   });
 });

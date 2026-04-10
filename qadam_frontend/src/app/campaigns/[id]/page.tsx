@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { getCampaign, getCampaignBackers, getCampaignUpdates } from "@/lib/api";
@@ -58,6 +59,15 @@ export default function CampaignDetailPage() {
     enabled: !!id,
   });
 
+  const campaign = campaignData?.data;
+
+  useEffect(() => {
+    if (campaign?.title) {
+      document.title = `${campaign.title} | Qadam`;
+    }
+    return () => { document.title = "Qadam — Build step by step"; };
+  }, [campaign?.title]);
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-32">
@@ -66,7 +76,6 @@ export default function CampaignDetailPage() {
     );
   }
 
-  const campaign = campaignData?.data;
   if (!campaign) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
@@ -141,6 +150,31 @@ export default function CampaignDetailPage() {
                 </Link>
               </div>
               <ShareButtons title={campaign.title} description={campaign.description} />
+
+              {campaign.pitch_video_url && (() => {
+                const url = campaign.pitch_video_url!;
+                const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                const loomMatch = url.match(/loom\.com\/share\/([\w-]+)/);
+                if (ytMatch) {
+                  return (
+                    <div className="mt-4 aspect-video rounded-xl overflow-hidden border">
+                      <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+                    </div>
+                  );
+                }
+                if (loomMatch) {
+                  return (
+                    <div className="mt-4 aspect-video rounded-xl overflow-hidden border">
+                      <iframe src={`https://www.loom.com/embed/${loomMatch[1]}`} className="w-full h-full" allowFullScreen />
+                    </div>
+                  );
+                }
+                return (
+                  <a href={url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm text-amber-600 hover:underline">
+                    Watch pitch video <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                );
+              })()}
             </div>
 
             <Separator />

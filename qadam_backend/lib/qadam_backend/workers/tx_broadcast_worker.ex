@@ -15,11 +15,9 @@ defmodule QadamBackend.Workers.TxBroadcastWorker do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
-    %{
-      "milestone_id" => milestone_id,
-      "instruction" => instruction,
-      "ai_decision_hash" => ai_decision_hash
-    } = args
+    milestone_id = args["milestone_id"]
+    instruction = args["instruction"]
+    ai_decision_hash = args["ai_decision_hash"]
 
     milestone = Milestones.get_milestone!(milestone_id) |> Repo.preload(:campaign)
     campaign = milestone.campaign
@@ -47,6 +45,12 @@ defmodule QadamBackend.Workers.TxBroadcastWorker do
             campaign.solana_pubkey,
             milestone.index,
             ai_decision_hash
+          )
+
+        "execute_extension_result" ->
+          TransactionBuilder.sign_and_broadcast_execute_extension(
+            campaign.solana_pubkey,
+            milestone.index
           )
       end
 

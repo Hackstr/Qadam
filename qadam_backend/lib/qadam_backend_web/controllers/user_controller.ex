@@ -28,10 +28,45 @@ defmodule QadamBackendWeb.UserController do
           notify_milestone_approved notify_milestone_rejected
           notify_governance_vote notify_refund_available notify_campaign_updates))
 
-        case Accounts.update_user(user, allowed) do
-          {:ok, updated} -> json(conn, %{data: user_json(updated)})
-          {:error, changeset} -> {:error, changeset}
+        # If email changed, reset verification and send token
+        email_changed = allowed["email"] && allowed["email"] != user.email
+
+        extra =
+          if email_changed do
+            token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
+            %{email_verified: false, email_verification_token: token, email_verification_sent_at: DateTime.utc_now()}
+          else
+            %{}
+          end
+
+        case Accounts.update_user(user, Map.merge(allowed, extra)) do
+          {:ok, updated} ->
+            if email_changed && updated.email do
+              try do
+                QadamBackend.Emails.email_verification(updated.email, updated.email_verification_token)
+                |> QadamBackend.Mailer.deliver()
+              rescue
+                _ -> :ok  # Don't fail the update if email sending fails
+              end
+            end
+
+            json(conn, %{data: user_json(updated)})
+
+          {:error, changeset} ->
+            {:error, changeset}
         end
+    end
+  end
+
+  @doc "Verify email via token link"
+  def verify_email(conn, %{"token" => token}) do
+    case Accounts.get_user_by_email_token(token) do
+      nil ->
+        conn |> put_status(:bad_request) |> json(%{error: "Invalid or expired token"})
+
+      user ->
+        Accounts.update_user(user, %{email_verified: true, email_verification_token: nil})
+        json(conn, %{ok: true, message: "Email verified successfully"})
     end
   end
 
@@ -41,6 +76,7 @@ defmodule QadamBackendWeb.UserController do
       wallet_address: user.wallet_address,
       display_name: user.display_name,
       email: user.email,
+      email_verified: user.email_verified,
       avatar_url: user.avatar_url,
       notify_milestone_approved: user.notify_milestone_approved,
       notify_milestone_rejected: user.notify_milestone_rejected,

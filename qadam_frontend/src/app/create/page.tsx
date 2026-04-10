@@ -13,6 +13,7 @@ import { Plus, Trash2, Loader2, ArrowRight } from "lucide-react";
 interface MilestoneInput {
   title: string;
   description: string;
+  acceptance_criteria: string;
   amount: string;
   deadline: string;
 }
@@ -25,18 +26,21 @@ export default function CreateCampaignPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Apps");
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState("");
+  const [pitchVideoUrl, setPitchVideoUrl] = useState("");
   const [goal, setGoal] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [totalSupply, setTotalSupply] = useState("1000000");
   const [backerPercent, setBackerPercent] = useState("20");
   const [milestones, setMilestones] = useState<MilestoneInput[]>([
-    { title: "", description: "", amount: "", deadline: "" },
+    { title: "", description: "", acceptance_criteria: "", amount: "", deadline: "" },
   ]);
 
   const addMilestone = () => {
     if (milestones.length >= MAX_MILESTONES) return;
-    setMilestones([...milestones, { title: "", description: "", amount: "", deadline: "" }]);
+    setMilestones([...milestones, { title: "", description: "", acceptance_criteria: "", amount: "", deadline: "" }]);
   };
 
   const removeMilestone = (idx: number) => {
@@ -83,14 +87,25 @@ export default function CreateCampaignPage() {
 
       // Sync to PostgreSQL so it appears in Discover
       try {
-        const { syncCampaignCreation } = await import("@/lib/api");
+        const { syncCampaignCreation, uploadCoverImage } = await import("@/lib/api");
         const SOL = 1_000_000_000;
+
+        let coverUrl: string | undefined;
+        if (coverFile) {
+          try {
+            const uploaded = await uploadCoverImage(coverFile);
+            coverUrl = uploaded.url;
+          } catch { /* cover upload is optional */ }
+        }
+
         await syncCampaignCreation({
           solana_pubkey: result.campaignPda,
           creator_wallet: publicKey!.toBase58(),
           title,
           description,
           category,
+          cover_image_url: coverUrl,
+          pitch_video_url: pitchVideoUrl || undefined,
           goal_lamports: Math.floor(goalNum * SOL),
           milestones_count: milestones.length,
           tokens_per_lamport: tokensPerSol || 100,
@@ -98,6 +113,7 @@ export default function CreateCampaignPage() {
             index: idx,
             title: m.title,
             description: m.description,
+            acceptance_criteria: m.acceptance_criteria,
             amount_lamports: Math.floor((parseFloat(m.amount) || 0) * SOL),
             deadline: new Date(m.deadline).toISOString(),
             grace_deadline: new Date(new Date(m.deadline).getTime() + 7 * 86400000).toISOString(),
@@ -105,7 +121,7 @@ export default function CreateCampaignPage() {
         });
       } catch (e) { console.warn("Sync failed:", e); }
 
-      router.push("/dashboard");
+      router.push("/dashboard?created=true");
     } catch (err: any) {
       if (err?.message === "cancelled") return; // User rejected — toast already shown
       console.error("Creation failed:", err);
@@ -117,9 +133,28 @@ export default function CreateCampaignPage() {
   return (
     <div className="container mx-auto px-4 py-10 max-w-3xl">
       <h1 className="text-3xl font-bold mb-2">Create Campaign</h1>
-      <p className="text-muted-foreground mb-8">
+      <p className="text-muted-foreground mb-6">
         Define your project, set milestones, and start receiving funding.
       </p>
+
+      {/* How it works — onboarding */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 p-4 bg-amber-50/50 border border-amber-100 rounded-xl">
+        <div className="text-center">
+          <div className="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center mx-auto text-sm font-bold mb-2">1</div>
+          <p className="text-xs font-medium">Describe your project</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Title, description, cover image</p>
+        </div>
+        <div className="text-center">
+          <div className="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center mx-auto text-sm font-bold mb-2">2</div>
+          <p className="text-xs font-medium">Define milestones</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Clear goals with deadlines and criteria</p>
+        </div>
+        <div className="text-center">
+          <div className="w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center mx-auto text-sm font-bold mb-2">3</div>
+          <p className="text-xs font-medium">Launch on-chain</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Campaign goes live on Solana</p>
+        </div>
+      </div>
 
       <div className="space-y-6">
         {/* Basic info */}
@@ -146,7 +181,36 @@ export default function CreateCampaignPage() {
                 rows={4}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-1 block">Cover Image (optional)</label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  if (file.size > 5_000_000) {
+                    import("sonner").then(({ toast }) => toast.error("Image must be under 5MB"));
+                    return;
+                  }
+                  setCoverFile(file);
+                  setCoverPreview(URL.createObjectURL(file));
+                }}
+                className="w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-amber-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-amber-700 hover:file:bg-amber-100"
+              />
+              {coverPreview && (
+                <img src={coverPreview} alt="Cover preview" className="mt-2 h-32 w-full object-cover rounded-lg border" />
+              )}
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Pitch Video URL (optional)</label>
+              <Input
+                value={pitchVideoUrl}
+                onChange={(e) => setPitchVideoUrl(e.target.value)}
+                placeholder="https://youtube.com/... or https://loom.com/..."
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1 block">Category</label>
                 <select
@@ -205,10 +269,17 @@ export default function CreateCampaignPage() {
                 <Textarea
                   value={m.description}
                   onChange={(e) => updateMilestone(idx, "description", e.target.value)}
-                  placeholder="What will you deliver? Include acceptance criteria."
+                  placeholder="What will you deliver in this milestone?"
                   rows={2}
                 />
-                <div className="grid grid-cols-2 gap-4">
+                <Textarea
+                  value={m.acceptance_criteria}
+                  onChange={(e) => updateMilestone(idx, "acceptance_criteria", e.target.value)}
+                  placeholder="Acceptance criteria: e.g. 'Working demo at URL, 100+ test users, screenshot of analytics'"
+                  rows={2}
+                />
+                <p className="text-xs text-muted-foreground -mt-2">AI will evaluate evidence against these criteria.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     type="number"
                     value={m.amount}
@@ -242,7 +313,7 @@ export default function CreateCampaignPage() {
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1 block">Token Name</label>
                 <Input
@@ -261,7 +332,7 @@ export default function CreateCampaignPage() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium mb-1 block">Total Supply</label>
                 <Input

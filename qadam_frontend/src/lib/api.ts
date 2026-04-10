@@ -1,4 +1,4 @@
-import type { Campaign, Milestone, BackerPosition, User, CampaignUpdate as CampaignUpdateType } from "@/types";
+import type { Campaign, Milestone, BackerPosition, User, CampaignUpdate as CampaignUpdateType, AdminDashboard } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
@@ -115,16 +115,48 @@ export async function submitEvidence(
 // SYNC — bridge on-chain events to PostgreSQL
 // ═══════════════════════════════════════════
 
+export async function uploadFile(file: File): Promise<{ url: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_URL}/upload/cover`, {
+    method: "POST",
+    headers: getAuthHeader(),
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Upload failed" }));
+    throw new Error(err.error || "Upload failed");
+  }
+  return res.json();
+}
+
+export async function uploadCoverImage(file: File): Promise<{ url: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_URL}/upload/cover`, {
+    method: "POST",
+    headers: getAuthHeader(),
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Upload failed" }));
+    throw new Error(err.error || "Upload failed");
+  }
+  return res.json();
+}
+
 export async function syncCampaignCreation(data: {
   solana_pubkey: string;
   creator_wallet: string;
   title: string;
   description?: string;
   category?: string;
+  cover_image_url?: string;
+  pitch_video_url?: string;
   goal_lamports: number;
   milestones_count: number;
   tokens_per_lamport: number;
-  milestones: { index: number; title: string; description?: string; amount_lamports: number; deadline: string; grace_deadline: string }[];
+  milestones: { index: number; title: string; description?: string; acceptance_criteria?: string; amount_lamports: number; deadline: string; grace_deadline: string }[];
 }) {
   return fetchApi<{ data: { id: string; solana_pubkey: string } }>("/webhooks/sync-campaign", {
     method: "POST",
@@ -242,4 +274,78 @@ export async function decideMilestone(id: string, approved: boolean) {
     method: "POST",
     body: JSON.stringify({ approved }),
   });
+}
+
+export async function getAdminDashboard() {
+  return fetchApi<{ data: AdminDashboard }>("/admin/dashboard");
+}
+
+export async function pauseCampaign(id: string) {
+  return fetchApi<{ data: { id: string; status: string } }>(`/admin/campaigns/${id}/pause`, { method: "POST" });
+}
+
+export async function resumeCampaign(id: string) {
+  return fetchApi<{ data: { id: string; status: string } }>(`/admin/campaigns/${id}/resume`, { method: "POST" });
+}
+
+export async function toggleFeatured(id: string, featured: boolean) {
+  return fetchApi<{ data: { id: string; featured: boolean } }>(`/admin/campaigns/${id}/feature`, {
+    method: "POST",
+    body: JSON.stringify({ featured }),
+  });
+}
+
+export async function getAdminCampaigns(filters?: { status?: string; category?: string; search?: string; sort?: string }) {
+  const params = new URLSearchParams();
+  if (filters?.status) params.set("status", filters.status);
+  if (filters?.category) params.set("category", filters.category);
+  if (filters?.search) params.set("search", filters.search);
+  if (filters?.sort) params.set("sort", filters.sort);
+  const qs = params.toString();
+  return fetchApi<{ data: Campaign[] }>(`/admin/campaigns${qs ? `?${qs}` : ""}`);
+}
+
+export async function getAdminCampaignDetail(id: string) {
+  return fetchApi<{ data: any }>(`/admin/campaigns/${id}/detail`);
+}
+
+export async function getAdminMilestones(filters?: { status?: string; ai_decision?: string; campaign_id?: string; preset?: string }) {
+  const params = new URLSearchParams();
+  if (filters?.status) params.set("status", filters.status);
+  if (filters?.ai_decision) params.set("ai_decision", filters.ai_decision);
+  if (filters?.campaign_id) params.set("campaign_id", filters.campaign_id);
+  if (filters?.preset) params.set("preset", filters.preset);
+  const qs = params.toString();
+  return fetchApi<{ data: any[] }>(`/admin/milestones${qs ? `?${qs}` : ""}`);
+}
+
+export async function getAdminMilestoneDetail(id: string) {
+  return fetchApi<{ data: any }>(`/admin/milestones/${id}/detail`);
+}
+
+export async function getAdminAuditLog(filters?: { campaign_id?: string; limit?: number }) {
+  const params = new URLSearchParams();
+  if (filters?.campaign_id) params.set("campaign_id", filters.campaign_id);
+  if (filters?.limit) params.set("limit", String(filters.limit));
+  const qs = params.toString();
+  return fetchApi<{ data: any[] }>(`/admin/audit${qs ? `?${qs}` : ""}`);
+}
+
+export async function getAdminAiStats() {
+  return fetchApi<{ data: any }>("/admin/ai/stats");
+}
+
+export async function getAdminUsers(filters?: { search?: string }) {
+  const params = new URLSearchParams();
+  if (filters?.search) params.set("search", filters.search);
+  const qs = params.toString();
+  return fetchApi<{ data: any[] }>(`/admin/users${qs ? `?${qs}` : ""}`);
+}
+
+export async function getAdminUserDetail(wallet: string) {
+  return fetchApi<{ data: any }>(`/admin/users/${wallet}`);
+}
+
+export async function getAdminGovernance() {
+  return fetchApi<{ data: { active: any[]; history: any[] } }>("/admin/governance");
 }

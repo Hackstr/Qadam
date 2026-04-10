@@ -20,6 +20,9 @@ defmodule QadamBackend.Accounts.User do
     # Verification
     field :github_username, :string
     field :github_verified, :boolean, default: false
+    field :email_verified, :boolean, default: false
+    field :email_verification_token, :string
+    field :email_verification_sent_at, :utc_datetime
 
     timestamps(type: :utc_datetime)
   end
@@ -28,7 +31,8 @@ defmodule QadamBackend.Accounts.User do
   @optional_fields ~w(display_name email avatar_url
                       notify_milestone_approved notify_milestone_rejected
                       notify_governance_vote notify_refund_available
-                      notify_campaign_updates github_username github_verified)a
+                      notify_campaign_updates github_username github_verified
+                      email_verified email_verification_token email_verification_sent_at)a
 
   def changeset(user, attrs) do
     user

@@ -84,9 +84,23 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
                 </Button>
               )}
 
-              <p className="text-xs text-muted-foreground mt-2">
-                Deadline: {new Date(milestone.deadline).toLocaleDateString()}
-              </p>
+              {(() => {
+                const active = ["pending", "grace_period", "extended", "submitted", "ai_processing"].includes(milestone.status);
+                const diff = Math.ceil((new Date(milestone.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                const countdown = diff < 0
+                  ? { text: `Overdue by ${Math.abs(diff)} days`, color: "text-red-500" }
+                  : diff === 0
+                  ? { text: "Due today", color: "text-red-500" }
+                  : diff <= 7
+                  ? { text: `${diff} days left`, color: "text-amber-500" }
+                  : { text: `${diff} days left`, color: "text-muted-foreground" };
+                return (
+                  <p className={`text-xs mt-2 ${active ? countdown.color : "text-muted-foreground"}`}>
+                    {active ? `${countdown.text} · ` : ""}
+                    {new Date(milestone.deadline).toLocaleDateString()}
+                  </p>
+                );
+              })()}
             </div>
           </div>
         );

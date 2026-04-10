@@ -40,7 +40,7 @@ export default function PortfolioPage() {
       <p className="text-sm text-muted-foreground mb-8">Your backed campaigns and token positions.</p>
 
       {/* Stats — clean minimal */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="bg-white border border-black/[0.06] rounded-2xl p-5">
           <p className="text-2xl font-bold tabular-nums">{formatSol(totalBacked)}</p>
           <p className="text-xs text-muted-foreground mt-1">Total Backed</p>
@@ -74,7 +74,7 @@ export default function PortfolioPage() {
             const tierInfo = TIER_LABELS[pos.tier as 1 | 2 | 3];
             const hasUnclaimedTokens = pos.tokens_claimed < pos.tokens_allocated;
             const canRefund = pos.campaign_status === "refunded" && !pos.refund_claimed;
-            const needsVote = pos.campaign_status === "active"; // link to vote page where they can check
+            const needsVote = pos.has_active_vote === true;
 
             return (
               <Card key={idx} className="hover:shadow-sm transition-shadow">
@@ -101,7 +101,7 @@ export default function PortfolioPage() {
 
                   {/* Action buttons */}
                   {(hasUnclaimedTokens || canRefund || needsVote) && (
-                    <div className="flex gap-2 mt-3 pt-3 border-t">
+                    <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t">
                       {hasUnclaimedTokens && pos.campaign_status !== "refunded" && (
                         <Button
                           size="sm"

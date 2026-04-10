@@ -27,6 +27,7 @@ defmodule QadamBackendWeb.Router do
     # Auth
     get "/auth/nonce", AuthController, :nonce
     post "/auth/verify", AuthController, :verify
+    get "/auth/verify-email", UserController, :verify_email
 
     # Campaign discovery (public)
     get "/campaigns", CampaignController, :index
@@ -76,6 +77,13 @@ defmodule QadamBackendWeb.Router do
     # Creator: post update
     post "/campaigns/:campaign_id/updates", UpdateController, :create
 
+    # Upload cover image
+    post "/upload/cover", UploadController, :cover
+
+    # GitHub OAuth
+    get "/auth/github", GithubAuthController, :authorize
+    post "/auth/github/callback", GithubAuthController, :callback
+
     # Governance: check my vote
     get "/milestones/:milestone_id/my-vote", GovernanceController, :my_vote
 
@@ -91,9 +99,21 @@ defmodule QadamBackendWeb.Router do
   scope "/api/admin", QadamBackendWeb do
     pipe_through [:api, :admin]
 
+    get "/dashboard", AdminDashboardController, :index
     get "/review-queue", AdminController, :review_queue
+    get "/campaigns", AdminController, :list_campaigns
+    get "/campaigns/:id/detail", AdminController, :show_campaign
+    get "/milestones", AdminAuditController, :list_milestones
+    get "/milestones/:id/detail", AdminAuditController, :show_milestone
+    get "/audit", AdminAuditController, :audit_log
+    get "/ai/stats", AdminAuditController, :ai_stats
+    get "/users", AdminAuditController, :list_users
+    get "/users/:wallet", AdminAuditController, :show_user
+    get "/governance", AdminAuditController, :governance
     post "/milestones/:id/decide", AdminController, :decide
     post "/campaigns/:id/feature", AdminController, :set_featured
+    post "/campaigns/:id/pause", AdminController, :pause_campaign
+    post "/campaigns/:id/resume", AdminController, :resume_campaign
   end
 
   # Dev routes

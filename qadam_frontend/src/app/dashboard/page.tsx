@@ -1,15 +1,27 @@
 "use client";
 
+import { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useSearchParams } from "next/navigation";
 import { getCampaigns } from "@/lib/api";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Send } from "lucide-react";
+import { Loader2, Plus, Send, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
+  return (
+    <Suspense>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
   const { publicKey, connected } = useWallet();
+  const searchParams = useSearchParams();
+  const justCreated = searchParams.get("created") === "true";
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["my-campaigns", publicKey?.toBase58()],
@@ -33,7 +45,16 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-10">
-      <div className="flex items-center justify-between mb-8">
+      {justCreated && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
+          <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+          <div>
+            <p className="font-medium text-green-800">Campaign created successfully!</p>
+            <p className="text-sm text-green-700">Share it with your community to attract backers.</p>
+          </div>
+        </div>
+      )}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold">My Campaigns</h1>
           <p className="text-muted-foreground mt-1">
