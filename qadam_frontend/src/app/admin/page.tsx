@@ -1,137 +1,145 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { getReviewQueue, decideMilestone } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { getAdminDashboard } from "@/lib/api";
+import { formatSol } from "@/lib/constants";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Check, X, ShieldAlert } from "lucide-react";
+import {
+  LayoutDashboard, Loader2, FolderOpen, Wallet, Users,
+  ClipboardCheck, TrendingUp, Brain, AlertTriangle, Clock, Zap,
+} from "lucide-react";
+import Link from "next/link";
+import type { AdminAttentionItem, AdminActivityItem } from "@/types";
 
-const ADMIN_WALLET = process.env.NEXT_PUBLIC_ADMIN_WALLET;
+const ATTENTION_CONFIG: Record<string, { label: string; color: string; icon: typeof AlertTriangle; link: string }> = {
+  needs_review: { label: "Needs Review", color: "text-purple-600 bg-purple-50", icon: ClipboardCheck, link: "/admin/reviews" },
+  overdue: { label: "Overdue", color: "text-red-600 bg-red-50", icon: Clock, link: "/admin/milestones" },
+  stuck_in_ai: { label: "Stuck in AI", color: "text-amber-600 bg-amber-50", icon: Zap, link: "/admin/milestones" },
+};
 
-export default function AdminReviewPage() {
-  const { publicKey, connected } = useWallet();
-  const queryClient = useQueryClient();
-
-  // Auth guard
-  const isAdmin = connected && publicKey && publicKey.toBase58() === ADMIN_WALLET;
-  if (!connected) {
-    return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <ShieldAlert className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Admin Access Required</h1>
-        <p className="text-muted-foreground">Connect your admin wallet to access the review queue.</p>
-      </div>
-    );
-  }
-  if (!isAdmin) {
-    return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <ShieldAlert className="h-12 w-12 mx-auto text-red-500 mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Unauthorized</h1>
-        <p className="text-muted-foreground">This wallet does not have admin access.</p>
-      </div>
-    );
-  }
-
+export default function AdminOverviewPage() {
   const { data, isLoading } = useQuery({
-    queryKey: ["review-queue"],
-    queryFn: getReviewQueue,
+    queryKey: ["admin-dashboard"],
+    queryFn: getAdminDashboard,
+    refetchInterval: 30000, // refresh every 30s
   });
 
-  const decideMutation = useMutation({
-    mutationFn: ({ id, approved }: { id: string; approved: boolean }) =>
-      decideMilestone(id, approved),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["review-queue"] }),
-  });
+  if (isLoading) {
+    return <Loader2 className="h-8 w-8 animate-spin mx-auto mt-16" />;
+  }
 
-  const milestones = data?.data || [];
+  const d = data?.data;
+  if (!d) return <p className="text-muted-foreground">Failed to load dashboard.</p>;
+
+  const metrics = [
+    { label: "Active Campaigns", value: d.active_campaigns, icon: FolderOpen, color: "text-blue-600" },
+    { label: "Total Raised", value: formatSol(d.total_raised_lamports), icon: Wallet, color: "text-green-600" },
+    { label: "Total Backers", value: d.total_backers, icon: Users, color: "text-indigo-600" },
+    { label: "Pending Reviews", value: d.pending_reviews, icon: ClipboardCheck, color: d.pending_reviews > 0 ? "text-amber-600" : "text-muted-foreground", badge: d.pending_reviews > 0 },
+    { label: "Success Rate", value: `${d.success_rate}%`, icon: TrendingUp, color: "text-green-600" },
+    { label: "AI Accuracy", value: d.total_decisions > 0 ? `${d.ai_accuracy}%` : "N/A", icon: Brain, color: "text-purple-600" },
+  ];
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-2">Admin Review Queue</h1>
-      <p className="text-muted-foreground mb-8">
-        Milestones flagged as PARTIAL by AI, awaiting human decision.
-      </p>
+    <div>
+      <div className="flex items-center gap-2 mb-6">
+        <LayoutDashboard className="h-5 w-5 text-muted-foreground" />
+        <h1 className="text-xl font-bold">Overview</h1>
+      </div>
 
-      {isLoading ? (
-        <Loader2 className="h-8 w-8 animate-spin mx-auto" />
-      ) : milestones.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p>No milestones pending review</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {milestones.map((m) => (
-            <Card key={m.id}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">
-                    {m.title || `Milestone ${(m.index || 0) + 1}`}
-                  </CardTitle>
-                  <Badge variant="secondary">Under Review</Badge>
+      {/* Metric cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
+        {metrics.map((m) => {
+          const Icon = m.icon;
+          return (
+            <Card key={m.label}>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Icon className={`h-4 w-4 ${m.color}`} />
+                  {m.badge && <Badge className="bg-amber-500 text-white text-[10px] px-1.5 py-0">!</Badge>}
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {m.evidence_text && (
-                  <div>
-                    <p className="text-sm font-medium mb-1">Evidence:</p>
-                    <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded">
-                      {m.evidence_text}
-                    </p>
-                  </div>
-                )}
-
-                {m.evidence_links && m.evidence_links.length > 0 && (
-                  <div>
-                    <p className="text-sm font-medium mb-1">Links:</p>
-                    <ul className="text-sm space-y-1">
-                      {m.evidence_links.map((link, i) => (
-                        <li key={i}>
-                          <a
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 hover:underline break-all"
-                          >
-                            {link}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {m.ai_explanation && (
-                  <div className="bg-amber-50 border border-amber-200 rounded p-3">
-                    <p className="text-sm font-medium mb-1">AI Assessment:</p>
-                    <p className="text-sm">{m.ai_explanation}</p>
-                  </div>
-                )}
-
-                <div className="flex gap-3 pt-2">
-                  <Button
-                    onClick={() => decideMutation.mutate({ id: m.id, approved: true })}
-                    disabled={decideMutation.isPending}
-                    className="gap-2 bg-green-600 hover:bg-green-700"
-                  >
-                    <Check className="h-4 w-4" /> Approve
-                  </Button>
-                  <Button
-                    onClick={() => decideMutation.mutate({ id: m.id, approved: false })}
-                    disabled={decideMutation.isPending}
-                    variant="destructive"
-                    className="gap-2"
-                  >
-                    <X className="h-4 w-4" /> Reject
-                  </Button>
-                </div>
+                <p className="text-2xl font-bold tabular-nums">{m.value}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{m.label}</p>
               </CardContent>
             </Card>
-          ))}
+          );
+        })}
+      </div>
+
+      {/* Needs Attention */}
+      {d.needs_attention.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <h2 className="text-sm font-semibold">Needs Attention ({d.needs_attention.length})</h2>
+          </div>
+          <div className="border border-black/[0.06] rounded-xl overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/30">
+                <tr>
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">Type</th>
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">Campaign</th>
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">Milestone</th>
+                  <th className="text-right px-4 py-2 font-medium text-muted-foreground">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {d.needs_attention.map((item: AdminAttentionItem, i: number) => {
+                  const config = ATTENTION_CONFIG[item.type] || ATTENTION_CONFIG.overdue;
+                  const Icon = config.icon;
+                  return (
+                    <tr key={i} className="border-t border-black/[0.04]">
+                      <td className="px-4 py-2.5">
+                        <span className={`inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full ${config.color}`}>
+                          <Icon className="h-3 w-3" />
+                          {config.label}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5 text-sm">{item.campaign_title || "—"}</td>
+                      <td className="px-4 py-2.5 text-sm">
+                        {item.milestone_title || `#${(item.milestone_index ?? 0) + 1}`}
+                      </td>
+                      <td className="px-4 py-2.5 text-right">
+                        <Link href={config.link} className="text-xs text-amber-600 hover:underline">
+                          View
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
+
+      {/* Recent Activity */}
+      <div>
+        <h2 className="text-sm font-semibold mb-3">Recent Activity</h2>
+        {d.recent_activity.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No recent activity.</p>
+        ) : (
+          <div className="space-y-2">
+            {d.recent_activity.map((item: AdminActivityItem) => (
+              <div key={item.id} className="flex items-center justify-between text-sm border border-black/[0.04] rounded-lg px-4 py-2.5">
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="text-[10px] font-mono">
+                    {item.from_state} → {item.to_state}
+                  </Badge>
+                  <span className="text-muted-foreground">
+                    {item.campaign_title}
+                    {item.milestone_index != null && ` — MS ${item.milestone_index + 1}`}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {new Date(item.timestamp).toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
