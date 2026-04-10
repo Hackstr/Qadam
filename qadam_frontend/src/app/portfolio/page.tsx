@@ -37,7 +37,7 @@ export default function PortfolioPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold tracking-tight mb-1">Portfolio</h1>
-      <p className="text-sm text-muted-foreground mb-8">Your backed campaigns and token positions.</p>
+      <p className="text-sm text-muted-foreground mb-8">Your backed campaigns and earned shares.</p>
 
       {/* Stats — clean minimal */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -47,7 +47,7 @@ export default function PortfolioPage() {
         </div>
         <div className="bg-white border border-black/[0.06] rounded-2xl p-5">
           <p className="text-2xl font-bold tabular-nums">{totalTokens.toLocaleString()}</p>
-          <p className="text-xs text-muted-foreground mt-1">Tokens Allocated</p>
+          <p className="text-xs text-muted-foreground mt-1">Share Earned</p>
         </div>
         <div className="bg-white border border-black/[0.06] rounded-2xl p-5">
           <p className="text-2xl font-bold tabular-nums">{positions.length}</p>
@@ -94,7 +94,7 @@ export default function PortfolioPage() {
                     <div className="text-right">
                       <p className="font-semibold">{formatSol(pos.amount_lamports)}</p>
                       <p className="text-xs text-muted-foreground">
-                        {pos.tokens_claimed.toLocaleString()} / {pos.tokens_allocated.toLocaleString()} tokens
+                        {pos.tokens_claimed.toLocaleString()} / {pos.tokens_allocated.toLocaleString()} share
                       </p>
                     </div>
                   </Link>
@@ -123,7 +123,7 @@ export default function PortfolioPage() {
                           }}
                         >
                           <Gift className="h-3.5 w-3.5" />
-                          Claim Tokens
+                          Claim Share
                         </Button>
                       )}
                       {needsVote && (

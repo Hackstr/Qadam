@@ -13,8 +13,8 @@ const faqs = [
     a: "Every AI decision can be appealed. Creators can request human review from the Qadam team. Human reviewers check the evidence and can override the AI decision. The appeal process is built into the smart contract.",
   },
   {
-    q: "How do I receive tokens?",
-    a: "After each milestone is approved, you can claim your tokens in My Backed \u2192 \"Claim Tokens\". Tokens are released proportionally per approved milestone. For example, if a campaign has 3 milestones, you can claim 1/3 of your tokens after each approval.",
+    q: "How do I receive my share?",
+    a: "After each milestone is approved, you can claim your share in My Backed \u2192 \"Claim Share\". Shares are released proportionally per approved milestone. For example, if a campaign has 3 milestones, you can claim 1/3 of your share after each approval.",
   },
   {
     q: "Can I get my SOL back if the project fails?",
@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: "What are Genesis / Early / Standard tiers?",
-    a: "The first 50 backers get Genesis tier (1.0x tokens per SOL). Next 200 get Early tier (0.67x). Everyone after is Standard (0.5x). Back early for better token allocation.",
+    a: "The first 50 backers get Genesis tier (1.0x share per SOL). Next 200 get Early tier (0.67x). Everyone after is Standard (0.5x). Back early for a higher share.",
   },
   {
     q: "How does milestone verification work?",

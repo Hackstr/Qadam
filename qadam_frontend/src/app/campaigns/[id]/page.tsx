@@ -218,7 +218,7 @@ export default function CampaignDetailPage() {
                         <div className="text-right text-sm">
                           <p className="font-medium">{formatSol(backer.amount_lamports)}</p>
                           <p className="text-xs text-muted-foreground">
-                            Tier {backer.tier} · {backer.tokens_allocated.toLocaleString()} tokens
+                            Tier {backer.tier} · {backer.tokens_allocated.toLocaleString()} share
                           </p>
                         </div>
                       </div>
@@ -304,19 +304,13 @@ export default function CampaignDetailPage() {
                         <ArrowRight className="h-4 w-4" />
                       </Button>
                     </Link>
-                    {campaign.tokens_per_lamport && (
-                      <div className="mt-3 p-3 bg-zinc-50 rounded-lg text-xs text-muted-foreground">
-                        <p>Back 1 SOL → receive{" "}
-                          <strong className="text-foreground">
-                            {campaign.tokens_per_lamport.toLocaleString()} tokens
-                          </strong>
-                        </p>
-                        <p className="mt-0.5">
-                          Current tier:{" "}
-                          <span className={tierInfo.color}>{tierInfo.name} ({tierInfo.ratio})</span>
-                        </p>
-                      </div>
-                    )}
+                    <div className="mt-3 p-3 bg-zinc-50 rounded-lg text-xs text-muted-foreground">
+                      <p>
+                        Current tier:{" "}
+                        <span className={tierInfo.color}>{tierInfo.name} ({tierInfo.ratio})</span>
+                      </p>
+                      <p className="mt-0.5">Early backers earn a higher share of the project.</p>
+                    </div>
                   </>
                 ) : (
                   <div className="text-center py-2 text-sm text-muted-foreground capitalize">
@@ -326,45 +320,40 @@ export default function CampaignDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Token info */}
-            {campaign.token_mint_address && (
-              <Card className="border-black/[0.06]">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold">Project Token</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {campaign.tokens_per_lamport && (
-                    <div className="space-y-1.5 text-sm">
-                      {[
-                        { label: "Genesis (1.0x)", mult: 1 },
-                        { label: "Early (0.67x)", mult: 0.67 },
-                        { label: "Standard (0.5x)", mult: 0.5 },
-                      ].map(({ label, mult }) => (
-                        <div key={label} className="flex justify-between">
-                          <span className="text-muted-foreground">{label}</span>
-                          <span className="font-medium tabular-nums">
-                            {Math.floor(campaign.tokens_per_lamport! * mult).toLocaleString()} / SOL
-                          </span>
-                        </div>
-                      ))}
+            {/* Backer tiers */}
+            <Card className="border-black/[0.06]">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">Backer Tiers</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-green-50">
+                    <div>
+                      <p className="font-medium text-green-700">Genesis</p>
+                      <p className="text-xs text-green-600">First 50 backers</p>
                     </div>
-                  )}
-                  <div className="pt-2 border-t flex items-center justify-between gap-2">
-                    <p className="font-mono text-[10px] text-muted-foreground/60 truncate">
-                      {campaign.token_mint_address}
-                    </p>
-                    <a
-                      href={getExplorerUrl(campaign.token_mint_address)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-shrink-0"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground hover:text-amber-600 transition-colors" />
-                    </a>
+                    <span className="font-semibold text-green-700">1.0x share</span>
                   </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-amber-50">
+                    <div>
+                      <p className="font-medium text-amber-700">Early</p>
+                      <p className="text-xs text-amber-600">Backers 51-250</p>
+                    </div>
+                    <span className="font-semibold text-amber-700">0.67x share</span>
+                  </div>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50">
+                    <div>
+                      <p className="font-medium text-gray-600">Standard</p>
+                      <p className="text-xs text-gray-500">251+</p>
+                    </div>
+                    <span className="font-semibold text-gray-600">0.5x share</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground pt-1">
+                  Your share gives you governance rights — vote on deadline extensions and refunds.
+                </p>
                 </CardContent>
               </Card>
-            )}
 
             {/* Governance vote link */}
             <Link href={`/campaigns/${campaign.id}/vote`}>

@@ -153,8 +153,8 @@ export default function BackCampaignPage() {
               <Badge className={tierInfo.color}>{tierInfo.name} ({tierInfo.ratio})</Badge>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Estimated Tokens</span>
-              <span className="font-semibold">{estimatedTokens.toLocaleString()}</span>
+              <span className="text-muted-foreground">Your Share</span>
+              <span className="font-semibold">{estimatedTokens.toLocaleString()} points</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Campaign Progress</span>

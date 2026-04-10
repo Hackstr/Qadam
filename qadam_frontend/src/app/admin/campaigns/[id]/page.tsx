@@ -93,7 +93,7 @@ export default function AdminCampaignDetailPage() {
               Created: {new Date(c.inserted_at).toLocaleDateString()}
             </div>
             {c.tokens_per_lamport && (
-              <p className="text-xs text-muted-foreground">Tokens per SOL: {c.tokens_per_lamport * 1e9}</p>
+              <p className="text-xs text-muted-foreground">Share rate: {c.tokens_per_lamport.toLocaleString()} per SOL</p>
             )}
           </CardContent>
         </Card>

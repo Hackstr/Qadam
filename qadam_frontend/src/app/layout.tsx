@@ -20,10 +20,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Qadam — Build step by step",
   description:
-    "Decentralized crowdfunding on Solana with AI milestone verification. Backers become co-owners through tokens.",
+    "Crowdfunding on Solana with AI milestone verification. SOL stays in escrow until real progress is proven.",
   openGraph: {
     title: "Qadam — Crowdfunding where progress unlocks funding",
-    description: "Back projects on Solana. AI verifies milestones. Backers become co-owners through tokens.",
+    description: "Back projects on Solana. AI verifies milestones. Your contribution earns you a share in the project.",
     type: "website",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Qadam — Build step by step" }],
   },

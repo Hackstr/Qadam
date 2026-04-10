@@ -76,7 +76,7 @@ export default function Home() {
                 className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-md"
               >
                 SOL stays in escrow. AI verifies each milestone.
-                Creators get paid for real progress. Backers become co-owners.
+                Creators get paid for real progress. Backers earn a share in every project they support.
               </motion.p>
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
@@ -190,7 +190,7 @@ export default function Home() {
             {[
               { icon: Shield, title: "Milestone Escrow", desc: "Funds physically cannot leave without proof of progress. The smart contract enforces it — no trust required." },
               { icon: Cpu, title: "AI Verification", desc: "Claude AI evaluates evidence objectively in under 60 seconds. Instant, fair, transparent decisions." },
-              { icon: Coins, title: "Token Equity", desc: "Backers receive project tokens proportional to their contribution. Not donors — co-owners with governance rights." },
+              { icon: Coins, title: "Backer Equity", desc: "Your contribution earns you a share in the project. Early backers get higher allocation. Vote on key decisions." },
               { icon: Eye, title: "On-chain Transparency", desc: "Every decision, every transaction, every AI verdict — publicly verifiable on Solana. Nothing hidden." },
             ].map((feature) => (
               <motion.div
