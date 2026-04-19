@@ -92,7 +92,7 @@ export default function CreateCampaignPage() {
           } catch { /* cover upload is optional */ }
         }
 
-        await syncCampaignCreation({
+        const syncResult = await syncCampaignCreation({
           solana_pubkey: result.campaignPda,
           creator_wallet: publicKey!.toBase58(),
           title,
@@ -113,6 +113,14 @@ export default function CreateCampaignPage() {
             grace_deadline: new Date(new Date(m.deadline).getTime() + 7 * 86400000).toISOString(),
           })),
         });
+
+        const campaignId = syncResult?.data?.id;
+        if (campaignId) {
+          router.push(`/campaigns/${campaignId}?new=true`);
+        } else {
+          router.push("/dashboard?created=true");
+        }
+        return;
       } catch (e) { console.warn("Sync failed:", e); }
 
       router.push("/dashboard?created=true");

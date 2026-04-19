@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { getCampaigns } from "@/lib/api";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Send, CheckCircle2 } from "lucide-react";
+import { Loader2, Plus, Send, CheckCircle2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -46,12 +46,21 @@ function DashboardContent() {
   return (
     <div className="container mx-auto px-4 py-10">
       {justCreated && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
-          <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-          <div>
-            <p className="font-medium text-green-800">Campaign created successfully!</p>
-            <p className="text-sm text-green-700">Share it with your community to attract backers.</p>
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+            <div>
+              <p className="font-medium text-green-800">Campaign created successfully!</p>
+              <p className="text-sm text-green-700">Share it with your community to attract backers.</p>
+            </div>
           </div>
+          {myCampaigns[0] && (
+            <Link href={`/campaigns/${myCampaigns[0].id}`}>
+              <Button size="sm" variant="outline" className="shrink-0 gap-1">
+                View <ArrowRight className="h-3 w-3" />
+              </Button>
+            </Link>
+          )}
         </div>
       )}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { getCampaign, getCampaignBackers, getCampaignUpdates } from "@/lib/api";
 import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
 import { ShareButtons } from "@/components/social/share-buttons";
@@ -20,6 +20,7 @@ import {
   BarChart3, Wrench, Globe, Rocket,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 import type { LucideIcon } from "lucide-react";
 
 // Category covers — same as campaign-card
@@ -38,8 +39,18 @@ function getExplorerUrl(address: string) {
 }
 
 export default function CampaignDetailPage() {
+  return (
+    <Suspense>
+      <CampaignDetailContent />
+    </Suspense>
+  );
+}
+
+function CampaignDetailContent() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isNew = searchParams.get("new") === "true";
 
   const { data: campaignData, isLoading } = useQuery({
     queryKey: ["campaign", id],
@@ -67,6 +78,23 @@ export default function CampaignDetailPage() {
     }
     return () => { document.title = "Qadam — Build step by step"; };
   }, [campaign?.title]);
+
+  useEffect(() => {
+    if (isNew && campaign) {
+      const url = `${window.location.origin}/campaigns/${id}`;
+      toast.success("Campaign is live on Solana!", {
+        description: "Share it to get your first backers",
+        duration: 10000,
+        action: {
+          label: "Copy link",
+          onClick: () => {
+            navigator.clipboard.writeText(url);
+            toast.success("Link copied!");
+          },
+        },
+      });
+    }
+  }, [isNew, campaign, id]);
 
   if (isLoading) {
     return (
