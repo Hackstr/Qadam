@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { formatSol, formatPercent, TIER_LABELS, TIER_1_MAX_BACKERS, TIER_2_MAX_BACKERS } from "@/lib/constants";
 import type { Campaign } from "@/types";
-import { Users, CheckCircle2, Circle, ArrowUpRight, Smartphone, Gamepad2, BarChart3, Wrench, Globe, Rocket, type LucideIcon } from "lucide-react";
+import { Users, CheckCircle2, Circle, ArrowUpRight, Lock, Smartphone, Gamepad2, BarChart3, Wrench, Globe, Rocket, type LucideIcon } from "lucide-react";
 
 function getCurrentTier(backersCount: number): 1 | 2 | 3 {
   if (backersCount < TIER_1_MAX_BACKERS) return 1;
@@ -110,9 +110,17 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
                 ))}
               </span>
             </div>
-            <span className={`text-[11px] font-medium ${tierInfo.color}`}>
-              {tierInfo.name}
-            </span>
+            <div className="flex items-center gap-2">
+              {campaign.solana_pubkey && !campaign.solana_pubkey.startsWith("demo_") && (
+                <span className="flex items-center gap-0.5 text-[10px] text-green-600">
+                  <Lock className="h-2.5 w-2.5" />
+                  Escrow
+                </span>
+              )}
+              <span className={`text-[11px] font-medium ${tierInfo.color}`}>
+                {tierInfo.name}
+              </span>
+            </div>
           </div>
         </div>
 

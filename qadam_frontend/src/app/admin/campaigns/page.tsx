@@ -29,13 +29,14 @@ export default function AdminCampaignsPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-campaigns", search, statusFilter, categoryFilter],
     queryFn: () => getAdminCampaigns({
       search: search || undefined,
       status: statusFilter || undefined,
       category: categoryFilter || undefined,
     }),
+    retry: false,
   });
 
   const featureMutation = useMutation({
@@ -108,6 +109,11 @@ export default function AdminCampaignsPage() {
       {/* Table */}
       {isLoading ? (
         <Loader2 className="h-8 w-8 animate-spin mx-auto mt-16" />
+      ) : isError ? (
+        <div className="text-center py-16 text-muted-foreground">
+          <p className="font-medium text-red-500 mb-1">Failed to load campaigns</p>
+          <p className="text-sm">Make sure you are signed in — disconnect and reconnect your wallet.</p>
+        </div>
       ) : campaigns.length === 0 ? (
         <p className="text-center text-muted-foreground py-16">No campaigns found.</p>
       ) : (

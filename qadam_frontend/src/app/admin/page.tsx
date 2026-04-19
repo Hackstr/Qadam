@@ -30,7 +30,12 @@ export default function AdminOverviewPage() {
   }
 
   const d = data?.data;
-  if (!d) return <p className="text-muted-foreground">Failed to load dashboard.</p>;
+  if (!d) return (
+    <div className="text-center py-16">
+      <p className="font-medium text-red-500 mb-1">Failed to load dashboard</p>
+      <p className="text-sm text-muted-foreground">Make sure you are signed in — disconnect and reconnect your wallet to trigger authentication.</p>
+    </div>
+  );
 
   const metrics = [
     { label: "Active Campaigns", value: d.active_campaigns, icon: FolderOpen, color: "text-blue-600" },

@@ -37,11 +37,13 @@ export function AccountSetupModal() {
     retry: false,
   });
 
-  // Show modal if user has no display_name and no email (first time)
+  // Show modal after 45s delay if user has no display_name and no email (first time)
   useEffect(() => {
-    if (userData?.data && !userData.data.display_name && !userData.data.email) {
-      setOpen(true);
-    }
+    if (!userData?.data) return;
+    if (userData.data.display_name || userData.data.email) return;
+
+    const timer = setTimeout(() => setOpen(true), 45_000);
+    return () => clearTimeout(timer);
   }, [userData]);
 
   const updateMutation = useMutation({

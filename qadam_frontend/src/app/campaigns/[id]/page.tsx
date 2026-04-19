@@ -269,6 +269,30 @@ export default function CampaignDetailPage() {
                   />
                 </div>
 
+                {/* Escrow trust indicator */}
+                {campaign.solana_pubkey && !campaign.solana_pubkey.startsWith("demo_") ? (
+                  <a
+                    href={getExplorerUrl(campaign.solana_pubkey)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-amber-600 transition-colors mb-4 p-2.5 bg-green-50/50 border border-green-100/50 rounded-lg"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0 animate-pulse" />
+                    <span>
+                      {campaign.raised_lamports > 0
+                        ? `${formatSol(campaign.raised_lamports)} locked in escrow`
+                        : "Funds go directly to on-chain escrow"
+                      }
+                    </span>
+                    <ExternalLink className="h-3 w-3 ml-auto flex-shrink-0" />
+                  </a>
+                ) : (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 p-2.5 bg-green-50/50 border border-green-100/50 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                    <span>Funds locked in smart contract until milestones verified</span>
+                  </div>
+                )}
+
                 {/* Stats grid */}
                 <div className="grid grid-cols-2 gap-3 text-sm mb-5">
                   <div>

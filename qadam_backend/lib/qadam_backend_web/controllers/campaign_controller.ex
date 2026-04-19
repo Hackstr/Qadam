@@ -15,6 +15,13 @@ defmodule QadamBackendWeb.CampaignController do
       limit: parse_int(params["limit"], 50)
     )
 
+    # If no real campaigns and no filters — show demo for first impression
+    campaigns = if Enum.empty?(campaigns) && is_nil(params["search"]) && is_nil(params["status"]) do
+      Campaigns.list_campaigns(include_demo: true, limit: 9)
+    else
+      campaigns
+    end
+
     json(conn, %{data: Enum.map(campaigns, &campaign_json/1)})
   end
 

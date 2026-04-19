@@ -8,6 +8,7 @@ defmodule QadamBackend.Campaigns do
 
   def list_campaigns(opts \\ []) do
     Campaign
+    |> filter_demo(opts[:include_demo])
     |> filter_by_status(opts[:status])
     |> filter_by_category(opts[:category])
     |> filter_by_creator(opts[:creator_wallet])
@@ -50,6 +51,9 @@ defmodule QadamBackend.Campaigns do
   end
 
   # Private filters
+
+  defp filter_demo(query, true), do: query
+  defp filter_demo(query, _), do: where(query, [c], not like(c.solana_pubkey, "demo_%"))
 
   defp filter_by_status(query, nil), do: query
   defp filter_by_status(query, status), do: where(query, [c], c.status == ^status)

@@ -43,10 +43,11 @@ export function useAutoAuth() {
         const messageBytes = new TextEncoder().encode(message);
         const signature = await signMessage(messageBytes);
 
-        // 3. Verify with backend → get JWT
+        // 3. Verify with backend → get JWT (signature must be base58)
+        const { default: bs58 } = await import("bs58");
         const { token: jwt, wallet: walletAddr } = await verifySignature(
           publicKey.toBase58(),
-          Buffer.from(signature).toString("base64"),
+          bs58.encode(signature),
           message
         );
 

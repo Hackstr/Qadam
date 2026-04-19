@@ -154,8 +154,11 @@ export default function BackCampaignPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Your Share</span>
-              <span className="font-semibold">{estimatedTokens.toLocaleString()} points</span>
+              <span className="font-semibold">{estimatedTokens.toLocaleString()} share</span>
             </div>
+            <p className="text-xs text-muted-foreground -mt-1">
+              Your share gives you governance rights — vote on extensions and refunds.
+            </p>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Campaign Progress</span>
               <span>{formatSol(campaign.raised_lamports)} / {formatSol(campaign.goal_lamports)}</span>
