@@ -68,7 +68,7 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
                 <div className="mt-2 p-3 bg-amber-50/50 border border-amber-100/50 rounded-lg">
                   <p className="text-xs font-medium text-amber-700 mb-1 flex items-center gap-1">
                     <Eye className="h-3 w-3" />
-                    What AI will verify
+                    Acceptance criteria
                   </p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     {milestone.acceptance_criteria}
@@ -86,7 +86,7 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
                 }`}>
                   <p className="font-medium text-xs mb-1 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    AI Verification: {milestone.status === "approved" ? "Approved" : milestone.status === "rejected" ? "Rejected" : "Under Review"}
+                    Verification: {milestone.status === "approved" ? "Approved" : milestone.status === "rejected" ? "Rejected" : "Under Review"}
                   </p>
                   <p className="text-xs text-muted-foreground leading-relaxed">{milestone.ai_explanation}</p>
                 </div>
