@@ -11,7 +11,7 @@ export function Footer() {
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
             <span className="hidden sm:inline">&middot;</span>
-            <span className="hidden sm:inline">Powered by Solana &middot; Verified by AI</span>
+            <span className="hidden sm:inline">Powered by Solana</span>
           </div>
         </div>
       </div>

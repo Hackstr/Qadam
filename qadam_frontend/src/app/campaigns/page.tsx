@@ -50,7 +50,7 @@ export default function CampaignsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight mb-1">Discover</h1>
           <p className="text-sm text-muted-foreground">
-            Back projects you believe in. SOL stays in escrow until milestones are verified by AI.
+            Back projects you believe in. SOL stays in escrow until the community approves each milestone.
           </p>
         </div>
         <div className="relative w-full md:w-64 flex-shrink-0">

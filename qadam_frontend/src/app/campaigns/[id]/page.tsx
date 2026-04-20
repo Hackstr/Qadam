@@ -134,7 +134,7 @@ function CampaignDetailContent() {
       {/* Cover hero */}
       {campaign.cover_image_url ? (
         <div className="h-56 overflow-hidden">
-          <img src={campaign.cover_image_url} alt={campaign.title} className="w-full h-full object-cover object-bottom" />
+          <img src={campaign.cover_image_url} alt={campaign.title} className="w-full h-full object-cover object-[center_80%]" />
         </div>
       ) : (
         <div

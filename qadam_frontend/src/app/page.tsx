@@ -59,7 +59,7 @@ export default function Home() {
                 className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-sm font-medium mb-6"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                Powered by Solana · Verified by AI
+                Powered by Solana
               </motion.div>
 
               <motion.h1

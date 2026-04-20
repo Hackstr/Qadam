@@ -16,7 +16,7 @@ export async function generateMetadata(
 
     const title = `${campaign.title} | Qadam`;
     const description = campaign.description?.slice(0, 160) ||
-      "Milestone-based crowdfunding on Solana. SOL in escrow until verified by AI.";
+      "Milestone-based crowdfunding on Solana. SOL in escrow until the community approves.";
     const image = campaign.cover_image_url || "/og-image.png";
 
     return {
