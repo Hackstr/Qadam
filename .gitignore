@@ -28,3 +28,4 @@ qadam_frontend/.next
 .vscode
 *.swp
 .next
+qadam_backend/priv/solana/node_modules/
