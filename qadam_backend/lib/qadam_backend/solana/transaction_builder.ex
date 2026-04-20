@@ -86,7 +86,8 @@ defmodule QadamBackend.Solana.TransactionBuilder do
       script = sign_script_path()
 
       if File.exists?(script) do
-        case System.cmd("node", [script, args], stderr_to_stdout: true) do
+        script_dir = Path.dirname(script)
+        case System.cmd("node", [script, args], stderr_to_stdout: true, cd: script_dir) do
           {output, 0} ->
             case Jason.decode(String.trim(output)) do
               {:ok, %{"signedTx" => signed_tx}} -> {:ok, signed_tx}

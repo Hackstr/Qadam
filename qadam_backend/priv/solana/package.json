@@ -1,0 +1,8 @@
+{
+  "name": "qadam-solana-signer",
+  "private": true,
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1",
+    "@solana/web3.js": "^1.98.0"
+  }
+}
