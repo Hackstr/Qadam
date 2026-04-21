@@ -5,6 +5,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMe, updateMe } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
+import { useAccountSetupStore } from "@/stores/account-setup-store";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +22,7 @@ import { toast } from "sonner";
 export function AccountSetupModal() {
   const { connected, publicKey } = useWallet();
   const { isAuthenticated } = useAuthStore();
-  const [open, setOpen] = useState(false);
+  const { isOpen: storeOpen, close: storeClose } = useAccountSetupStore();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [notifyApproved, setNotifyApproved] = useState(true);
@@ -37,20 +38,14 @@ export function AccountSetupModal() {
     retry: false,
   });
 
-  // Show modal after 45s delay if user has no display_name and no email (first time)
-  useEffect(() => {
-    if (!userData?.data) return;
-    if (userData.data.display_name || userData.data.email) return;
-
-    const timer = setTimeout(() => setOpen(true), 45_000);
-    return () => clearTimeout(timer);
-  }, [userData]);
+  // Modal opens only via store (triggered from Create/Back flows)
+  // No auto-open on first visit
 
   const updateMutation = useMutation({
     mutationFn: (data: Record<string, any>) => updateMe(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
-      setOpen(false);
+      storeClose();
       toast.success("Account saved");
     },
     onError: () => {
@@ -70,7 +65,7 @@ export function AccountSetupModal() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={storeOpen} onOpenChange={(v) => !v && storeClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -149,7 +144,7 @@ export function AccountSetupModal() {
             </Button>
             <Button
               variant="ghost"
-              onClick={() => setOpen(false)}
+              onClick={() => storeClose()}
               className="flex-1"
             >
               Skip for now

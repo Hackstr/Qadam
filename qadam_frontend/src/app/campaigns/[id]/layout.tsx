@@ -38,7 +38,7 @@ export async function generateMetadata(
   } catch {
     return {
       title: "Qadam — Milestone Crowdfunding on Solana",
-      description: "SOL stays in escrow until AI verifies each milestone.",
+      description: "SOL stays in escrow until the community approves each milestone.",
     };
   }
 }

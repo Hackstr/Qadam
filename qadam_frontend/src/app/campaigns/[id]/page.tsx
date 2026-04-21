@@ -126,7 +126,7 @@ function CampaignDetailContent() {
 
   // Social share
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-  const tweetText = `Just found "${campaign.title}" on @QadamProtocol — AI-verified crowdfunding on Solana. SOL stays in escrow until milestones are proven. 🚀`;
+  const tweetText = `Just found "${campaign.title}" on @QadamProtocol — community-governed crowdfunding on Solana. SOL stays in escrow until backers approve each milestone.`;
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
 
   return (

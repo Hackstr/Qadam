@@ -280,7 +280,7 @@ export default function CreateCampaignPage() {
                   placeholder="Acceptance criteria: e.g. 'Working demo at URL, 100+ test users, screenshot of analytics'"
                   rows={2}
                 />
-                <p className="text-xs text-muted-foreground -mt-2">AI will evaluate evidence against these criteria.</p>
+                <p className="text-xs text-muted-foreground -mt-2">Community of backers will vote based on these criteria.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
                     type="number"

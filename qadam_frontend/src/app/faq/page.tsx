@@ -6,7 +6,7 @@ import { useState } from "react";
 const faqs = [
   {
     q: "How does escrow work?",
-    a: "When you back a project, your SOL goes directly into a smart contract on Solana — not to the creator. The contract holds it until Claude AI verifies that the creator has completed each milestone. Only then are funds released.",
+    a: "When you back a project, your SOL goes directly into a smart contract on Solana — not to the creator. The contract holds it until the community of backers votes to approve each milestone. Only then are funds released.",
   },
   {
     q: "What if AI makes a wrong decision?",
@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     q: "How does milestone verification work?",
-    a: "Creators write what they accomplished, add demo links or screenshots, and submit evidence. Claude AI evaluates the evidence against the milestone's acceptance criteria in under 60 seconds and makes a decision: Approved, Rejected, or Needs Human Review.",
+    a: "Creators write what they accomplished, add demo links or screenshots, and submit evidence. The community of backers then votes on whether the acceptance criteria are met. Approved — SOL released. Not approved — backers vote for an extension or refund.",
   },
   {
     q: "What's the platform fee?",

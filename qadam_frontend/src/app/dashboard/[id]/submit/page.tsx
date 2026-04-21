@@ -181,7 +181,7 @@ export default function SubmitEvidencePage() {
             <Textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Describe what you've done for this milestone. Be specific — AI will evaluate this."
+              placeholder="Describe what you've done for this milestone. Be specific — backers will vote based on this."
               rows={6}
               className="resize-none"
             />
@@ -267,7 +267,7 @@ export default function SubmitEvidencePage() {
         )}
 
         <p className="text-xs text-center text-muted-foreground">
-          Evidence hash will be recorded on-chain, then Claude AI will verify your submission.
+          Evidence hash will be recorded on-chain. Community of backers will vote on your submission.
         </p>
       </div>
     </div>

@@ -36,7 +36,7 @@ export default function Home() {
                 <span className="opacity-30">*</span>
                 <span className="font-extrabold">National Solana Hackathon</span>
                 <span className="opacity-30">*</span>
-                <span>AI-Verified Crowdfunding</span>
+                <span>Community Governed Crowdfunding</span>
                 <span className="opacity-30">*</span>
                 <span>Milestone Escrow on Solana</span>
                 <span className="opacity-30">*</span>
@@ -75,7 +75,7 @@ export default function Home() {
                 variants={fadeUp}
                 className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-md"
               >
-                SOL stays in escrow. AI verifies each milestone.
+                SOL stays in escrow. Community votes on each milestone.
                 Creators get paid for real progress. Backers earn a share in every project they support.
               </motion.p>
 
@@ -105,10 +105,10 @@ export default function Home() {
                 {/* Ambient glow */}
                 <div className="absolute inset-0 -m-12 bg-amber-500/[0.05] rounded-full blur-3xl pointer-events-none" />
 
-                {/* Floating badge — AI Verified */}
+                {/* Floating badge — Community Verified */}
                 <div className="absolute top-8 -left-4 z-10 bg-white/90 backdrop-blur-xl border border-white/60 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg -rotate-[6deg]">
                   <CheckCircle className="h-3.5 w-3.5 text-amber-500" />
-                  <span className="text-[11px] font-semibold text-amber-700">AI Verified in 23s</span>
+                  <span className="text-[11px] font-semibold text-amber-700">Community Approved</span>
                 </div>
 
                 {/* Floating badge — Escrow */}
@@ -147,7 +147,7 @@ export default function Home() {
             {[
               { num: "01", icon: PenLine, title: "Create", desc: "Define your project, milestones, and funding goal on Solana" },
               { num: "02", icon: Users, title: "Fund", desc: "Backers send SOL directly to smart contract escrow" },
-              { num: "03", icon: ScanSearch, title: "AI Verifies", desc: "Claude AI evaluates evidence of milestone completion", highlight: true },
+              { num: "03", icon: Users, title: "Community Votes", desc: "Backers vote on-chain to approve or reject milestone completion", highlight: true },
               { num: "04", icon: Banknote, title: "Release", desc: "Approved? SOL transfers to creator automatically" },
             ].map((step) => (
               <motion.div
@@ -189,7 +189,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               { icon: Shield, title: "Milestone Escrow", desc: "Funds physically cannot leave without proof of progress. The smart contract enforces it — no trust required." },
-              { icon: Cpu, title: "AI Verification", desc: "Claude AI evaluates evidence objectively in under 60 seconds. Instant, fair, transparent decisions." },
+              { icon: Users, title: "Community Governance", desc: "Backers vote on every milestone approval, extension, and refund. Decisions are on-chain, transparent, and final." },
               { icon: Coins, title: "Backer Equity", desc: "Your contribution earns you a share in the project. Early backers get higher allocation. Vote on key decisions." },
               { icon: Eye, title: "On-chain Transparency", desc: "Every decision, every transaction, every AI verdict — publicly verifiable on Solana. Nothing hidden." },
             ].map((feature) => (
@@ -226,7 +226,7 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {[
               { value: "2.5%", label: "Platform fee", sub: "vs 8-10% on Kickstarter" },
-              { value: "< 60s", label: "AI verification", sub: "Claude evaluates evidence" },
+              { value: "On-chain", label: "Every vote verified", sub: "Transparent governance" },
               { value: "Free", label: "First 20 creators", sub: "Zero commission forever" },
               { value: "100%", label: "On-chain", sub: "Every tx verifiable" },
             ].map((stat) => (

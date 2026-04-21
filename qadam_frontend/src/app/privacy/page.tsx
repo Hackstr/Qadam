@@ -51,7 +51,7 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold text-foreground">5. Third-Party Services</h2>
           <ul className="list-disc pl-5 space-y-1">
             <li>Solana blockchain — for all on-chain transactions</li>
-            <li>Anthropic (Claude AI) — for milestone verification (evidence text is sent for analysis)</li>
+            <li>Solana blockchain — for all on-chain transactions and governance voting</li>
           </ul>
         </section>
 

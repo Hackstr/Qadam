@@ -54,11 +54,11 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-foreground">6. AI Verification</h2>
+          <h2 className="text-lg font-semibold text-foreground">6. Milestone Verification</h2>
           <p>
-            Milestone verification is performed by AI (Claude by Anthropic). AI decisions can be appealed
-            through the human review process. Qadam does not guarantee the accuracy of AI decisions.
-            The human review process is the final arbiter.
+            Milestone verification is performed by the community of backers through on-chain governance
+            voting. Each backer's voting weight is proportional to their contribution, with a 20% cap
+            per position to prevent whale dominance. A 20% quorum is required for votes to be valid.
           </p>
         </section>
 
