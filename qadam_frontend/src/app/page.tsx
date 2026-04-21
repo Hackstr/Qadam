@@ -10,7 +10,7 @@ import { formatSol } from "@/lib/constants";
 import {
   ArrowRight, Shield, Cpu, Coins, Eye,
   PenLine, Users, ScanSearch, Banknote,
-  CheckCircle, Lock, ArrowDown,
+  CheckCircle, Lock, ArrowDown, Zap, ChevronDown,
 } from "lucide-react";
 
 const fadeUp: any = {
@@ -130,6 +130,24 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Trust strip */}
+      <div className="border-y border-black/[0.04] bg-white/50">
+        <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 text-sm text-muted-foreground">
+          <span className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-green-500" />
+            Funds in on-chain escrow
+          </span>
+          <span className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-purple-500" />
+            Community governance
+          </span>
+          <span className="flex items-center gap-2">
+            <Zap className="h-4 w-4 text-amber-500" />
+            Built on Solana
+          </span>
+        </div>
+      </div>
+
       {/* How It Works — numbered cards */}
       <motion.section
         initial="hidden"
@@ -191,7 +209,7 @@ export default function Home() {
               { icon: Shield, title: "Milestone Escrow", desc: "Funds physically cannot leave without proof of progress. The smart contract enforces it — no trust required." },
               { icon: Users, title: "Community Governance", desc: "Backers vote on every milestone approval, extension, and refund. Decisions are on-chain, transparent, and final." },
               { icon: Coins, title: "Backer Equity", desc: "Your contribution earns you a share in the project. Early backers get higher allocation. Vote on key decisions." },
-              { icon: Eye, title: "On-chain Transparency", desc: "Every decision, every transaction, every AI verdict — publicly verifiable on Solana. Nothing hidden." },
+              { icon: Eye, title: "On-chain Transparency", desc: "Every vote, every transaction, every release — publicly verifiable on Solana. Nothing hidden." },
             ].map((feature) => (
               <motion.div
                 key={feature.title}
@@ -207,6 +225,78 @@ export default function Home() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Story blocks — MindMarket style */}
+      <section className="py-16 md:py-24">
+        <div className="container mx-auto px-4 max-w-4xl space-y-16">
+          {[
+            {
+              headline: "No more broken promises.",
+              body: "Too many projects raise money and disappear. Qadam locks funds in a smart contract until real progress is proven. If a creator doesn't deliver — backers get their SOL back.",
+            },
+            {
+              headline: "Community decides, not a platform.",
+              body: "Every milestone is voted by the people who funded it. No hidden algorithms. No opaque review process. You backed it — you vote.",
+            },
+            {
+              headline: "Backers become co-owners.",
+              body: "When you fund a project, you don't just donate — you earn project tokens. Early backers get Genesis tier. Vote on key decisions together.",
+            },
+          ].map((block, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className={`${i % 2 === 0 ? "text-left" : "text-right"}`}
+            >
+              <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-4">{block.headline}</h3>
+              <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl ${i % 2 === 0 ? '' : 'ml-auto'}">
+                {block.body}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* For Creators / For Backers */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={stagger}
+        className="py-16"
+      >
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div variants={fadeUp} className="border border-black/[0.06] rounded-2xl p-8">
+              <h3 className="text-xl font-bold mb-2">For Creators</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Get funded without losing control. Structured milestones. Community backing.
+                No VC, no equity dilution, no geography limits.
+              </p>
+              <Link href="/create">
+                <Button variant="outline" className="gap-1.5">
+                  Start a Campaign <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div variants={fadeUp} className="border border-black/[0.06] rounded-2xl p-8">
+              <h3 className="text-xl font-bold mb-2">For Backers</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Invest in early projects, safely. Funds in escrow. You vote on progress.
+                Refunds if things don't work out.
+              </p>
+              <Link href="/campaigns">
+                <Button variant="outline" className="gap-1.5">
+                  Explore Campaigns <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
+            </motion.div>
           </div>
         </div>
       </motion.section>
@@ -244,7 +334,31 @@ export default function Home() {
         </div>
       </motion.section>
 
-      {/* CTA — dual cards */}
+      {/* FAQ preview */}
+      <section className="py-16">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-2xl font-bold text-center mb-8">Common Questions</h2>
+          <div className="space-y-3">
+            {[
+              { q: "How does escrow work?", a: "Your SOL goes directly into a smart contract on Solana — not to the creator. Released only when community votes to approve each milestone." },
+              { q: "What if a milestone fails?", a: "Backers vote on-chain — either extend the deadline or trigger a proportional refund. The smart contract enforces the outcome automatically." },
+              { q: "What do I get as a backer?", a: "Project tokens representing your share. Early backers get Genesis tier (1.0x). You also get governance rights — vote on every decision." },
+            ].map((faq, i) => (
+              <details key={i} className="group border border-black/[0.06] rounded-xl">
+                <summary className="flex items-center justify-between p-4 cursor-pointer font-medium text-sm">
+                  {faq.q}
+                  <ChevronDown className="h-4 w-4 text-muted-foreground group-open:rotate-180 transition-transform" />
+                </summary>
+                <p className="px-4 pb-4 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+              </details>
+            ))}
+          </div>
+          <div className="text-center mt-4">
+            <Link href="/faq" className="text-sm text-amber-600 hover:underline">See all FAQ →</Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA — clean, centered */}
       <motion.section
         initial="hidden"
