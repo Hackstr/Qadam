@@ -8,6 +8,7 @@ import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
 import { ShareButtons } from "@/components/social/share-buttons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -17,7 +18,7 @@ import {
 import {
   Users, Wallet, ArrowRight, Loader2, ArrowLeft,
   ExternalLink, Share2, Smartphone, Gamepad2,
-  BarChart3, Wrench, Globe, Rocket,
+  BarChart3, Wrench, Globe, Rocket, AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -163,20 +164,25 @@ function CampaignDetailContent() {
           <div className="lg:col-span-2 space-y-6">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold leading-tight">{campaign.title}</h1>
-              {campaign.description && (
-                <p className="text-muted-foreground mt-3 leading-relaxed">{campaign.description}</p>
-              )}
+
+              {/* Creator info */}
               <div className="flex items-center gap-3 mt-3 flex-wrap">
                 <Link
                   href={`/profile/${campaign.creator_wallet}`}
-                  className="text-xs text-muted-foreground hover:text-amber-600 flex items-center gap-1 transition-colors"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-amber-600 transition-colors"
                 >
-                  by{" "}
-                  <span className={campaign.creator_display_name ? "font-medium" : "font-mono"}>
-                    {campaign.creator_display_name || `${campaign.creator_wallet.slice(0, 4)}...${campaign.creator_wallet.slice(-4)}`}
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                    {(campaign.creator_display_name || campaign.creator_wallet)[0].toUpperCase()}
+                  </div>
+                  <span className={campaign.creator_display_name ? "font-medium" : "font-mono text-xs"}>
+                    {campaign.creator_display_name || `${campaign.creator_wallet.slice(0, 6)}...${campaign.creator_wallet.slice(-4)}`}
                   </span>
                 </Link>
+                {campaign.category && (
+                  <Badge variant="secondary" className="text-xs">{campaign.category}</Badge>
+                )}
               </div>
+
               <ShareButtons title={campaign.title} description={campaign.description} />
 
               {campaign.pitch_video_url && (() => {
@@ -207,13 +213,42 @@ function CampaignDetailContent() {
 
             <Separator />
 
-            <Tabs defaultValue="milestones">
-              <TabsList>
+            <Tabs defaultValue="about">
+              <TabsList className="flex-wrap">
+                <TabsTrigger value="about">About</TabsTrigger>
                 <TabsTrigger value="milestones">Milestones</TabsTrigger>
-                <TabsTrigger value="backers">Backers ({campaign.backers_count})</TabsTrigger>
                 <TabsTrigger value="updates">Updates ({updates.length})</TabsTrigger>
+                <TabsTrigger value="backers">Backers ({campaign.backers_count})</TabsTrigger>
+                {campaign.faq && campaign.faq.length > 0 && (
+                  <TabsTrigger value="faq">FAQ</TabsTrigger>
+                )}
               </TabsList>
 
+              {/* About tab */}
+              <TabsContent value="about" className="mt-6 space-y-6">
+                {campaign.description && (
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{campaign.description}</p>
+                  </div>
+                )}
+
+                {/* Risks & Challenges */}
+                {campaign.risks && (
+                  <div className="p-4 bg-amber-50/50 border border-amber-100/50 rounded-xl">
+                    <h3 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-1.5">
+                      <AlertCircle className="h-4 w-4" />
+                      Risks & Challenges
+                    </h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{campaign.risks}</p>
+                  </div>
+                )}
+
+                {!campaign.description && !campaign.risks && (
+                  <p className="text-muted-foreground">No description provided yet.</p>
+                )}
+              </TabsContent>
+
+              {/* Milestones tab */}
               <TabsContent value="milestones" className="mt-6">
                 {campaign.milestones && campaign.milestones.length > 0 ? (
                   <MilestoneTimeline milestones={campaign.milestones} />
@@ -222,9 +257,13 @@ function CampaignDetailContent() {
                 )}
               </TabsContent>
 
+              {/* Backers tab */}
               <TabsContent value="backers" className="mt-6">
                 {backers.length === 0 ? (
-                  <p className="text-muted-foreground">No backers yet. Be the first!</p>
+                  <div className="text-center py-10 text-muted-foreground">
+                    <Users className="h-8 w-8 mx-auto mb-2 text-muted-foreground/30" />
+                    <p>No backers yet. Be the first!</p>
+                  </div>
                 ) : (
                   <div className="space-y-3">
                     {backers.map((backer, idx) => (
@@ -255,9 +294,12 @@ function CampaignDetailContent() {
                 )}
               </TabsContent>
 
+              {/* Updates tab */}
               <TabsContent value="updates" className="mt-6">
                 {updates.length === 0 ? (
-                  <p className="text-muted-foreground text-sm">No updates yet from the creator.</p>
+                  <div className="text-center py-10 text-muted-foreground">
+                    <p className="text-sm">No updates yet from the creator.</p>
+                  </div>
                 ) : (
                   <div className="space-y-4">
                     {updates.map((update) => (
@@ -276,6 +318,20 @@ function CampaignDetailContent() {
                   </div>
                 )}
               </TabsContent>
+
+              {/* FAQ tab */}
+              {campaign.faq && campaign.faq.length > 0 && (
+                <TabsContent value="faq" className="mt-6">
+                  <div className="space-y-3">
+                    {campaign.faq.map((item: { q: string; a: string }, i: number) => (
+                      <div key={i} className="border border-black/[0.06] rounded-xl p-4">
+                        <p className="font-medium text-sm">{item.q}</p>
+                        <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{item.a}</p>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+              )}
             </Tabs>
           </div>
 

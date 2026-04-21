@@ -21,6 +21,8 @@ export interface Campaign {
   milestones_count: number;
   milestones_approved: number;
   milestones?: Milestone[];
+  risks?: string;
+  faq?: { q: string; a: string }[];
   inserted_at: string;
 }
 
