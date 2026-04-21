@@ -83,7 +83,7 @@ export default function BackCampaignPage() {
         await syncBacking({
           campaign_pubkey: campaign.solana_pubkey,
           backer_wallet: publicKey!.toBase58(),
-          amount_lamports: Math.floor(amountNum * 1_000_000_000),
+          amount_lamports: Math.floor(amountNum * LAMPORTS_PER_SOL),
           tier,
           tokens_allocated: estimatedTokens,
         });

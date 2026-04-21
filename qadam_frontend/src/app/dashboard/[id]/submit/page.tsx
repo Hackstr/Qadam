@@ -106,7 +106,7 @@ export default function SubmitEvidencePage() {
       try {
         const { triggerMilestoneVerification } = await import("@/lib/api");
         await triggerMilestoneVerification(campaign.id, currentMilestone.index);
-      } catch {}
+      } catch { /* verification trigger is best-effort */ }
 
       router.push(`/campaigns/${campaign.id}/vote`);
     } catch (err: any) {

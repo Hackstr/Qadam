@@ -141,9 +141,9 @@ export default function PortfolioPage() {
                                   campaign_pubkey: pubkey,
                                   wallet: pos.wallet_address,
                                   tokens_claimed: pos.tokens_allocated,
-                                }).catch(() => {})
+                                }).catch(() => { /* sync is best-effort, on-chain tx already succeeded */ })
                               );
-                            }).catch(() => {});
+                            }).catch(() => { /* sync is best-effort, on-chain tx already succeeded */ });
                           }}
                         >
                           <Gift className="h-3.5 w-3.5" />
@@ -171,9 +171,9 @@ export default function PortfolioPage() {
                                 syncRefund({
                                   campaign_pubkey: pubkey,
                                   wallet: pos.wallet_address,
-                                }).catch(() => {})
+                                }).catch(() => { /* sync is best-effort, on-chain tx already succeeded */ })
                               );
-                            }).catch(() => {});
+                            }).catch(() => { /* sync is best-effort, on-chain tx already succeeded */ });
                           }}
                         >
                           <RotateCcw className="h-3.5 w-3.5" />

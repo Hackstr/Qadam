@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useQadamProgram } from "@/hooks/use-qadam-program";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -115,14 +116,14 @@ export default function CreateCampaignPage() {
 
       try {
         const { syncCampaignCreation, uploadCoverImage } = await import("@/lib/api");
-        const SOL = 1_000_000_000;
+        const SOL = LAMPORTS_PER_SOL;
 
         let coverUrl: string | undefined;
         if (coverFile) {
           try {
             const uploaded = await uploadCoverImage(coverFile);
             coverUrl = uploaded.url;
-          } catch { /* optional */ }
+          } catch { /* cover upload is optional, campaign still created */ }
         }
 
         const syncResult = await syncCampaignCreation({

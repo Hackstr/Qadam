@@ -241,7 +241,7 @@ function VoteCard({
                     wallet: publicKey!.toBase58(),
                     approve: true,
                     voting_power: 0,
-                  }).catch(() => {});
+                  }).catch(() => { /* sync best-effort */ });
                   toast.success("Vote cast — Approve");
                 } catch (err: any) {
                   if (err?.message !== "cancelled") console.error(err);
@@ -265,7 +265,7 @@ function VoteCard({
                     wallet: publicKey!.toBase58(),
                     approve: false,
                     voting_power: 0,
-                  }).catch(() => {});
+                  }).catch(() => { /* sync best-effort */ });
                   toast.success("Vote cast — Reject");
                 } catch (err: any) {
                   if (err?.message !== "cancelled") console.error(err);

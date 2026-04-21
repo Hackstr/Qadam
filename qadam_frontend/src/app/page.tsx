@@ -8,9 +8,9 @@ import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
 import { formatSol } from "@/lib/constants";
 import {
-  ArrowRight, Shield, Cpu, Coins, Eye,
-  PenLine, Users, ScanSearch, Banknote,
-  CheckCircle, Lock, ArrowDown, Zap, ChevronDown,
+  ArrowRight, Shield, Coins, Eye,
+  PenLine, Users, Banknote,
+  CheckCircle, Lock, Zap, ChevronDown,
 } from "lucide-react";
 
 const fadeUp: any = {
@@ -255,7 +255,7 @@ export default function Home() {
               className={`${i % 2 === 0 ? "text-left" : "text-right"}`}
             >
               <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-4">{block.headline}</h3>
-              <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl ${i % 2 === 0 ? '' : 'ml-auto'}">
+              <p className={`text-muted-foreground text-lg leading-relaxed max-w-2xl ${i % 2 === 0 ? "" : "ml-auto"}`}>
                 {block.body}
               </p>
             </motion.div>
