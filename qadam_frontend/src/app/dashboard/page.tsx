@@ -7,7 +7,10 @@ import { useSearchParams } from "next/navigation";
 import { getCampaigns } from "@/lib/api";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Send, CheckCircle2, ArrowRight } from "lucide-react";
+import { Loader2, Plus, Send, CheckCircle2, ArrowRight, Rocket, Eye } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { formatSol } from "@/lib/constants";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -88,30 +91,78 @@ function DashboardContent() {
           <p className="text-sm text-muted-foreground/60 mt-1">Make sure the backend is running.</p>
         </div>
       ) : myCampaigns.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-lg text-muted-foreground mb-4">No campaigns yet</p>
+        <div className="max-w-md mx-auto text-center py-20">
+          <div className="w-16 h-16 mx-auto rounded-full bg-amber-50 flex items-center justify-center mb-4">
+            <Rocket className="h-8 w-8 text-amber-500" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">Ready to launch your project?</h3>
+          <p className="text-muted-foreground leading-relaxed">
+            Bring your idea to the community. Define milestones. Get funded as you deliver.
+          </p>
           <Link href="/create">
-            <Button className="gap-2">
+            <Button className="gap-2 mt-6 bg-amber-500 hover:bg-amber-600 text-white">
               <Plus className="h-4 w-4" />
               Create Your First Campaign
             </Button>
           </Link>
+          <div className="mt-8 pt-8 border-t">
+            <p className="text-xs text-muted-foreground">
+              Connected: <span className="font-mono">{publicKey?.toBase58().slice(0, 4)}...{publicKey?.toBase58().slice(-4)}</span>
+            </p>
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {myCampaigns.map((campaign) => (
-            <div key={campaign.id} className="space-y-2">
-              <CampaignCard campaign={campaign} />
-              {campaign.status === "active" && campaign.milestones_approved < campaign.milestones_count && (
-                <Link href={`/dashboard/${campaign.id}/submit`}>
-                  <Button variant="outline" size="sm" className="w-full gap-2">
-                    <Send className="h-3.5 w-3.5" />
-                    Submit Evidence
-                  </Button>
-                </Link>
-              )}
-            </div>
-          ))}
+        <div className="space-y-4">
+          {myCampaigns.map((campaign) => {
+            // Compute next action
+            const hasUnsubmitted = campaign.status === "active" && campaign.milestones_approved < campaign.milestones_count;
+            const nextAction = hasUnsubmitted
+              ? { text: `Submit evidence for Milestone ${campaign.milestones_approved + 1}`, href: `/dashboard/${campaign.id}/submit`, color: "text-amber-600" }
+              : campaign.status === "completed"
+              ? { text: "Campaign completed", href: `/campaigns/${campaign.id}`, color: "text-green-600" }
+              : { text: `Campaign is ${campaign.status}`, href: `/campaigns/${campaign.id}`, color: "text-muted-foreground" };
+
+            return (
+              <Card key={campaign.id} className="hover:shadow-sm transition-shadow">
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <Link href={`/campaigns/${campaign.id}`} className="hover:underline">
+                        <h3 className="font-semibold truncate">{campaign.title}</h3>
+                      </Link>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="secondary" className="text-xs">{campaign.status}</Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {campaign.milestones_approved}/{campaign.milestones_count} milestones
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-semibold tabular-nums">{formatSol(campaign.raised_lamports)}</p>
+                      <p className="text-xs text-muted-foreground">of {formatSol(campaign.goal_lamports)}</p>
+                    </div>
+                  </div>
+
+                  {/* Next action */}
+                  <div className="mt-3 pt-3 border-t flex items-center justify-between">
+                    <p className={`text-sm font-medium ${nextAction.color}`}>{nextAction.text}</p>
+                    <Link href={nextAction.href}>
+                      <Button size="sm" variant="outline" className="gap-1.5">
+                        {hasUnsubmitted ? <Send className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                        {hasUnsubmitted ? "Submit" : "View"}
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+          {/* Add campaign button at bottom */}
+          <Link href="/create">
+            <Button variant="outline" className="w-full gap-2 mt-2">
+              <Plus className="h-4 w-4" /> New Campaign
+            </Button>
+          </Link>
         </div>
       )}
     </div>

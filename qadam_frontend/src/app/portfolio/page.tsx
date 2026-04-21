@@ -55,6 +55,30 @@ export default function PortfolioPage() {
         </div>
       </div>
 
+      {/* Action Required */}
+      {(() => {
+        const actions: { text: string; href: string; type: "vote" | "claim" | "refund" }[] = [];
+        positions.forEach((pos) => {
+          if (pos.has_active_vote) actions.push({ text: `Vote on "${pos.campaign_title}"`, href: `/campaigns/${pos.campaign_id}/vote`, type: "vote" });
+          if (pos.tokens_claimed < pos.tokens_allocated && pos.campaign_status !== "refunded") actions.push({ text: `Claim share from "${pos.campaign_title}"`, href: `/portfolio`, type: "claim" });
+          if (pos.campaign_status === "refunded" && !pos.refund_claimed) actions.push({ text: `Claim refund from "${pos.campaign_title}"`, href: `/portfolio`, type: "refund" });
+        });
+        if (actions.length === 0) return null;
+        return (
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+            <p className="text-sm font-semibold text-amber-800 mb-2">Action required ({actions.length})</p>
+            <div className="space-y-1.5">
+              {actions.slice(0, 5).map((a, i) => (
+                <Link key={i} href={a.href} className="flex items-center gap-2 text-sm text-amber-700 hover:text-amber-900">
+                  <span>{a.type === "vote" ? "🗳" : a.type === "claim" ? "💰" : "↩"}</span>
+                  <span className="hover:underline">{a.text}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Positions */}
       {isLoading ? (
         <Loader2 className="h-8 w-8 animate-spin mx-auto" />
