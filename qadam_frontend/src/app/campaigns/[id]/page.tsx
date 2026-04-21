@@ -428,6 +428,34 @@ function CampaignDetailContent() {
               </CardContent>
             </Card>
 
+            {/* Active vote widget */}
+            {(() => {
+              const votingMs = (campaign.milestones || []).find(
+                (m: any) => m.status === "voting_active" || m.status === "extension_requested" || m.status === "submitted"
+              );
+              if (!votingMs) return null;
+              return (
+                <Card className="border-purple-200 bg-purple-50/30">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                      <p className="text-sm font-semibold text-purple-700">
+                        {votingMs.status === "submitted" ? "Evidence Submitted" : "Community is Voting"}
+                      </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Milestone {votingMs.index + 1}: {votingMs.title || "Untitled"}
+                    </p>
+                    <Link href={`/campaigns/${campaign.id}/vote`}>
+                      <Button size="sm" className="w-full gap-1.5 bg-purple-600 hover:bg-purple-700 text-white">
+                        Cast Your Vote
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
             {/* Backer tiers */}
             <Card className="border-black/[0.06]">
               <CardHeader className="pb-3">

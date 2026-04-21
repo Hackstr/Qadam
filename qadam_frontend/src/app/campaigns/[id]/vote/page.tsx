@@ -1,16 +1,41 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useQadamProgram } from "@/hooks/use-qadam-program";
 import { getCampaign } from "@/lib/api";
+import { formatSol } from "@/lib/constants";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, CheckCircle2, XCircle, Loader2, Clock } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowLeft, CheckCircle2, XCircle, Loader2, Clock, Vote,
+  ExternalLink, Eye, Timer, Users,
+} from "lucide-react";
 import Link from "next/link";
+
+function useCountdown(deadline: string | undefined) {
+  const [timeLeft, setTimeLeft] = useState("");
+  useEffect(() => {
+    if (!deadline) return;
+    const tick = () => {
+      const diff = new Date(deadline).getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft("Voting ended"); return; }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(d > 0 ? `${d}d ${h}h ${m}m` : `${h}h ${m}m ${s}s`);
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [deadline]);
+  return timeLeft;
+}
 
 export default function VotePage() {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +46,7 @@ export default function VotePage() {
     queryKey: ["campaign", id],
     queryFn: () => getCampaign(id),
     enabled: !!id,
+    refetchInterval: 10000, // live polling every 10s
   });
 
   if (isLoading) {
@@ -40,9 +66,13 @@ export default function VotePage() {
     );
   }
 
-  // Find milestones in voting state
   const votingMilestones = (campaign.milestones || []).filter(
     (m) => m.status === "voting_active" || m.status === "extension_requested"
+  );
+
+  // Also show recently submitted milestones (evidence submitted, waiting for votes)
+  const submittedMilestones = (campaign.milestones || []).filter(
+    (m) => m.status === "submitted"
   );
 
   return (
@@ -55,106 +85,200 @@ export default function VotePage() {
         Back to campaign
       </Link>
 
-      <h1 className="text-2xl font-bold tracking-tight mb-1">Governance Votes</h1>
+      <div className="flex items-center gap-2 mb-1">
+        <Vote className="h-5 w-5 text-purple-500" />
+        <h1 className="text-2xl font-bold tracking-tight">Community Voting</h1>
+      </div>
       <p className="text-sm text-muted-foreground mb-8">
-        {campaign.title} — vote on milestone extensions or refunds
+        {campaign.title} — your vote decides what happens next
       </p>
 
-      {votingMilestones.length === 0 ? (
+      {votingMilestones.length === 0 && submittedMilestones.length === 0 ? (
         <div className="text-center py-16 border border-black/[0.06] rounded-2xl">
-          <Clock className="h-10 w-10 text-muted-foreground/30 mx-auto mb-4" />
-          <p className="text-muted-foreground">No active votes right now</p>
+          <Vote className="h-10 w-10 text-muted-foreground/20 mx-auto mb-4" />
+          <p className="font-medium text-muted-foreground">No active votes right now</p>
           <p className="text-sm text-muted-foreground/60 mt-1">
-            Votes open when a creator requests a milestone extension
+            Votes open when creator submits milestone evidence
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Active votes */}
           {votingMilestones.map((milestone) => (
-            <Card key={milestone.id} className="overflow-hidden">
-              <CardHeader className="pb-3 bg-amber-50 border-b border-amber-100">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-amber-500" />
-                  Milestone {milestone.index + 1}: {milestone.title || "Untitled"}
-                </CardTitle>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Creator requested an extension. Your vote matters.
-                </p>
-              </CardHeader>
-              <CardContent className="p-5 space-y-4">
-                {/* Vote results so far (placeholder — real data from API) */}
-                <div>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-green-600 font-medium">Extend</span>
-                    <span className="text-red-500 font-medium">Refund</span>
-                  </div>
-                  <div className="h-3 bg-red-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: "60%" }} />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1 text-center">
-                    Voting ends {new Date(milestone.deadline).toLocaleDateString()}
-                  </p>
-                </div>
+            <VoteCard
+              key={milestone.id}
+              campaign={campaign}
+              milestone={milestone}
+              connected={connected}
+              publicKey={publicKey}
+              txStatus={txStatus}
+              voteOnExtension={voteOnExtension}
+            />
+          ))}
 
-                {/* Vote buttons */}
-                {!connected ? (
-                  <p className="text-center text-sm text-muted-foreground">
-                    Connect wallet to vote
+          {/* Submitted — awaiting vote start */}
+          {submittedMilestones.map((milestone) => (
+            <Card key={milestone.id} className="border-blue-100">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                  <p className="font-medium text-sm">
+                    Milestone {milestone.index + 1}: {milestone.title || "Untitled"}
                   </p>
-                ) : (
-                  <div className="flex gap-3">
-                    <Button
-                      className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white"
-                      disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
-                      onClick={async () => {
-                        try {
-                          await voteOnExtension(campaign.solana_pubkey, milestone.index, true);
-                          const { syncVote } = await import("@/lib/api");
-                          syncVote({
-                            campaign_pubkey: campaign.solana_pubkey,
-                            milestone_index: milestone.index,
-                            wallet: publicKey!.toBase58(),
-                            approve: true,
-                            voting_power: 0,
-                          }).catch(() => {});
-                        } catch (err: any) {
-                          if (err?.message !== "cancelled") console.error(err);
-                        }
-                      }}
-                    >
-                      <CheckCircle2 className="h-4 w-4" />
-                      Extend Deadline
-                    </Button>
-                    <Button
-                      className="flex-1 gap-2"
-                      variant="destructive"
-                      disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
-                      onClick={async () => {
-                        try {
-                          await voteOnExtension(campaign.solana_pubkey, milestone.index, false);
-                          const { syncVote } = await import("@/lib/api");
-                          syncVote({
-                            campaign_pubkey: campaign.solana_pubkey,
-                            milestone_index: milestone.index,
-                            wallet: publicKey!.toBase58(),
-                            approve: false,
-                            voting_power: 0,
-                          }).catch(() => {});
-                        } catch (err: any) {
-                          if (err?.message !== "cancelled") console.error(err);
-                        }
-                      }}
-                    >
-                      <XCircle className="h-4 w-4" />
-                      Request Refund
-                    </Button>
-                  </div>
+                  <Badge className="bg-blue-50 text-blue-700 text-xs">Evidence Submitted</Badge>
+                </div>
+                {milestone.evidence_text && (
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{milestone.evidence_text}</p>
                 )}
+                <p className="text-xs text-muted-foreground mt-2">Voting will start soon.</p>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+function VoteCard({
+  campaign, milestone, connected, publicKey, txStatus, voteOnExtension,
+}: {
+  campaign: any;
+  milestone: any;
+  connected: boolean;
+  publicKey: any;
+  txStatus: string;
+  voteOnExtension: any;
+}) {
+  const countdown = useCountdown(milestone.extension_deadline || milestone.deadline);
+  const isVotingBusy = txStatus !== "idle" && txStatus !== "done" && txStatus !== "error";
+
+  return (
+    <Card className="overflow-hidden border-purple-100">
+      {/* Header */}
+      <div className="bg-purple-50/50 border-b border-purple-100 p-5">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="font-semibold">
+              Milestone {milestone.index + 1}: {milestone.title || "Untitled"}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {formatSol(milestone.amount_lamports)} — {milestone.status === "voting_active" ? "Community is voting" : "Extension requested"}
+            </p>
+          </div>
+          <Badge className="bg-purple-100 text-purple-700 gap-1">
+            <Timer className="h-3 w-3" />
+            {countdown}
+          </Badge>
+        </div>
+      </div>
+
+      <CardContent className="p-5 space-y-5">
+        {/* Evidence submitted by creator */}
+        {(milestone.evidence_text || (milestone.evidence_links && milestone.evidence_links.length > 0)) && (
+          <div className="bg-muted/30 rounded-xl p-4 space-y-2">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1">
+              <Eye className="h-3 w-3" /> Creator's evidence
+            </p>
+            {milestone.evidence_text && (
+              <p className="text-sm leading-relaxed">{milestone.evidence_text}</p>
+            )}
+            {milestone.evidence_links && milestone.evidence_links.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {milestone.evidence_links.map((link: string, i: number) => (
+                  <a key={i} href={link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline flex items-center gap-0.5">
+                    <ExternalLink className="h-3 w-3" /> {new URL(link).hostname}
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Acceptance criteria reminder */}
+        {milestone.acceptance_criteria && (
+          <div className="bg-amber-50/50 border border-amber-100/50 rounded-lg p-3">
+            <p className="text-xs font-medium text-amber-700 mb-1">Acceptance criteria</p>
+            <p className="text-xs text-muted-foreground">{milestone.acceptance_criteria}</p>
+          </div>
+        )}
+
+        {/* Vote progress */}
+        <div>
+          <div className="flex justify-between text-sm mb-2">
+            <span className="text-green-600 font-medium flex items-center gap-1">
+              <CheckCircle2 className="h-3.5 w-3.5" /> Approve
+            </span>
+            <span className="text-red-500 font-medium flex items-center gap-1">
+              Reject <XCircle className="h-3.5 w-3.5" />
+            </span>
+          </div>
+          <div className="h-3 bg-red-100 rounded-full overflow-hidden">
+            <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: "60%" }} />
+          </div>
+          <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
+            <span>Quorum: 20% required</span>
+            <span>{countdown}</span>
+          </div>
+        </div>
+
+        {/* Vote buttons */}
+        {!connected ? (
+          <p className="text-center text-sm text-muted-foreground py-2">
+            Connect your wallet to vote
+          </p>
+        ) : (
+          <div className="flex gap-3">
+            <Button
+              className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white"
+              disabled={isVotingBusy}
+              onClick={async () => {
+                try {
+                  await voteOnExtension(campaign.solana_pubkey, milestone.index, true);
+                  const { syncVote } = await import("@/lib/api");
+                  syncVote({
+                    campaign_pubkey: campaign.solana_pubkey,
+                    milestone_index: milestone.index,
+                    wallet: publicKey!.toBase58(),
+                    approve: true,
+                    voting_power: 0,
+                  }).catch(() => {});
+                  toast.success("Vote cast — Approve");
+                } catch (err: any) {
+                  if (err?.message !== "cancelled") console.error(err);
+                }
+              }}
+            >
+              {isVotingBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+              Approve
+            </Button>
+            <Button
+              className="flex-1 gap-2"
+              variant="destructive"
+              disabled={isVotingBusy}
+              onClick={async () => {
+                try {
+                  await voteOnExtension(campaign.solana_pubkey, milestone.index, false);
+                  const { syncVote } = await import("@/lib/api");
+                  syncVote({
+                    campaign_pubkey: campaign.solana_pubkey,
+                    milestone_index: milestone.index,
+                    wallet: publicKey!.toBase58(),
+                    approve: false,
+                    voting_power: 0,
+                  }).catch(() => {});
+                  toast.success("Vote cast — Reject");
+                } catch (err: any) {
+                  if (err?.message !== "cancelled") console.error(err);
+                }
+              }}
+            >
+              {isVotingBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+              Reject
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
