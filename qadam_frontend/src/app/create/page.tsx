@@ -53,6 +53,7 @@ export default function CreateCampaignPage() {
   const [coverPreview, setCoverPreview] = useState("");
   const [pitchVideoUrl, setPitchVideoUrl] = useState("");
   const [risks, setRisks] = useState("");
+  const [faqItems, setFaqItems] = useState<{ q: string; a: string }[]>([]);
 
   // Step 3 — Plan
   const [milestones, setMilestones] = useState<MilestoneInput[]>([
@@ -349,6 +350,39 @@ export default function CreateCampaignPage() {
                     rows={3}
                   />
                   <p className="text-xs text-muted-foreground mt-1">What could go wrong? How will you handle it?</p>
+                </div>
+
+                {/* FAQ */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">FAQ (optional)</label>
+                  <p className="text-xs text-muted-foreground mb-3">Common questions backers might ask. Shows as a tab on your campaign page.</p>
+                  {faqItems.map((item, idx) => (
+                    <div key={idx} className="border rounded-lg p-3 mb-2 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-muted-foreground">Q{idx + 1}</span>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setFaqItems(faqItems.filter((_, i) => i !== idx))} className="h-6 w-6 p-0">
+                          <Trash2 className="h-3 w-3 text-red-400" />
+                        </Button>
+                      </div>
+                      <Input
+                        value={item.q}
+                        onChange={(e) => { const u = [...faqItems]; u[idx] = { ...u[idx], q: e.target.value }; setFaqItems(u); }}
+                        placeholder="Question"
+                        className="text-sm"
+                      />
+                      <Input
+                        value={item.a}
+                        onChange={(e) => { const u = [...faqItems]; u[idx] = { ...u[idx], a: e.target.value }; setFaqItems(u); }}
+                        placeholder="Answer"
+                        className="text-sm"
+                      />
+                    </div>
+                  ))}
+                  {faqItems.length < 5 && (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setFaqItems([...faqItems, { q: "", a: "" }])} className="gap-1">
+                      <Plus className="h-3.5 w-3.5" /> Add FAQ
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -72,21 +72,16 @@ export function Header() {
 
         <div className="flex items-center gap-1">
           {connected && (
-            <button
+            <Link
+              href="/notifications"
               className="relative p-2 rounded-full hover:bg-black/[0.04] transition-colors"
               title="Notifications"
-              onClick={async () => {
-                if (unreadCount > 0) {
-                  await markNotificationsRead();
-                  queryClient.invalidateQueries({ queryKey: ["notifications"] });
-                }
-              }}
             >
               <BellIcon className="h-4 w-4 text-muted-foreground" />
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" />
               )}
-            </button>
+            </Link>
           )}
           <WalletMultiButton
             style={{
