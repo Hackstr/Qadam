@@ -346,6 +346,17 @@ export async function getAdminUserDetail(wallet: string) {
   return fetchApi<{ data: any }>(`/admin/users/${wallet}`);
 }
 
+// ═══════════════════════════════════════════
+// AI HELPER
+// ═══════════════════════════════════════════
+
+export async function aiHelp(context: string, message: string) {
+  return fetchApi<{ response: string }>("/ai/help", {
+    method: "POST",
+    body: JSON.stringify({ context, message }),
+  });
+}
+
 export async function getAdminGovernance() {
   return fetchApi<{ data: { active: any[]; history: any[] } }>("/admin/governance");
 }

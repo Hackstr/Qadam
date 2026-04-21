@@ -15,6 +15,7 @@ import {
   Lightbulb, Image, Target, Eye, Check, Rocket,
 } from "lucide-react";
 import { toast } from "sonner";
+import { AiHelperButton } from "@/components/ai-helper/ai-helper-button";
 
 interface MilestoneInput {
   title: string;
@@ -242,6 +243,14 @@ export default function CreateCampaignPage() {
                   <p className="text-xs text-muted-foreground mt-1">If a friend asks what you're building — this is what you say.</p>
                 </div>
 
+                <AiHelperButton
+                  context="title"
+                  onApply={(text) => {
+                    const lines = text.split("\n").filter(Boolean);
+                    if (lines[0] && !title) setTitle(lines[0].replace(/^[\d.)\-*]+\s*/, "").replace(/"/g, ""));
+                  }}
+                />
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium mb-1 block">Category</label>
@@ -323,6 +332,11 @@ export default function CreateCampaignPage() {
                     placeholder="What problem do you solve? Why now? Who benefits? What makes it different?"
                     rows={6}
                   />
+                  <AiHelperButton
+                    context="description"
+                    onApply={(text) => setDescription(text)}
+                    className="mt-2"
+                  />
                 </div>
 
                 <div>
@@ -349,6 +363,14 @@ export default function CreateCampaignPage() {
                 Your goal: <strong>{goalNum} SOL</strong>. Split into 1-5 milestones. Each unlocks part of funding when approved.
               </p>
             </div>
+
+            <AiHelperButton
+              context="milestones"
+              placeholder="Describe your project and its main phases..."
+              onApply={(text) => {
+                toast.success("Review the suggestions and edit your milestones below");
+              }}
+            />
 
             <div className="space-y-4">
               {milestones.map((m, idx) => (

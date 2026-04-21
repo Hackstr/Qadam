@@ -80,6 +80,9 @@ defmodule QadamBackendWeb.Router do
     # Upload cover image
     post "/upload/cover", UploadController, :cover
 
+    # AI Helper
+    post "/ai/help", AiHelperController, :help
+
     # GitHub OAuth
     get "/auth/github", GithubAuthController, :authorize
     post "/auth/github/callback", GithubAuthController, :callback
