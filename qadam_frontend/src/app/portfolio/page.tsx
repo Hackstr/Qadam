@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatSol, TIER_LABELS } from "@/lib/constants";
-import { Loader2, Wallet, TrendingUp, Gift, RotateCcw } from "lucide-react";
+import { Loader2, Wallet, TrendingUp, Gift, RotateCcw, Vote } from "lucide-react";
 import Link from "next/link";
 
 export default function PortfolioPage() {
@@ -70,7 +70,7 @@ export default function PortfolioPage() {
             <div className="space-y-1.5">
               {actions.slice(0, 5).map((a, i) => (
                 <Link key={i} href={a.href} className="flex items-center gap-2 text-sm text-amber-700 hover:text-amber-900">
-                  <span>{a.type === "vote" ? "🗳" : a.type === "claim" ? "💰" : "↩"}</span>
+                  {a.type === "vote" ? <Vote className="h-3.5 w-3.5 flex-shrink-0" /> : a.type === "claim" ? <Gift className="h-3.5 w-3.5 flex-shrink-0" /> : <RotateCcw className="h-3.5 w-3.5 flex-shrink-0" />}
                   <span className="hover:underline">{a.text}</span>
                 </Link>
               ))}

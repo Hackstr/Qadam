@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Qadam — Build step by step",
   description:
-    "Crowdfunding on Solana with AI milestone verification. SOL stays in escrow until real progress is proven.",
+    "Community-governed crowdfunding on Solana. SOL stays in escrow until backers approve each milestone.",
   openGraph: {
     title: "Qadam — Crowdfunding where progress unlocks funding",
     description: "Back projects on Solana. Community votes on milestones. Your contribution earns you a share in the project.",

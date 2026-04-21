@@ -9,8 +9,8 @@ const faqs = [
     a: "When you back a project, your SOL goes directly into a smart contract on Solana — not to the creator. The contract holds it until the community of backers votes to approve each milestone. Only then are funds released.",
   },
   {
-    q: "What if AI makes a wrong decision?",
-    a: "Every AI decision can be appealed. Creators can request human review from the Qadam team. Human reviewers check the evidence and can override the AI decision. The appeal process is built into the smart contract.",
+    q: "What if the community rejects a milestone unfairly?",
+    a: "Creators can request a deadline extension. The community votes again — extend or refund. Acceptance criteria set upfront protect both sides. If criteria are clearly met, the community is incentivized to approve (their tokens depend on project success too).",
   },
   {
     q: "How do I receive my share?",

@@ -214,12 +214,11 @@ function VoteCard({
             </span>
           </div>
           <div className="h-3 bg-red-100 rounded-full overflow-hidden">
-            <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: "60%" }} />
+            <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: "0%" }} />
           </div>
-          <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
-            <span>Quorum: 20% required</span>
-            <span>{countdown}</span>
-          </div>
+          <p className="text-xs text-muted-foreground mt-1.5 text-center">
+            Waiting for votes · Quorum: 20% required · {countdown}
+          </p>
         </div>
 
         {/* Vote buttons */}

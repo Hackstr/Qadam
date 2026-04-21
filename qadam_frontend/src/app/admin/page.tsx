@@ -15,7 +15,7 @@ import type { AdminAttentionItem, AdminActivityItem } from "@/types";
 const ATTENTION_CONFIG: Record<string, { label: string; color: string; icon: typeof AlertTriangle; link: string }> = {
   needs_review: { label: "Needs Review", color: "text-purple-600 bg-purple-50", icon: ClipboardCheck, link: "/admin/reviews" },
   overdue: { label: "Overdue", color: "text-red-600 bg-red-50", icon: Clock, link: "/admin/milestones" },
-  stuck_in_ai: { label: "Stuck in AI", color: "text-amber-600 bg-amber-50", icon: Zap, link: "/admin/milestones" },
+  stuck_in_ai: { label: "Stuck Processing", color: "text-amber-600 bg-amber-50", icon: Zap, link: "/admin/milestones" },
 };
 
 export default function AdminOverviewPage() {
@@ -43,7 +43,7 @@ export default function AdminOverviewPage() {
     { label: "Total Backers", value: d.total_backers, icon: Users, color: "text-indigo-600" },
     { label: "Pending Reviews", value: d.pending_reviews, icon: ClipboardCheck, color: d.pending_reviews > 0 ? "text-amber-600" : "text-muted-foreground", badge: d.pending_reviews > 0 },
     { label: "Success Rate", value: `${d.success_rate}%`, icon: TrendingUp, color: "text-green-600" },
-    { label: "AI Accuracy", value: d.total_decisions > 0 ? `${d.ai_accuracy}%` : "N/A", icon: Brain, color: "text-purple-600" },
+    { label: "Decisions Made", value: d.total_decisions || 0, icon: Brain, color: "text-purple-600" },
   ];
 
   return (

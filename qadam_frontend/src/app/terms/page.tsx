@@ -17,10 +17,10 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold text-foreground">2. Platform Description</h2>
           <p>
-            Qadam provides milestone-based crowdfunding with AI-powered verification. Creators submit
+            Qadam provides milestone-based crowdfunding with community governance. Creators submit
             campaigns with defined milestones. Backers contribute SOL to an on-chain escrow smart contract.
-            Funds are released to creators only after AI (and optionally human) verification of milestone
-            completion.
+            Funds are released to creators only after the community of backers votes to approve each
+            milestone completion.
           </p>
         </section>
 
