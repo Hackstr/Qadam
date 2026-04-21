@@ -7,6 +7,8 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p>Qadam &mdash; Build step by step</p>
           <div className="flex items-center gap-4">
+            <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
+            <Link href="/how-it-works" className="hover:text-foreground transition-colors">How It Works</Link>
             <Link href="/faq" className="hover:text-foreground transition-colors">FAQ</Link>
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>

@@ -500,6 +500,47 @@ function CampaignDetailContent() {
             </Link>
           </div>
         </div>
+
+        {/* Similar campaigns */}
+        <SimilarCampaigns currentId={campaign.id} category={campaign.category} />
+      </div>
+    </div>
+  );
+}
+
+function SimilarCampaigns({ currentId, category }: { currentId: string; category?: string }) {
+  const { data } = useQuery({
+    queryKey: ["similar-campaigns", category],
+    queryFn: () => getCampaign(""), // reuse campaigns list
+    enabled: false, // disabled — we'll use a simpler approach
+  });
+
+  // Simple approach: fetch from campaigns list API
+  const { data: listData } = useQuery({
+    queryKey: ["campaigns-for-similar"],
+    queryFn: async () => {
+      const { getCampaigns } = await import("@/lib/api");
+      return getCampaigns({ limit: 4 });
+    },
+  });
+
+  const similar = (listData?.data || []).filter((c: any) => c.id !== currentId).slice(0, 3);
+  if (similar.length === 0) return null;
+
+  return (
+    <div className="mt-12 pt-8 border-t">
+      <h3 className="text-lg font-semibold mb-4">Other campaigns</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {similar.map((c: any) => (
+          <Link key={c.id} href={`/campaigns/${c.id}`} className="border border-black/[0.06] rounded-xl p-4 hover:border-black/[0.12] transition-colors">
+            <p className="font-medium text-sm truncate">{c.title}</p>
+            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{c.description}</p>
+            <div className="flex justify-between items-center mt-3 text-xs text-muted-foreground">
+              <span>{formatSol(c.raised_lamports)} raised</span>
+              <Badge variant="secondary" className="text-[10px]">{c.status}</Badge>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

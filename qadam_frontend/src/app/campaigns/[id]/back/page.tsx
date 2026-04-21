@@ -166,6 +166,31 @@ export default function BackCampaignPage() {
           </CardContent>
         </Card>
 
+        {/* Understanding mechanics */}
+        <Card>
+          <CardContent className="p-5 space-y-2">
+            <p className="text-sm font-medium mb-2">Before you back, understand:</p>
+            <div className="space-y-1.5 text-xs text-muted-foreground">
+              <p className="flex items-start gap-2">
+                <span className="w-4 h-4 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0 mt-0.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500" /></span>
+                Your SOL goes to on-chain escrow, not to the creator
+              </p>
+              <p className="flex items-start gap-2">
+                <span className="w-4 h-4 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0 mt-0.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500" /></span>
+                You can vote to approve or reject each milestone
+              </p>
+              <p className="flex items-start gap-2">
+                <span className="w-4 h-4 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0 mt-0.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500" /></span>
+                If milestones fail, you can vote for a proportional refund
+              </p>
+              <p className="flex items-start gap-2">
+                <span className="w-4 h-4 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0 mt-0.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500" /></span>
+                Project tokens released per approved milestone
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Action */}
         {!connected ? (
           <p className="text-center text-muted-foreground">
