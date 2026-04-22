@@ -24,7 +24,16 @@ defmodule QadamBackendWeb.UpdateController do
         }
 
         case Campaigns.create_update(attrs) do
-          {:ok, update} -> conn |> put_status(:created) |> json(%{data: update_json(update)})
+          {:ok, update} ->
+            # Notify backers about update
+            campaign = Campaigns.get_campaign!(campaign_id)
+            QadamBackend.Notifications.Notify.notify_backers(campaign, "campaign_update",
+              "New update from #{campaign.title}",
+              update.title,
+              %{update_title: update.title, update_content: update.content})
+
+            conn |> put_status(:created) |> json(%{data: update_json(update)})
+
           {:error, changeset} -> {:error, changeset}
         end
 

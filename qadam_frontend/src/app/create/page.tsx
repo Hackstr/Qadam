@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
@@ -59,6 +59,40 @@ export default function CreateCampaignPage() {
   const [milestones, setMilestones] = useState<MilestoneInput[]>([
     { title: "", description: "", acceptance_criteria: "", amount: "", deadline: "" },
   ]);
+
+  // Draft save/restore
+  const DRAFT_KEY = "qadam_campaign_draft";
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const d = JSON.parse(saved);
+        if (d.title) setTitle(d.title);
+        if (d.pitch) setPitch(d.pitch);
+        if (d.category) setCategory(d.category);
+        if (d.goal) setGoal(d.goal);
+        if (d.description) setDescription(d.description);
+        if (d.pitchVideoUrl) setPitchVideoUrl(d.pitchVideoUrl);
+        if (d.risks) setRisks(d.risks);
+        if (d.faqItems) setFaqItems(d.faqItems);
+        if (d.milestones?.length) setMilestones(d.milestones);
+        if (d.step) setStep(d.step);
+      }
+    } catch { /* ignore corrupt draft */ }
+  }, []);
+
+  // Auto-save draft every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (title || description || milestones[0]?.title) {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          title, pitch, category, goal, description, pitchVideoUrl, risks, faqItems, milestones, step,
+        }));
+      }
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [title, pitch, category, goal, description, pitchVideoUrl, risks, faqItems, milestones, step]);
 
   // Computed
   const goalNum = parseFloat(goal) || 0;
@@ -149,6 +183,8 @@ export default function CreateCampaignPage() {
           })),
         });
 
+        localStorage.removeItem(DRAFT_KEY);
+
         const campaignId = syncResult?.data?.id;
         if (campaignId) {
           router.push(`/campaigns/${campaignId}?new=true`);
@@ -158,6 +194,7 @@ export default function CreateCampaignPage() {
         return;
       } catch (e) { console.warn("Sync failed:", e); }
 
+      localStorage.removeItem(DRAFT_KEY);
       router.push("/dashboard?created=true");
     } catch (err: any) {
       if (err?.message === "cancelled") return;

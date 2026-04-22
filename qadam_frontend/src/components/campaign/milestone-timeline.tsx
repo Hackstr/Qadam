@@ -92,17 +92,19 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
                 </div>
               )}
 
-              {/* Appeal button for rejected milestones (creator view) */}
+              {/* Action buttons for creator view */}
               {showAppeal && milestone.status === "rejected" && onAppeal && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-2 gap-1.5 text-amber-600 border-amber-200 hover:bg-amber-50"
-                  onClick={() => onAppeal(milestone.id)}
-                >
-                  <Scale className="h-3.5 w-3.5" />
-                  Request Human Review
-                </Button>
+                <div className="flex gap-2 mt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-1.5 text-amber-600 border-amber-200 hover:bg-amber-50"
+                    onClick={() => onAppeal(milestone.id)}
+                  >
+                    <Scale className="h-3.5 w-3.5" />
+                    Request Extension
+                  </Button>
+                </div>
               )}
 
               {(() => {

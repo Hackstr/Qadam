@@ -8,8 +8,9 @@ defmodule QadamBackendWeb.WebhookController do
   """
   use QadamBackendWeb, :controller
 
-  alias QadamBackend.Milestones
+  alias QadamBackend.{Milestones, Campaigns}
   alias QadamBackend.Workers.AIVerificationWorker
+  alias QadamBackend.Notifications.Notify
 
   action_fallback QadamBackendWeb.FallbackController
 
@@ -28,6 +29,13 @@ defmodule QadamBackendWeb.WebhookController do
         %{milestone_id: milestone.id}
         |> AIVerificationWorker.new()
         |> Oban.insert()
+
+        # Notify backers that evidence submitted
+        campaign = Campaigns.get_campaign!(campaign_id)
+        Notify.notify_backers(campaign, "milestone_submitted",
+          "Evidence submitted — your vote needed",
+          "Milestone #{index + 1} evidence has been submitted. Review and vote.",
+          %{milestone_title: milestone.title || "Milestone #{index + 1}"})
 
         json(conn, %{ok: true, milestone_id: milestone.id})
     end

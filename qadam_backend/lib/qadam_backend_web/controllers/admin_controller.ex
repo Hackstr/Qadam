@@ -98,6 +98,20 @@ defmodule QadamBackendWeb.AdminController do
           end
         end
 
+        # Notify about decision
+        if milestone.campaign do
+          type = if approved, do: "milestone_approved", else: "milestone_rejected"
+          title_text = if approved, do: "Milestone approved — SOL released!", else: "Milestone needs revision"
+
+          QadamBackend.Notifications.Notify.notify_creator(milestone.campaign, type, title_text,
+            "Milestone #{milestone.index + 1}: #{milestone.title || "Untitled"}",
+            %{milestone_title: milestone.title})
+
+          QadamBackend.Notifications.Notify.notify_backers(milestone.campaign, type, title_text,
+            "Milestone #{milestone.index + 1} has been #{new_status}.",
+            %{milestone_title: milestone.title})
+        end
+
         json(conn, %{data: %{id: updated.id, status: updated.status}})
 
       {:error, reason} ->
