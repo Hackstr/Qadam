@@ -3,6 +3,7 @@
 import { useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { getCampaign, getCampaignBackers, getCampaignUpdates } from "@/lib/api";
 import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
 import { ShareButtons } from "@/components/social/share-buttons";
@@ -52,6 +53,7 @@ function CampaignDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isNew = searchParams.get("new") === "true";
+  const { publicKey } = useWallet();
 
   const { data: campaignData, isLoading } = useQuery({
     queryKey: ["campaign", id],
@@ -124,6 +126,7 @@ function CampaignDetailContent() {
   const updates = updatesData?.data || [];
   const cover = CATEGORY_COVERS[campaign.category || ""] || DEFAULT_COVER;
   const CoverIcon = cover.icon;
+  const isOwner = publicKey?.toBase58() === campaign.creator_wallet;
 
   // Social share
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -180,6 +183,13 @@ function CampaignDetailContent() {
                 </Link>
                 {campaign.category && (
                   <Badge variant="secondary" className="text-xs">{campaign.category}</Badge>
+                )}
+                {isOwner && (
+                  <Link href={`/dashboard/${campaign.id}/submit`}>
+                    <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-xs cursor-pointer hover:bg-amber-100 gap-1">
+                      Manage Campaign
+                    </Badge>
+                  </Link>
                 )}
               </div>
 
@@ -463,27 +473,36 @@ function CampaignDetailContent() {
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between p-2 rounded-lg bg-green-50">
-                    <div>
-                      <p className="font-medium text-green-700">Genesis</p>
-                      <p className="text-xs text-green-600">First 50 backers</p>
-                    </div>
-                    <span className="font-semibold text-green-700">1.0x share</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded-lg bg-amber-50">
-                    <div>
-                      <p className="font-medium text-amber-700">Early</p>
-                      <p className="text-xs text-amber-600">Backers 51-250</p>
-                    </div>
-                    <span className="font-semibold text-amber-700">0.67x share</span>
-                  </div>
-                  <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50">
-                    <div>
-                      <p className="font-medium text-gray-600">Standard</p>
-                      <p className="text-xs text-gray-500">251+</p>
-                    </div>
-                    <span className="font-semibold text-gray-600">0.5x share</span>
-                  </div>
+                  {(() => {
+                    const bc = campaign.backers_count;
+                    const genesisLeft = Math.max(0, 50 - bc);
+                    const earlyLeft = bc < 50 ? 200 : Math.max(0, 250 - bc);
+                    return (
+                      <>
+                        <div className={`flex items-center justify-between p-2 rounded-lg ${tier === 1 ? "bg-green-50 ring-1 ring-green-200" : "bg-green-50/50"}`}>
+                          <div>
+                            <p className="font-medium text-green-700">Genesis</p>
+                            <p className="text-xs text-green-600">{genesisLeft > 0 ? `${genesisLeft} spots left` : "Filled"}</p>
+                          </div>
+                          <span className="font-semibold text-green-700">1.0x share</span>
+                        </div>
+                        <div className={`flex items-center justify-between p-2 rounded-lg ${tier === 2 ? "bg-amber-50 ring-1 ring-amber-200" : "bg-amber-50/50"}`}>
+                          <div>
+                            <p className="font-medium text-amber-700">Early</p>
+                            <p className="text-xs text-amber-600">{earlyLeft > 0 ? `${earlyLeft} spots left` : "Filled"}</p>
+                          </div>
+                          <span className="font-semibold text-amber-700">0.67x share</span>
+                        </div>
+                        <div className={`flex items-center justify-between p-2 rounded-lg ${tier === 3 ? "bg-gray-50 ring-1 ring-gray-200" : "bg-gray-50/30"}`}>
+                          <div>
+                            <p className="font-medium text-gray-600">Standard</p>
+                            <p className="text-xs text-gray-500">Unlimited</p>
+                          </div>
+                          <span className="font-semibold text-gray-600">0.5x share</span>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
                 <p className="text-xs text-muted-foreground pt-1">
                   Your share gives you governance rights — vote on deadline extensions and refunds.

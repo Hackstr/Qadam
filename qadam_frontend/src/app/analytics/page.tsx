@@ -36,7 +36,7 @@ export default function AnalyticsPage() {
     { icon: BarChart2, label: "Campaigns", value: s ? s.total_campaigns : "---", sub: s ? `${s.active_campaigns} active` : "" },
     { icon: Users, label: "Backers", value: s ? s.total_backers.toLocaleString() : "---", sub: "unique positions" },
     { icon: CheckCircle2, label: "Completed", value: s ? s.completed_campaigns : "---", sub: "campaigns delivered" },
-    { icon: Zap, label: "AI Speed", value: "< 60s", sub: "verification time" },
+    { icon: Zap, label: "Governance", value: "On-chain", sub: "community voting" },
     { icon: Target, label: "Success Rate", value: s ? `${s.success_rate}%` : "---", sub: "campaigns completed" },
   ];
 

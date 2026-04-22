@@ -17,6 +17,7 @@ import {
   FileText, Eye, CheckCircle2, Link2, MessageSquare,
 } from "lucide-react";
 import { AiHelperButton } from "@/components/ai-helper/ai-helper-button";
+import { toast } from "sonner";
 import Link from "next/link";
 
 export default function SubmitEvidencePage() {
@@ -108,7 +109,8 @@ export default function SubmitEvidencePage() {
         await triggerMilestoneVerification(campaign.id, currentMilestone.index);
       } catch { /* verification trigger is best-effort */ }
 
-      router.push(`/campaigns/${campaign.id}/vote`);
+      toast.success("Evidence submitted! Community voting will begin.", { duration: 6000 });
+      router.push(`/campaigns/${campaign.id}`);
     } catch (err: any) {
       if (err?.message === "cancelled") return;
       console.error("Submit failed:", err);

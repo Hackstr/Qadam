@@ -403,7 +403,29 @@ export default function CreateCampaignPage() {
               context="milestones"
               placeholder="Describe your project and its main phases..."
               onApply={(text) => {
-                toast.success("Review the suggestions and edit your milestones below");
+                // Try to parse AI response into milestone fields
+                const lines = text.split("\n").filter(l => l.trim());
+                const parsed: MilestoneInput[] = [];
+                let current: Partial<MilestoneInput> = {};
+                for (const line of lines) {
+                  const titleMatch = line.match(/^(?:\d+[\.\)]\s*|[-•]\s*)?(?:Milestone\s*\d*:?\s*)?(.{5,60})$/i);
+                  if (titleMatch && !current.title) {
+                    current.title = titleMatch[1].trim().replace(/^["']|["']$/g, "");
+                  } else if (current.title && !current.description) {
+                    current.description = line.trim();
+                    current.acceptance_criteria = "";
+                    current.amount = "";
+                    current.deadline = "";
+                    parsed.push(current as MilestoneInput);
+                    current = {};
+                  }
+                }
+                if (parsed.length > 0) {
+                  setMilestones(parsed.slice(0, MAX_MILESTONES));
+                  toast.success(`${parsed.length} milestone(s) generated — edit amounts and deadlines below`);
+                } else {
+                  toast.success("Review the suggestions and edit your milestones below");
+                }
               }}
             />
 
