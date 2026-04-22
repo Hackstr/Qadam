@@ -213,7 +213,12 @@ function DashboardContent() {
                     </Link>
                     <Link href={`/dashboard/${campaign.id}/edit`}>
                       <Button variant="outline" size="sm" className="gap-1.5 text-xs rounded-full">
-                        <BarChart2 className="h-3 w-3" /> Edit
+                        <PenLine className="h-3 w-3" /> Edit
+                      </Button>
+                    </Link>
+                    <Link href={`/dashboard/${campaign.id}/analytics`}>
+                      <Button variant="outline" size="sm" className="gap-1.5 text-xs rounded-full">
+                        <BarChart2 className="h-3 w-3" /> Analytics
                       </Button>
                     </Link>
                     <Link href={`/campaigns/${campaign.id}`}>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search } from "lucide-react";
+import { SkeletonCards } from "@/components/ui/skeleton-card";
 import { useState, useEffect } from "react";
 
 const CATEGORIES = ["Apps", "Games", "SaaS", "Tools", "Infrastructure"];
@@ -130,9 +131,7 @@ export default function CampaignsPage() {
 
       {/* Grid */}
       {isLoading ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
+        <SkeletonCards count={6} />
       ) : isError ? (
         <div className="text-center py-20">
           <p className="text-muted-foreground">Could not load campaigns.</p>

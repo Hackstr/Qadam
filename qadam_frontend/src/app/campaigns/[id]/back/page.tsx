@@ -89,7 +89,7 @@ export default function BackCampaignPage() {
         });
       } catch (e) { console.warn("Sync failed:", e); }
 
-      toast.success("Backed successfully!");
+      toast.success("You're now a backer! Check your portfolio for details.", { duration: 8000 });
       router.push(`/campaigns/${id}`);
     } catch (err: any) {
       if (err?.message === "cancelled") return;
