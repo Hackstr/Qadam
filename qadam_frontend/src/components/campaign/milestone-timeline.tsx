@@ -26,7 +26,38 @@ interface MilestoneTimelineProps {
 
 export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: MilestoneTimelineProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Horizontal milestone path summary */}
+      <div className="flex items-center gap-0 px-2">
+        {milestones.map((m, i) => {
+          const isDone = m.status === "approved";
+          const isCurrent = ["submitted", "voting_active", "under_human_review", "extension_requested"].includes(m.status);
+          const isFailed = m.status === "rejected" || m.status === "failed";
+          return (
+            <div key={m.id} className="flex items-center flex-1">
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                isDone ? "bg-green-500" :
+                isCurrent ? "bg-amber-500" :
+                isFailed ? "bg-red-400" :
+                "bg-gray-200"
+              }`}>
+                {isDone && <Check className="h-3 w-3 text-white" />}
+                {isCurrent && <div className="w-2 h-2 rounded-full bg-white" />}
+                {isFailed && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+              </div>
+              {i < milestones.length - 1 && (
+                <div className={`flex-1 h-0.5 ${isDone ? "bg-green-300" : "bg-gray-100"}`} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-xs text-muted-foreground text-center -mt-4">
+        {milestones.filter(m => m.status === "approved").length} of {milestones.length} milestones complete
+      </p>
+
+      {/* Detailed vertical list */}
+      <div className="space-y-4">
       {milestones.map((milestone, idx) => {
         const config = statusConfig[milestone.status] || statusConfig.pending;
         const Icon = config.icon;
@@ -128,6 +159,7 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

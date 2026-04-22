@@ -187,7 +187,7 @@ export default function CreateCampaignPage() {
 
         const campaignId = syncResult?.data?.id;
         if (campaignId) {
-          router.push(`/campaigns/${campaignId}?new=true`);
+          router.push(`/create/success?id=${campaignId}`);
         } else {
           router.push("/dashboard?created=true");
         }
@@ -215,38 +215,62 @@ export default function CreateCampaignPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-3xl">
-      {/* Progress indicator */}
-      <div className="flex items-center justify-between mb-8">
-        {STEPS.map((s, i) => {
-          const Icon = s.icon;
-          const isActive = step === s.num;
-          const isDone = step > s.num;
-          return (
+    <div className="container mx-auto px-4 py-10 max-w-5xl">
+      <div className="flex gap-10">
+        {/* Sidebar — step navigation */}
+        <div className="hidden md:block w-52 flex-shrink-0">
+          <p className="text-sm font-semibold text-muted-foreground mb-4">Create Campaign</p>
+          <nav className="space-y-1">
+            {STEPS.map((s) => {
+              const Icon = s.icon;
+              const isActive = step === s.num;
+              const isDone = step > s.num;
+              const labels = ["Name, pitch, goal", "Cover, description, risks", "Milestones and criteria", "Review and launch"];
+              return (
+                <button
+                  key={s.num}
+                  onClick={() => isDone && setStep(s.num)}
+                  disabled={!isDone && !isActive}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all ${
+                    isActive ? "bg-amber-50 border border-amber-200" :
+                    isDone ? "hover:bg-gray-50 cursor-pointer" :
+                    "opacity-40"
+                  }`}
+                >
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                    isActive ? "bg-amber-500 text-white" :
+                    isDone ? "bg-green-500 text-white" :
+                    "bg-gray-100 text-gray-400"
+                  }`}>
+                    {isDone ? <Check className="h-3.5 w-3.5" /> : s.num}
+                  </div>
+                  <div>
+                    <p className={`text-sm font-medium ${isActive ? "text-amber-700" : isDone ? "text-foreground" : "text-muted-foreground"}`}>
+                      {s.num}. {s.title}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">{labels[s.num - 1]}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {/* Main content */}
+        <div className="flex-1 min-w-0">
+        {/* Mobile step indicator */}
+        <div className="md:hidden flex items-center gap-2 mb-6">
+          {STEPS.map((s, i) => (
             <div key={s.num} className="flex items-center flex-1">
-              <button
-                onClick={() => isDone && setStep(s.num)}
-                disabled={!isDone}
-                className={`flex items-center gap-2 transition-colors ${
-                  isActive ? "text-amber-600" : isDone ? "text-green-600 cursor-pointer" : "text-muted-foreground/40"
-                }`}
-              >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors ${
-                  isActive ? "border-amber-500 bg-amber-50 text-amber-600"
-                  : isDone ? "border-green-500 bg-green-50 text-green-600"
-                  : "border-black/[0.08] text-muted-foreground/40"
-                }`}>
-                  {isDone ? <Check className="h-4 w-4" /> : s.num}
-                </div>
-                <span className="text-sm font-medium hidden sm:inline">{s.title}</span>
-              </button>
-              {i < STEPS.length - 1 && (
-                <div className={`flex-1 h-px mx-3 ${step > s.num ? "bg-green-300" : "bg-black/[0.06]"}`} />
-              )}
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                step === s.num ? "bg-amber-500 text-white" : step > s.num ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
+              }`}>
+                {step > s.num ? <Check className="h-3 w-3" /> : s.num}
+              </div>
+              {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-1 ${step > s.num ? "bg-green-300" : "bg-gray-100"}`} />}
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
 
       {/* Step content */}
       <div className="space-y-6">
@@ -254,9 +278,10 @@ export default function CreateCampaignPage() {
         {/* ═══ STEP 1: IDEA ═══ */}
         {step === 1 && (
           <>
-            <div className="mb-2">
-              <h2 className="text-2xl font-bold">Tell us about your project</h2>
-              <p className="text-muted-foreground mt-1">This is what backers will see first. Make it count.</p>
+            <div className="mb-6">
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 1 of 4</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Tell us about your project</h2>
+              <p className="text-muted-foreground mt-2">This is what backers will see first. Make it count.</p>
             </div>
 
             <Card>
@@ -324,9 +349,10 @@ export default function CreateCampaignPage() {
         {/* ═══ STEP 2: STORY ═══ */}
         {step === 2 && (
           <>
-            <div className="mb-2">
-              <h2 className="text-2xl font-bold">Make them feel it</h2>
-              <p className="text-muted-foreground mt-1">Add visuals and depth. Campaigns with video raise 3x more.</p>
+            <div className="mb-6">
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 2 of 4</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Make them feel it</h2>
+              <p className="text-muted-foreground mt-2">Backers invest in stories, not in forms. Show them what you're building.</p>
             </div>
 
             <Card>
@@ -429,8 +455,9 @@ export default function CreateCampaignPage() {
         {/* ═══ STEP 3: PLAN ═══ */}
         {step === 3 && (
           <>
-            <div className="mb-2">
-              <h2 className="text-2xl font-bold">Break down your path</h2>
+            <div className="mb-6">
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 3 of 4</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Break down your path</h2>
               <p className="text-muted-foreground mt-1">
                 Your goal: <strong>{goalNum} SOL</strong>. Split into 1-5 milestones. Each unlocks part of funding when approved.
               </p>
@@ -570,10 +597,11 @@ export default function CreateCampaignPage() {
         {/* ═══ STEP 4: PREVIEW ═══ */}
         {step === 4 && (
           <>
-            <div className="mb-2 flex items-center justify-between">
+            <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">Preview your campaign</h2>
-                <p className="text-muted-foreground mt-1">This is what backers will see. Launch when ready.</p>
+                <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 4 of 4</p>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Preview your campaign</h2>
+                <p className="text-muted-foreground mt-2">This is exactly what backers will see. Launch when ready.</p>
               </div>
               <Badge variant="outline" className="gap-1"><Eye className="h-3 w-3" /> Preview</Badge>
             </div>
@@ -694,7 +722,9 @@ export default function CreateCampaignPage() {
             </Button>
           )}
         </div>
+        </div>
       </div>
+    </div>
     </div>
   );
 }
