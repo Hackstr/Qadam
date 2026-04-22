@@ -185,11 +185,18 @@ function CampaignDetailContent() {
                   <Badge variant="secondary" className="text-xs">{campaign.category}</Badge>
                 )}
                 {isOwner && (
-                  <Link href={`/dashboard/${campaign.id}/submit`}>
-                    <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-xs cursor-pointer hover:bg-amber-100 gap-1">
-                      Manage Campaign
-                    </Badge>
-                  </Link>
+                  <div className="flex gap-1.5">
+                    <Link href={`/dashboard/${campaign.id}/edit`}>
+                      <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-xs cursor-pointer hover:bg-amber-100">
+                        Edit
+                      </Badge>
+                    </Link>
+                    <Link href={`/dashboard/${campaign.id}/submit`}>
+                      <Badge className="bg-green-50 text-green-700 border border-green-200 text-xs cursor-pointer hover:bg-green-100">
+                        Submit Evidence
+                      </Badge>
+                    </Link>
+                  </div>
                 )}
               </div>
 

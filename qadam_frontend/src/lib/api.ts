@@ -350,6 +350,24 @@ export async function getAdminUserDetail(wallet: string) {
 // AI HELPER
 // ═══════════════════════════════════════════
 
+export async function getMilestoneComments(milestoneId: string) {
+  return fetchApi<{ data: any[] }>(`/milestones/${milestoneId}/comments`);
+}
+
+export async function postMilestoneComment(milestoneId: string, content: string) {
+  return fetchApi<{ data: { id: string } }>(`/milestones/${milestoneId}/comments`, {
+    method: "POST",
+    body: JSON.stringify({ content }),
+  });
+}
+
+export async function updateCampaign(id: string, data: { description?: string; cover_image_url?: string; pitch_video_url?: string }) {
+  return fetchApi<{ data: { id: string } }>(`/campaigns/${id}/edit`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
 export async function aiHelp(context: string, message: string) {
   return fetchApi<{ response: string }>("/ai/help", {
     method: "POST",

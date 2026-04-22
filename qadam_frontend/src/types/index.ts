@@ -41,8 +41,14 @@ export interface Milestone {
   evidence_links?: string[];
   ai_decision?: string;
   ai_explanation?: string;
+  extension_deadline?: string;
   submitted_at?: string;
   decided_at?: string;
+  votes_count?: number;
+  votes_approve?: number;
+  votes_reject?: number;
+  votes_total_power?: number;
+  votes_approve_percent?: number;
 }
 
 export type MilestoneStatus =

@@ -36,6 +36,9 @@ defmodule QadamBackendWeb.Router do
     get "/campaigns/:campaign_id/milestones", MilestoneController, :index
     get "/milestones/:id", MilestoneController, :show
 
+    # Milestone comments (public read)
+    get "/milestones/:milestone_id/comments", CommentController, :index
+
     # Campaign updates (public read)
     get "/campaigns/:campaign_id/updates", UpdateController, :index
 
@@ -70,6 +73,12 @@ defmodule QadamBackendWeb.Router do
 
     # Backer portfolio
     get "/portfolio", BackerController, :portfolio
+
+    # Creator: edit campaign (description, cover, video)
+    put "/campaigns/:id/edit", CampaignController, :update_campaign
+
+    # Milestone comments (authenticated write)
+    post "/milestones/:milestone_id/comments", CommentController, :create
 
     # Creator: submit evidence
     post "/campaigns/:campaign_id/milestones/:index/evidence", MilestoneController, :submit_evidence

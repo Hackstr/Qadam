@@ -16,6 +16,7 @@ import {
   ExternalLink, Eye, Timer, Users,
 } from "lucide-react";
 import Link from "next/link";
+import { MilestoneComments } from "@/components/campaign/milestone-comments";
 
 function useCountdown(deadline: string | undefined) {
   const [timeLeft, setTimeLeft] = useState("");
@@ -214,11 +215,15 @@ function VoteCard({
             </span>
           </div>
           <div className="h-3 bg-red-100 rounded-full overflow-hidden">
-            <div className="h-full bg-green-500 rounded-full transition-all duration-500" style={{ width: "0%" }} />
+            <div
+              className="h-full bg-green-500 rounded-full transition-all duration-500"
+              style={{ width: `${milestone.votes_approve_percent ?? 0}%` }}
+            />
           </div>
-          <p className="text-xs text-muted-foreground mt-1.5 text-center">
-            Waiting for votes · Quorum: 20% required · {countdown}
-          </p>
+          <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
+            <span>{milestone.votes_count ?? 0} vote(s) cast</span>
+            <span>Quorum: 20% · {countdown}</span>
+          </div>
         </div>
 
         {/* Vote buttons */}
@@ -277,6 +282,9 @@ function VoteCard({
             </Button>
           </div>
         )}
+
+        {/* Discussion */}
+        <MilestoneComments milestoneId={milestone.id} />
       </CardContent>
     </Card>
   );

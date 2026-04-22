@@ -1,5 +1,6 @@
 defmodule QadamBackendWeb.CampaignController do
   use QadamBackendWeb, :controller
+  import Ecto.Query
 
   alias QadamBackend.Campaigns
   alias QadamBackend.Backers
@@ -29,6 +30,22 @@ defmodule QadamBackendWeb.CampaignController do
     case Campaigns.get_campaign_with_milestones(id) do
       nil -> {:error, :not_found}
       campaign -> json(conn, %{data: campaign_detail_json(campaign)})
+    end
+  end
+
+  @doc "Creator updates campaign details (description, cover, video)"
+  def update_campaign(conn, %{"id" => id} = params) do
+    wallet = conn.assigns.current_wallet
+    campaign = Campaigns.get_campaign!(id)
+
+    if campaign.creator_wallet != wallet do
+      conn |> put_status(:forbidden) |> json(%{error: "Not the campaign creator"})
+    else
+      allowed = Map.take(params, ~w(description cover_image_url pitch_video_url))
+      case Campaigns.update_campaign(campaign, allowed) do
+        {:ok, updated} -> json(conn, %{data: %{id: updated.id, status: "updated"}})
+        {:error, changeset} -> {:error, changeset}
+      end
     end
   end
 
@@ -74,7 +91,7 @@ defmodule QadamBackendWeb.CampaignController do
   end
 
   defp milestone_json(m) do
-    %{
+    base = %{
       id: m.id,
       index: m.index,
       title: m.title,
@@ -82,12 +99,35 @@ defmodule QadamBackendWeb.CampaignController do
       acceptance_criteria: m.acceptance_criteria,
       amount_lamports: m.amount_lamports,
       deadline: m.deadline,
+      extension_deadline: m.extension_deadline,
       status: m.status,
       ai_decision: m.ai_decision,
       ai_explanation: m.ai_explanation,
+      evidence_text: m.evidence_text,
+      evidence_links: m.evidence_links,
       submitted_at: m.submitted_at,
       decided_at: m.decided_at
     }
+
+    # Add vote counts for milestones in voting state
+    if m.status in ["voting_active", "extension_requested"] do
+      votes = QadamBackend.Repo.all(
+        from(v in QadamBackend.Governance.ExtensionVote,
+          where: v.milestone_id == ^m.id)
+      )
+      approve_power = votes |> Enum.filter(& &1.vote_approve) |> Enum.reduce(0, fn v, acc -> acc + (v.voting_power || 0) end)
+      reject_power = votes |> Enum.reject(& &1.vote_approve) |> Enum.reduce(0, fn v, acc -> acc + (v.voting_power || 0) end)
+      total_power = approve_power + reject_power
+
+      base
+      |> Map.put(:votes_count, length(votes))
+      |> Map.put(:votes_approve, approve_power)
+      |> Map.put(:votes_reject, reject_power)
+      |> Map.put(:votes_total_power, total_power)
+      |> Map.put(:votes_approve_percent, if(total_power > 0, do: round(approve_power / total_power * 100), else: 0))
+    else
+      base
+    end
   end
 
   defp position_json(p) do
