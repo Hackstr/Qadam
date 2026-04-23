@@ -135,57 +135,65 @@ function CampaignDetailContent() {
 
   return (
     <div>
-      {/* Cover hero */}
+      {/* Cover hero — taller, better positioning */}
       {campaign.cover_image_url ? (
-        <div className="h-56 overflow-hidden">
-          <img src={campaign.cover_image_url} alt={campaign.title} className="w-full h-full object-cover object-[center_80%]" />
+        <div className="h-64 md:h-80 overflow-hidden relative">
+          <img src={campaign.cover_image_url} alt={campaign.title} className="w-full h-full object-cover object-[center_75%]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+          <div className="absolute bottom-4 left-6">
+            {campaign.category && (
+              <Badge className="bg-white/90 text-foreground text-xs">{campaign.category}</Badge>
+            )}
+          </div>
         </div>
       ) : (
         <div
-          className="h-48 flex items-center justify-center relative"
+          className="h-64 md:h-80 flex items-center justify-center relative"
           style={{ background: `linear-gradient(135deg, ${cover.from}, ${cover.to})` }}
         >
-          <CoverIcon className="h-12 w-12 text-white/70" />
-          <span className="absolute bottom-4 left-6 text-[11px] font-medium uppercase tracking-widest text-white/50">
-            {campaign.category || "Project"}
-          </span>
+          <CoverIcon className="h-16 w-16 text-white/60" />
+          <div className="absolute bottom-4 left-6">
+            {campaign.category && (
+              <Badge className="bg-white/20 text-white text-xs border-white/30">{campaign.category}</Badge>
+            )}
+          </div>
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Back nav */}
+      <div className="container mx-auto px-4 py-6">
+        {/* Back nav — subtle */}
         <Link
           href="/campaigns"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-4"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Discover
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Discover
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main */}
           <div className="lg:col-span-2 space-y-6">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold leading-tight">{campaign.title}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold leading-tight tracking-tight">{campaign.title}</h1>
 
-              {/* Creator info */}
-              <div className="flex items-center gap-3 mt-3 flex-wrap">
+              {/* Creator info — richer */}
+              <div className="flex items-center gap-3 mt-4 flex-wrap">
                 <Link
                   href={`/profile/${campaign.creator_wallet}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-amber-600 transition-colors"
+                  className="flex items-center gap-2.5 text-sm hover:text-amber-600 transition-colors"
                 >
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                     {(campaign.creator_display_name || campaign.creator_wallet)[0].toUpperCase()}
                   </div>
-                  <span className={campaign.creator_display_name ? "font-medium" : "font-mono text-xs"}>
-                    {campaign.creator_display_name || `${campaign.creator_wallet.slice(0, 6)}...${campaign.creator_wallet.slice(-4)}`}
-                  </span>
+                  <div>
+                    <span className={`block text-sm ${campaign.creator_display_name ? "font-semibold" : "font-mono text-xs"}`}>
+                      {campaign.creator_display_name || `${campaign.creator_wallet.slice(0, 6)}...${campaign.creator_wallet.slice(-4)}`}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">Creator</span>
+                  </div>
                 </Link>
-                {campaign.category && (
-                  <Badge variant="secondary" className="text-xs">{campaign.category}</Badge>
-                )}
                 {isOwner && (
-                  <div className="flex gap-1.5">
+                  <div className="flex gap-1.5 ml-auto">
                     <Link href={`/dashboard/${campaign.id}/edit`}>
                       <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-xs cursor-pointer hover:bg-amber-100">
                         Edit
@@ -200,7 +208,9 @@ function CampaignDetailContent() {
                 )}
               </div>
 
-              <ShareButtons title={campaign.title} description={campaign.description} />
+              <div className="mt-4">
+                <ShareButtons title={campaign.title} description={campaign.description} />
+              </div>
 
               {campaign.pitch_video_url && (() => {
                 const url = campaign.pitch_video_url!;
