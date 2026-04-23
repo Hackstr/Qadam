@@ -21,8 +21,8 @@ const faqs = [
     a: "Yes. If a milestone fails and backers vote for refund (instead of a deadline extension), remaining SOL is returned proportionally to all backers based on their contribution.",
   },
   {
-    q: "What are Genesis / Early / Standard tiers?",
-    a: "The first 50 backers get Genesis tier (1.0x share per SOL). Next 200 get Early tier (0.67x). Everyone after is Standard (0.5x). Back early for a higher share.",
+    q: "What are Founders / Early Backers / Supporters tiers?",
+    a: "The first 50 backers are Founders (1.0 ownership points per SOL). Next 200 are Early Backers (0.67 points). Everyone after is Supporters (0.5 points). Back early for more ownership.",
   },
   {
     q: "How does milestone verification work?",
@@ -67,7 +67,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 export default function FaqPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold tracking-tight mb-2">Frequently Asked Questions</h1>
+      <h1 className="font-display text-3xl tracking-tight mb-2">Frequently Asked Questions</h1>
       <p className="text-muted-foreground mb-8">
         Everything you need to know about backing and creating campaigns on Qadam.
       </p>

@@ -46,15 +46,15 @@ const STEPS = [
 ];
 
 const TIERS = [
-  { name: "Genesis", ratio: "1.0x", backers: "First 50 backers", color: "bg-green-50 text-green-700 border-green-200" },
-  { name: "Early", ratio: "0.67x", backers: "Backers 51-250", color: "bg-amber-50 text-amber-700 border-amber-200" },
-  { name: "Standard", ratio: "0.5x", backers: "Everyone after 250", color: "bg-gray-50 text-gray-600 border-gray-200" },
+  { name: "Founders", ratio: "1.0 pts/SOL", backers: "First 50 backers", color: "bg-green-50 text-green-700 border-green-200" },
+  { name: "Early Backers", ratio: "0.67 pts/SOL", backers: "Backers 51-250", color: "bg-amber-50 text-amber-700 border-amber-200" },
+  { name: "Supporters", ratio: "0.5 pts/SOL", backers: "Everyone after 250", color: "bg-gray-50 text-gray-600 border-gray-200" },
 ];
 
 export default function HowItWorksPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold tracking-tight mb-2">How Qadam Works</h1>
+      <h1 className="font-display text-3xl tracking-tight mb-2">How Qadam Works</h1>
       <p className="text-muted-foreground mb-12">The complete flow from idea to funded project.</p>
 
       {/* Steps */}

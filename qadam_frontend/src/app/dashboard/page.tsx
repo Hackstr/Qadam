@@ -81,7 +81,7 @@ function DashboardContent() {
       {/* Header — personalized */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+          <h1 className="font-display text-3xl md:text-4xl tracking-tight">
             {displayName ? `Welcome back, ${displayName}` : "My Campaigns"}
           </h1>
           <p className="text-muted-foreground mt-1">

@@ -35,7 +35,7 @@ function SuccessContent() {
         <div className="w-24 h-24 mx-auto rounded-full bg-amber-50 flex items-center justify-center mb-6">
           <Rocket className="h-12 w-12 text-amber-500" />
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
+        <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-3">
           Your campaign is LIVE on Solana!
         </h1>
         {campaign && (

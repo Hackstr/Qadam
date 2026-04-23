@@ -243,7 +243,7 @@ export default function Home() {
             },
             {
               headline: "Backers become co-owners.",
-              body: "When you fund a project, you don't just donate — you earn project tokens. Early backers get Genesis tier. Vote on key decisions together.",
+              body: "When you fund a project, you don't just donate — you earn ownership points. Founders tier backers earn the most. Vote on key decisions together.",
             },
           ].map((block, i) => (
             <motion.div
@@ -342,7 +342,7 @@ export default function Home() {
             {[
               { q: "How does escrow work?", a: "Your SOL goes directly into a smart contract on Solana — not to the creator. Released only when community votes to approve each milestone." },
               { q: "What if a milestone fails?", a: "Backers vote on-chain — either extend the deadline or trigger a proportional refund. The smart contract enforces the outcome automatically." },
-              { q: "What do I get as a backer?", a: "Project tokens representing your share. Early backers get Genesis tier (1.0x). You also get governance rights — vote on every decision." },
+              { q: "What do I get as a backer?", a: "Ownership points proportional to your contribution. Founders tier earns 1.0 points per SOL. You also get governance rights — vote on every milestone decision." },
             ].map((faq, i) => (
               <details key={i} className="group border border-black/[0.06] rounded-xl">
                 <summary className="flex items-center justify-between p-4 cursor-pointer font-medium text-sm">

@@ -89,7 +89,7 @@ export default function AdminSettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ReadOnlyField label="Genesis (Tier 1)" value="First 50 backers \u2014 1.0x" hint="TIER_1_MAX_BACKERS = 50, full token rate" />
+            <ReadOnlyField label="Founders (Tier 1)" value="First 50 backers \u2014 1.0 pts/SOL" hint="TIER_1_MAX_BACKERS = 50, full ownership points rate" />
             <ReadOnlyField label="Early (Tier 2)" value="Backers 51-250 \u2014 0.67x" hint="TIER_2_MAX_BACKERS = 250, TIER_2_RATIO_BPS = 6700" />
             <ReadOnlyField label="Standard (Tier 3)" value="251+ \u2014 0.5x" hint="TIER_3_RATIO_BPS = 5000" />
           </CardContent>

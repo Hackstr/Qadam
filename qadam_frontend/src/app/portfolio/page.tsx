@@ -51,7 +51,7 @@ export default function PortfolioPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-1">Your Portfolio</h1>
+      <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-1">Your Portfolio</h1>
       <p className="text-muted-foreground mb-8">Track your backed projects, vote on milestones, claim tokens.</p>
 
       {/* Stats — 4 colored cards */}

@@ -107,14 +107,14 @@ export default function CampaignAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="text-sm">Genesis (1.0x)</span>
+                  <span className="text-sm">Founders (1.0 pts)</span>
                 </div>
                 <span className="font-semibold tabular-nums">{genesisBakers}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-sm">Early (0.67x)</span>
+                  <span className="text-sm">Early Backers (0.67 pts)</span>
                 </div>
                 <span className="font-semibold tabular-nums">{earlyBackers}</span>
               </div>
