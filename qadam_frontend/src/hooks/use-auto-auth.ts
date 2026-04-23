@@ -16,13 +16,20 @@ export function useAutoAuth() {
   const { connected, publicKey, signMessage } = useWallet();
   const { setAuth, clearAuth } = useAuthStore();
   const authInProgress = useRef(false);
+  const wasEverConnected = useRef(false);
 
   useEffect(() => {
-    // Not connected — clear everything
+    // Track if wallet was ever connected in this session
+    if (connected) wasEverConnected.current = true;
+
+    // Not connected
     if (!connected || !publicKey) {
-      const hadToken = localStorage.getItem("qadam_token");
-      if (hadToken) {
+      // Only clear token on EXPLICIT disconnect (not page load)
+      // On page load: connected starts false → then becomes true
+      // We don't want to wipe token during that transition
+      if (wasEverConnected.current) {
         clearAuth();
+        wasEverConnected.current = false;
       }
       authInProgress.current = false;
       return;
