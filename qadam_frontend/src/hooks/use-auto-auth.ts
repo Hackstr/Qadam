@@ -23,10 +23,18 @@ export function useAutoAuth() {
       return;
     }
 
-    // Already authenticated with this wallet
-    if (token && wallet === publicKey?.toBase58()) return;
+    // Check localStorage directly (zustand may not be hydrated yet)
+    const savedToken = localStorage.getItem("qadam_token");
+    const savedWallet = localStorage.getItem("qadam_wallet");
 
-    // Already attempted this session
+    // Already authenticated with this wallet
+    if (savedToken && savedWallet === publicKey?.toBase58()) {
+      // Re-hydrate store if zustand lost state
+      if (!token) setAuth(savedToken, savedWallet);
+      return;
+    }
+
+    // Already attempted this session — don't ask again
     if (authAttempted.current) return;
 
     // No signMessage support (some wallets)
