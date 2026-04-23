@@ -4,14 +4,13 @@ import { useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { getCampaign, getCampaignBackers, getCampaignUpdates } from "@/lib/api";
+import { getCampaign, getCampaignBackers, getCampaignUpdates, getCampaigns } from "@/lib/api";
 import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
-import { ShareButtons } from "@/components/social/share-buttons";
+import { MilestoneComments } from "@/components/campaign/milestone-comments";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import {
   formatSol, formatPercent, TIER_LABELS,
   TIER_1_MAX_BACKERS, TIER_2_MAX_BACKERS, SOLANA_NETWORK,
@@ -20,12 +19,14 @@ import {
   Users, Wallet, ArrowRight, Loader2, ArrowLeft,
   ExternalLink, Share2, Smartphone, Gamepad2,
   BarChart3, Wrench, Globe, Rocket, AlertCircle,
+  MapPin, Calendar, Crown, Star, UserCheck,
+  Copy, CheckCircle2, Clock, Vote,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 
-// Category covers — same as campaign-card
 const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
   Apps:           { from: "#1E3A8A", to: "#3B82F6", icon: Smartphone },
   Games:          { from: "#5B21B6", to: "#A855F7", icon: Gamepad2 },
@@ -41,11 +42,7 @@ function getExplorerUrl(address: string) {
 }
 
 export default function CampaignDetailPage() {
-  return (
-    <Suspense>
-      <CampaignDetailContent />
-    </Suspense>
-  );
+  return <Suspense><CampaignDetailContent /></Suspense>;
 }
 
 function CampaignDetailContent() {
@@ -54,19 +51,18 @@ function CampaignDetailContent() {
   const searchParams = useSearchParams();
   const isNew = searchParams.get("new") === "true";
   const { publicKey } = useWallet();
+  const [copied, setCopied] = useState(false);
 
   const { data: campaignData, isLoading } = useQuery({
     queryKey: ["campaign", id],
     queryFn: () => getCampaign(id),
     enabled: !!id,
   });
-
   const { data: backersData } = useQuery({
     queryKey: ["campaign-backers", id],
     queryFn: () => getCampaignBackers(id),
     enabled: !!id,
   });
-
   const { data: updatesData } = useQuery({
     queryKey: ["campaign-updates", id],
     queryFn: () => getCampaignUpdates(id),
@@ -76,244 +72,259 @@ function CampaignDetailContent() {
   const campaign = campaignData?.data;
 
   useEffect(() => {
-    if (campaign?.title) {
-      document.title = `${campaign.title} | Qadam`;
-    }
+    if (campaign?.title) document.title = `${campaign.title} | Qadam`;
     return () => { document.title = "Qadam — Build step by step"; };
   }, [campaign?.title]);
 
   useEffect(() => {
     if (isNew && campaign) {
-      const url = `${window.location.origin}/campaigns/${id}`;
       toast.success("Campaign is live on Solana!", {
         description: "Share it to get your first backers",
         duration: 10000,
-        action: {
-          label: "Copy link",
-          onClick: () => {
-            navigator.clipboard.writeText(url);
-            toast.success("Link copied!");
-          },
-        },
+        action: { label: "Copy link", onClick: () => { navigator.clipboard.writeText(`${window.location.origin}/campaigns/${id}`); toast.success("Link copied!"); } },
       });
     }
   }, [isNew, campaign, id]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-32">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (!campaign) {
-    return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold mb-4">Campaign not found</h1>
-        <Link href="/campaigns">
-          <Button variant="outline">← Back to Discover</Button>
-        </Link>
-      </div>
-    );
-  }
+  if (isLoading) return <div className="flex justify-center py-32"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+  if (!campaign) return (
+    <div className="container mx-auto px-4 py-20 text-center">
+      <h1 className="text-2xl font-bold mb-4">Campaign not found</h1>
+      <Link href="/campaigns"><Button variant="outline">Back to Discover</Button></Link>
+    </div>
+  );
 
   const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
-  const tier = campaign.backers_count < TIER_1_MAX_BACKERS ? 1
-    : campaign.backers_count < TIER_2_MAX_BACKERS ? 2 : 3;
+  const tier = campaign.backers_count < TIER_1_MAX_BACKERS ? 1 : campaign.backers_count < TIER_2_MAX_BACKERS ? 2 : 3;
   const tierInfo = TIER_LABELS[tier as 1 | 2 | 3];
   const backers = backersData?.data || [];
   const updates = updatesData?.data || [];
   const cover = CATEGORY_COVERS[campaign.category || ""] || DEFAULT_COVER;
   const CoverIcon = cover.icon;
   const isOwner = publicKey?.toBase58() === campaign.creator_wallet;
-
-  // Social share
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-  const tweetText = `Just found "${campaign.title}" on @QadamProtocol — community-governed crowdfunding on Solana. SOL stays in escrow until backers approve each milestone.`;
-  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
+  const foundersSpotsLeft = Math.max(0, TIER_1_MAX_BACKERS - campaign.backers_count);
+  const descriptionFirst = campaign.description?.split("\n")[0] || "";
 
   return (
     <div>
-      {/* Cover hero — taller, better positioning */}
-      {campaign.cover_image_url ? (
-        <div className="h-64 md:h-80 overflow-hidden relative">
-          <img src={campaign.cover_image_url} alt={campaign.title} className="w-full h-full object-cover object-[center_75%]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-          <div className="absolute bottom-4 left-6">
-            {campaign.category && (
-              <Badge className="bg-white/90 text-foreground text-xs">{campaign.category}</Badge>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div
-          className="h-64 md:h-80 flex items-center justify-center relative"
-          style={{ background: `linear-gradient(135deg, ${cover.from}, ${cover.to})` }}
-        >
-          <CoverIcon className="h-16 w-16 text-white/60" />
-          <div className="absolute bottom-4 left-6">
-            {campaign.category && (
-              <Badge className="bg-white/20 text-white text-xs border-white/30">{campaign.category}</Badge>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="container mx-auto px-4 py-6">
-        {/* Back nav — subtle */}
-        <Link
-          href="/campaigns"
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-4"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Discover
+      {/* ═══ HERO — Split 60/40 ═══ */}
+      <div className="container mx-auto px-4 pt-6 pb-8">
+        <Link href="/campaigns" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-4">
+          <ArrowLeft className="h-3.5 w-3.5" /> Discover
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main */}
-          <div className="lg:col-span-2 space-y-6">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold leading-tight tracking-tight">{campaign.title}</h1>
-
-              {/* Creator info — richer */}
-              <div className="flex items-center gap-3 mt-4 flex-wrap">
-                <Link
-                  href={`/profile/${campaign.creator_wallet}`}
-                  className="flex items-center gap-2.5 text-sm hover:text-amber-600 transition-colors"
-                >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                    {(campaign.creator_display_name || campaign.creator_wallet)[0].toUpperCase()}
-                  </div>
-                  <div>
-                    <span className={`block text-sm ${campaign.creator_display_name ? "font-semibold" : "font-mono text-xs"}`}>
-                      {campaign.creator_display_name || `${campaign.creator_wallet.slice(0, 6)}...${campaign.creator_wallet.slice(-4)}`}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">Creator</span>
-                  </div>
-                </Link>
-                {isOwner && (
-                  <div className="flex gap-1.5 ml-auto">
-                    <Link href={`/dashboard/${campaign.id}/edit`}>
-                      <Badge className="bg-amber-50 text-amber-700 border border-amber-200 text-xs cursor-pointer hover:bg-amber-100">
-                        Edit
-                      </Badge>
-                    </Link>
-                    <Link href={`/dashboard/${campaign.id}/submit`}>
-                      <Badge className="bg-green-50 text-green-700 border border-green-200 text-xs cursor-pointer hover:bg-green-100">
-                        Submit Evidence
-                      </Badge>
-                    </Link>
-                  </div>
-                )}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* Left — Cover image */}
+          <div className="rounded-2xl overflow-hidden aspect-[4/3] relative">
+            {campaign.cover_image_url ? (
+              <img src={campaign.cover_image_url} alt={campaign.title} className="w-full h-full object-cover object-[center_70%]" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${cover.from}, ${cover.to})` }}>
+                <CoverIcon className="h-16 w-16 text-white/50" />
               </div>
+            )}
+            {campaign.category && (
+              <Badge className="absolute top-4 left-4 bg-white/90 text-foreground text-xs">{campaign.category}</Badge>
+            )}
+          </div>
 
-              <div className="mt-4">
-                <ShareButtons title={campaign.title} description={campaign.description} />
-              </div>
+          {/* Right — Title + meta + CTA */}
+          <div className="flex flex-col justify-center">
+            <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight">{campaign.title}</h1>
+            {descriptionFirst && (
+              <p className="text-muted-foreground mt-3 leading-relaxed">{descriptionFirst}</p>
+            )}
 
-              {campaign.pitch_video_url && (() => {
-                const url = campaign.pitch_video_url!;
-                const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-                const loomMatch = url.match(/loom\.com\/share\/([\w-]+)/);
-                if (ytMatch) {
-                  return (
-                    <div className="mt-4 aspect-video rounded-xl overflow-hidden border">
-                      <iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
-                    </div>
-                  );
-                }
-                if (loomMatch) {
-                  return (
-                    <div className="mt-4 aspect-video rounded-xl overflow-hidden border">
-                      <iframe src={`https://www.loom.com/embed/${loomMatch[1]}`} className="w-full h-full" allowFullScreen />
-                    </div>
-                  );
-                }
-                return (
-                  <a href={url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm text-amber-600 hover:underline">
-                    Watch pitch video <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                );
-              })()}
+            <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> Almaty, Kazakhstan</span>
+              <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {new Date(campaign.inserted_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
             </div>
 
-            <Separator />
+            <div className="flex items-center gap-3 mt-6">
+              {campaign.status === "active" && (
+                <Link href={`/campaigns/${campaign.id}/back`}>
+                  <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full px-8" size="lg">
+                    <Wallet className="h-4 w-4" /> Back This Project <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              )}
+              <Button
+                variant="outline"
+                className="gap-2 rounded-full"
+                onClick={() => {
+                  navigator.clipboard.writeText(shareUrl);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                  toast.success("Link copied!");
+                }}
+              >
+                {copied ? <CheckCircle2 className="h-4 w-4" /> : <Share2 className="h-4 w-4" />}
+                {copied ? "Copied" : "Share"}
+              </Button>
+            </div>
 
+            {isOwner && (
+              <div className="flex gap-2 mt-4">
+                <Link href={`/dashboard/${campaign.id}/edit`}>
+                  <Button variant="outline" size="sm" className="rounded-full text-xs">Edit Campaign</Button>
+                </Link>
+                <Link href={`/dashboard/${campaign.id}/submit`}>
+                  <Button size="sm" className="rounded-full text-xs bg-green-600 hover:bg-green-700 text-white">Submit Evidence</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ═══ CREATOR STRIP ═══ */}
+      <div className="border-y border-black/[0.06]">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <Link href={`/profile/${campaign.creator_wallet}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-sm font-bold">
+              {(campaign.creator_display_name || campaign.creator_wallet)[0].toUpperCase()}
+            </div>
+            <div>
+              <p className="font-semibold text-sm">{campaign.creator_display_name || `${campaign.creator_wallet.slice(0, 6)}...${campaign.creator_wallet.slice(-4)}`}</p>
+              <p className="text-xs text-muted-foreground">Creator · Almaty, Kazakhstan</p>
+            </div>
+          </Link>
+          <Link href={`/profile/${campaign.creator_wallet}`} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+            View profile <ArrowRight className="h-3 w-3" />
+          </Link>
+        </div>
+      </div>
+
+      {/* ═══ MAIN CONTENT + SIDEBAR ═══ */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left — Content */}
+          <div className="lg:col-span-2">
             <Tabs defaultValue="about">
-              <TabsList className="flex-wrap">
-                <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="milestones">Milestones</TabsTrigger>
-                <TabsTrigger value="updates">Updates ({updates.length})</TabsTrigger>
-                <TabsTrigger value="backers">Backers ({campaign.backers_count})</TabsTrigger>
+              <TabsList className="border-b border-black/[0.06] bg-transparent p-0 h-auto gap-6">
+                <TabsTrigger value="about" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-0 pb-3 text-sm">About</TabsTrigger>
+                <TabsTrigger value="milestones" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-0 pb-3 text-sm">Milestones</TabsTrigger>
+                <TabsTrigger value="updates" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-0 pb-3 text-sm flex items-center gap-1.5">Updates {updates.length > 0 && <Badge className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0">{updates.length}</Badge>}</TabsTrigger>
+                <TabsTrigger value="backers" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-0 pb-3 text-sm flex items-center gap-1.5">Backers {campaign.backers_count > 0 && <Badge className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0">{campaign.backers_count}</Badge>}</TabsTrigger>
                 {campaign.faq && campaign.faq.length > 0 && (
-                  <TabsTrigger value="faq">FAQ</TabsTrigger>
+                  <TabsTrigger value="faq" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-0 pb-3 text-sm">FAQ</TabsTrigger>
                 )}
               </TabsList>
 
-              {/* About tab */}
-              <TabsContent value="about" className="mt-6 space-y-6">
+              {/* About */}
+              <TabsContent value="about" className="mt-8 space-y-8">
                 {campaign.description && (
-                  <div className="prose prose-sm max-w-none">
-                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{campaign.description}</p>
-                  </div>
+                  <p className="text-lg leading-relaxed">{campaign.description}</p>
                 )}
 
-                {/* Risks & Challenges */}
+                {/* Pitch video */}
+                {campaign.pitch_video_url && (() => {
+                  const url = campaign.pitch_video_url!;
+                  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                  const loomMatch = url.match(/loom\.com\/share\/([\w-]+)/);
+                  if (ytMatch) return <div className="aspect-video rounded-xl overflow-hidden border"><iframe src={`https://www.youtube.com/embed/${ytMatch[1]}`} className="w-full h-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /></div>;
+                  if (loomMatch) return <div className="aspect-video rounded-xl overflow-hidden border"><iframe src={`https://www.loom.com/embed/${loomMatch[1]}`} className="w-full h-full" allowFullScreen /></div>;
+                  return <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm text-amber-600 hover:underline flex items-center gap-1">Watch pitch video <ExternalLink className="h-3.5 w-3.5" /></a>;
+                })()}
+
+                {/* Risks */}
                 {campaign.risks && (
-                  <div className="p-4 bg-amber-50/50 border border-amber-100/50 rounded-xl">
-                    <h3 className="text-sm font-semibold text-amber-800 mb-2 flex items-center gap-1.5">
-                      <AlertCircle className="h-4 w-4" />
-                      Risks & Challenges
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{campaign.risks}</p>
+                  <div className="p-5 bg-amber-50/50 border-l-4 border-amber-400 rounded-r-xl">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertCircle className="h-4 w-4 text-amber-600" />
+                      <h3 className="font-semibold text-sm text-amber-800">Risks & Challenges</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{campaign.risks}</p>
                   </div>
                 )}
 
-                {!campaign.description && !campaign.risks && (
-                  <p className="text-muted-foreground">No description provided yet.</p>
+                {/* Milestone journey */}
+                {campaign.milestones && campaign.milestones.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold">Milestone journey</h3>
+                      <button onClick={() => {}} className="text-xs text-amber-600 hover:underline">View all milestones →</button>
+                    </div>
+                    <div className="flex items-center gap-0">
+                      {campaign.milestones.map((m, i) => {
+                        const isDone = m.status === "approved";
+                        const isVoting = ["voting_active", "submitted", "extension_requested"].includes(m.status);
+                        return (
+                          <div key={m.id} className="flex items-center flex-1">
+                            <div className="flex flex-col items-center gap-1.5">
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                                isDone ? "bg-green-500" : isVoting ? "bg-purple-500 ring-4 ring-purple-100" : "bg-gray-200"
+                              }`}>
+                                {isDone && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                {isVoting && <div className="w-2 h-2 rounded-full bg-white" />}
+                                {!isDone && !isVoting && <span className="text-[9px] font-bold text-gray-400">{i + 1}</span>}
+                              </div>
+                              <div className="text-center">
+                                <p className="text-[10px] font-medium truncate max-w-[80px]">{m.title || `M${i + 1}`}</p>
+                                <p className={`text-[9px] ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
+                                  {isDone ? "Approved" : isVoting ? "Voting" : "Pending"}
+                                </p>
+                                <p className="text-[9px] text-muted-foreground">{formatSol(m.amount_lamports)}</p>
+                              </div>
+                            </div>
+                            {i < campaign.milestones!.length - 1 && (
+                              <div className={`flex-1 h-0.5 mx-1 ${isDone ? "bg-green-300" : "bg-gray-100"}`} />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
               </TabsContent>
 
-              {/* Milestones tab */}
-              <TabsContent value="milestones" className="mt-6">
+              {/* Milestones */}
+              <TabsContent value="milestones" className="mt-8">
                 {campaign.milestones && campaign.milestones.length > 0 ? (
-                  <MilestoneTimeline milestones={campaign.milestones} />
+                  <MilestoneTimeline milestones={campaign.milestones} showAppeal={isOwner} />
+                ) : <p className="text-muted-foreground">No milestones yet</p>}
+              </TabsContent>
+
+              {/* Updates */}
+              <TabsContent value="updates" className="mt-8">
+                {updates.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-8 text-center">No updates yet from the creator.</p>
                 ) : (
-                  <p className="text-muted-foreground">No milestones yet</p>
+                  <div className="space-y-4">
+                    {updates.map((u) => (
+                      <div key={u.id} className="border border-black/[0.06] rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-semibold text-sm">{u.title}</h4>
+                          <span className="text-xs text-muted-foreground">{new Date(u.inserted_at).toLocaleDateString()}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{u.content}</p>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </TabsContent>
 
-              {/* Backers tab */}
-              <TabsContent value="backers" className="mt-6">
+              {/* Backers */}
+              <TabsContent value="backers" className="mt-8">
                 {backers.length === 0 ? (
                   <div className="text-center py-10 text-muted-foreground">
                     <Users className="h-8 w-8 mx-auto mb-2 text-muted-foreground/30" />
                     <p>No backers yet. Be the first!</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {backers.map((backer, idx) => (
-                      <div key={idx} className="flex items-center justify-between py-2 border-b border-black/[0.04] last:border-0">
+                  <div className="space-y-2">
+                    {backers.map((b, idx) => (
+                      <div key={idx} className="flex items-center justify-between py-2.5 border-b border-black/[0.04] last:border-0">
                         <div className="flex items-center gap-3">
-                          <span className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
-                            {idx + 1}
-                          </span>
-                          <a
-                            href={getExplorerUrl(backer.wallet_address)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-mono text-sm hover:text-amber-600 transition-colors flex items-center gap-1"
-                          >
-                            {backer.wallet_address.slice(0, 4)}...{backer.wallet_address.slice(-4)}
-                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                          <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium">{idx + 1}</span>
+                          <a href={getExplorerUrl(b.wallet_address)} target="_blank" rel="noopener noreferrer" className="font-mono text-xs hover:text-amber-600">
+                            {b.wallet_address.slice(0, 4)}...{b.wallet_address.slice(-4)}
                           </a>
                         </div>
-                        <div className="text-right text-sm">
-                          <p className="font-medium">{formatSol(backer.amount_lamports)}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Tier {backer.tier} · {backer.tokens_allocated.toLocaleString()} share
-                          </p>
+                        <div className="flex items-center gap-3 text-sm">
+                          <span className="text-xs text-muted-foreground">{TIER_LABELS[b.tier as 1|2|3]?.name}</span>
+                          <span className="font-medium tabular-nums">{formatSol(b.amount_lamports)}</span>
                         </div>
                       </div>
                     ))}
@@ -321,137 +332,135 @@ function CampaignDetailContent() {
                 )}
               </TabsContent>
 
-              {/* Updates tab */}
-              <TabsContent value="updates" className="mt-6">
-                {updates.length === 0 ? (
-                  <div className="text-center py-10 text-muted-foreground">
-                    <p className="text-sm">No updates yet from the creator.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {updates.map((update) => (
-                      <div key={update.id} className="border border-black/[0.06] rounded-xl p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-semibold text-sm">{update.title}</h4>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(update.inserted_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                          {update.content}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-
-              {/* FAQ tab */}
+              {/* FAQ */}
               {campaign.faq && campaign.faq.length > 0 && (
-                <TabsContent value="faq" className="mt-6">
-                  <div className="space-y-3">
-                    {campaign.faq.map((item: { q: string; a: string }, i: number) => (
-                      <div key={i} className="border border-black/[0.06] rounded-xl p-4">
-                        <p className="font-medium text-sm">{item.q}</p>
-                        <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{item.a}</p>
-                      </div>
-                    ))}
-                  </div>
+                <TabsContent value="faq" className="mt-8 space-y-3">
+                  {campaign.faq.map((item: { q: string; a: string }, i: number) => (
+                    <div key={i} className="border border-black/[0.06] rounded-xl p-4">
+                      <p className="font-medium text-sm">{item.q}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{item.a}</p>
+                    </div>
+                  ))}
                 </TabsContent>
               )}
             </Tabs>
           </div>
 
-          {/* Sidebar */}
+          {/* ═══ SIDEBAR ═══ */}
           <div className="space-y-4">
-            <Card className="border-black/[0.06]">
-              <CardContent className="p-6">
-                {/* Amount */}
-                <div className="mb-1">
+            {/* Funding card */}
+            <Card>
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between mb-1">
                   <p className="text-3xl font-bold tabular-nums">{formatSol(campaign.raised_lamports)}</p>
-                  <p className="text-sm text-muted-foreground">raised of {formatSol(campaign.goal_lamports)} goal</p>
+                  {progress >= 100 && <Badge className="bg-green-50 text-green-700 text-xs">Funded</Badge>}
+                  {progress > 0 && progress < 100 && <Badge className="bg-amber-50 text-amber-700 text-xs">{progress}% funded</Badge>}
+                </div>
+                <p className="text-sm text-muted-foreground mb-3">raised of {formatSol(campaign.goal_lamports)} goal</p>
+
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
+                  <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${Math.min(progress, 100)}%` }} />
                 </div>
 
-                {/* Progress bar — thicker, more visible */}
-                <div className="h-2 bg-black/[0.04] rounded-full overflow-hidden my-4">
-                  <div
-                    className="h-full bg-amber-500 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min(progress, 100)}%` }}
-                  />
-                </div>
-
-                {/* Escrow trust indicator */}
+                {/* Escrow */}
                 {campaign.solana_pubkey && !campaign.solana_pubkey.startsWith("demo_") ? (
-                  <a
-                    href={getExplorerUrl(campaign.solana_pubkey)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs text-muted-foreground hover:text-amber-600 transition-colors mb-4 p-2.5 bg-green-50/50 border border-green-100/50 rounded-lg"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0 animate-pulse" />
-                    <span>
-                      {campaign.raised_lamports > 0
-                        ? `${formatSol(campaign.raised_lamports)} locked in escrow`
-                        : "Funds go directly to on-chain escrow"
-                      }
-                    </span>
-                    <ExternalLink className="h-3 w-3 ml-auto flex-shrink-0" />
+                  <a href={getExplorerUrl(campaign.solana_pubkey)} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs p-2.5 bg-green-50 border border-green-100 rounded-lg mb-4 hover:bg-green-100 transition-colors">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-green-700">{campaign.raised_lamports > 0 ? `${formatSol(campaign.raised_lamports)} locked in on-chain escrow` : "Funds go directly to on-chain escrow"}</span>
+                    <ExternalLink className="h-3 w-3 ml-auto text-green-500" />
                   </a>
                 ) : (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 p-2.5 bg-green-50/50 border border-green-100/50 rounded-lg">
-                    <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                    <span>Funds locked in smart contract until milestones verified</span>
+                  <div className="flex items-center gap-2 text-xs p-2.5 bg-green-50 border border-green-100 rounded-lg mb-4">
+                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                    <span className="text-green-700">Funds locked in smart contract</span>
                   </div>
                 )}
 
-                {/* Stats grid */}
-                <div className="grid grid-cols-2 gap-3 text-sm mb-5">
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-3 text-center mb-5">
                   <div>
-                    <p className="text-muted-foreground text-xs">Backers</p>
-                    <p className="font-semibold flex items-center gap-1 mt-0.5">
-                      <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                      {campaign.backers_count}
-                    </p>
+                    <p className="text-lg font-bold tabular-nums">{campaign.backers_count}</p>
+                    <p className="text-[10px] text-muted-foreground">backers</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground text-xs">Current Tier</p>
-                    <p className={`font-semibold mt-0.5 ${tierInfo.color}`}>
-                      {tierInfo.name} ({tierInfo.ratio})
-                    </p>
+                    <p className="text-lg font-bold tabular-nums">{campaign.milestones_approved}/{campaign.milestones_count}</p>
+                    <p className="text-[10px] text-muted-foreground">milestones</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground text-xs">Milestones</p>
-                    <p className="font-semibold mt-0.5">{campaign.milestones_approved}/{campaign.milestones_count}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground text-xs">Platform fee</p>
-                    <p className="font-semibold mt-0.5">2.5%</p>
+                    <p className="text-lg font-bold tabular-nums">2.5%</p>
+                    <p className="text-[10px] text-muted-foreground">platform fee</p>
                   </div>
                 </div>
 
                 {/* CTA */}
-                {campaign.status === "active" ? (
-                  <>
-                    <Link href={`/campaigns/${campaign.id}/back`}>
-                      <Button className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white" size="lg">
-                        <Wallet className="h-4 w-4" />
-                        Back This Project
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </Link>
-                    <div className="mt-3 p-3 bg-zinc-50 rounded-lg text-xs text-muted-foreground">
-                      <p>
-                        Current tier:{" "}
-                        <span className={tierInfo.color}>{tierInfo.name} ({tierInfo.ratio})</span>
-                      </p>
-                      <p className="mt-0.5">Early backers earn a higher share of the project.</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-2 text-sm text-muted-foreground capitalize">
-                    Campaign is {campaign.status}
+                {campaign.status === "active" && (
+                  <Link href={`/campaigns/${campaign.id}/back`}>
+                    <Button className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full" size="lg">
+                      <Wallet className="h-4 w-4" /> Back This Project <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                )}
+
+                {/* Founders spots */}
+                {tier === 1 && foundersSpotsLeft > 0 && (
+                  <div className="mt-3 flex items-center gap-2 text-xs text-amber-700">
+                    <Crown className="h-3.5 w-3.5 text-amber-500" />
+                    <span><strong>{foundersSpotsLeft} Founders spots left</strong> — back now for the full 1.0 points/SOL</span>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Backer rewards */}
+            <Card>
+              <CardContent className="p-5">
+                <h3 className="font-semibold text-sm mb-1">What you get as a backer</h3>
+                <p className="text-xs text-muted-foreground mb-4">For every SOL you back, you earn ownership points. Earlier backers earn more.</p>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-green-50 border border-green-100">
+                    <div className="flex items-center gap-2">
+                      <Crown className="h-4 w-4 text-green-600" />
+                      <div>
+                        <p className="font-semibold text-sm text-green-700">Founders</p>
+                        <p className="text-[10px] text-green-600">First 50 backers</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-sm text-green-700">1.0 pts/SOL</p>
+                      <p className="text-[10px] text-green-600">{foundersSpotsLeft} of 50 left</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50 border border-amber-100">
+                    <div className="flex items-center gap-2">
+                      <Star className="h-4 w-4 text-amber-600" />
+                      <div>
+                        <p className="font-semibold text-sm text-amber-700">Early Backers</p>
+                        <p className="text-[10px] text-amber-600">Backers 51–250</p>
+                      </div>
+                    </div>
+                    <p className="font-bold text-sm text-amber-700">0.67 pts/SOL</p>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <UserCheck className="h-4 w-4 text-gray-500" />
+                      <div>
+                        <p className="font-semibold text-sm text-gray-600">Supporters</p>
+                        <p className="text-[10px] text-gray-500">Everyone after 250</p>
+                      </div>
+                    </div>
+                    <p className="font-bold text-sm text-gray-600">0.5 pts/SOL</p>
+                  </div>
+                </div>
+
+                <div className="mt-3 p-3 bg-muted/30 rounded-lg">
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    <strong>What are ownership points?</strong> Points give you a voting share in the project and a claim on tokens released as milestones are approved. 1 point = 1 vote.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -464,18 +473,27 @@ function CampaignDetailContent() {
               return (
                 <Card className="border-purple-200 bg-purple-50/30">
                   <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                      <p className="text-sm font-semibold text-purple-700">
-                        {votingMs.status === "submitted" ? "Evidence Submitted" : "Community is Voting"}
-                      </p>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                        <p className="text-sm font-semibold text-purple-700">Community is voting</p>
+                      </div>
+                      {votingMs.extension_deadline && (
+                        <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> {Math.ceil((new Date(votingMs.extension_deadline).getTime() - Date.now()) / 86400000)}d left</span>
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      Milestone {votingMs.index + 1}: {votingMs.title || "Untitled"}
-                    </p>
+                    <p className="text-xs text-muted-foreground mb-3">Milestone {votingMs.index + 1}: {votingMs.title || "Untitled"}</p>
+                    {votingMs.votes_approve_percent != null && (
+                      <div className="mb-3">
+                        <div className="h-2 bg-purple-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-purple-500 rounded-full" style={{ width: `${votingMs.votes_approve_percent}%` }} />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground mt-1">{votingMs.votes_approve_percent}% YES · {votingMs.votes_count || 0} votes</p>
+                      </div>
+                    )}
                     <Link href={`/campaigns/${campaign.id}/vote`}>
-                      <Button size="sm" className="w-full gap-1.5 bg-purple-600 hover:bg-purple-700 text-white">
-                        Cast Your Vote
+                      <Button size="sm" className="w-full gap-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-full">
+                        <Vote className="h-3.5 w-3.5" /> Cast your vote
                       </Button>
                     </Link>
                   </CardContent>
@@ -483,84 +501,29 @@ function CampaignDetailContent() {
               );
             })()}
 
-            {/* Backer tiers */}
-            <Card className="border-black/[0.06]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">Backer Tiers</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="space-y-2 text-sm">
-                  {(() => {
-                    const bc = campaign.backers_count;
-                    const genesisLeft = Math.max(0, 50 - bc);
-                    const earlyLeft = bc < 50 ? 200 : Math.max(0, 250 - bc);
-                    return (
-                      <>
-                        <div className={`flex items-center justify-between p-2 rounded-lg ${tier === 1 ? "bg-green-50 ring-1 ring-green-200" : "bg-green-50/50"}`}>
-                          <div>
-                            <p className="font-medium text-green-700">Genesis</p>
-                            <p className="text-xs text-green-600">{genesisLeft > 0 ? `${genesisLeft} spots left` : "Filled"}</p>
-                          </div>
-                          <span className="font-semibold text-green-700">1.0x share</span>
-                        </div>
-                        <div className={`flex items-center justify-between p-2 rounded-lg ${tier === 2 ? "bg-amber-50 ring-1 ring-amber-200" : "bg-amber-50/50"}`}>
-                          <div>
-                            <p className="font-medium text-amber-700">Early</p>
-                            <p className="text-xs text-amber-600">{earlyLeft > 0 ? `${earlyLeft} spots left` : "Filled"}</p>
-                          </div>
-                          <span className="font-semibold text-amber-700">0.67x share</span>
-                        </div>
-                        <div className={`flex items-center justify-between p-2 rounded-lg ${tier === 3 ? "bg-gray-50 ring-1 ring-gray-200" : "bg-gray-50/30"}`}>
-                          <div>
-                            <p className="font-medium text-gray-600">Standard</p>
-                            <p className="text-xs text-gray-500">Unlimited</p>
-                          </div>
-                          <span className="font-semibold text-gray-600">0.5x share</span>
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-                <p className="text-xs text-muted-foreground pt-1">
-                  Your share gives you governance rights — vote on deadline extensions and refunds.
-                </p>
-                </CardContent>
-              </Card>
-
-            {/* Governance vote link */}
+            {/* Governance link */}
             <Link href={`/campaigns/${campaign.id}/vote`}>
-              <div className="border border-black/[0.06] rounded-xl p-4 text-center hover:border-black/[0.12] transition-colors cursor-pointer">
+              <div className="border border-black/[0.06] rounded-xl p-4 text-center hover:border-black/[0.12] transition-colors">
                 <p className="text-sm font-medium">Governance</p>
-                <p className="text-xs text-muted-foreground mt-0.5">View or cast votes on milestone extensions</p>
+                <p className="text-xs text-muted-foreground mt-0.5">View or cast votes on milestones</p>
               </div>
             </Link>
           </div>
         </div>
 
         {/* Similar campaigns */}
-        <SimilarCampaigns currentId={campaign.id} category={campaign.category} />
+        <SimilarCampaigns currentId={campaign.id} />
       </div>
     </div>
   );
 }
 
-function SimilarCampaigns({ currentId, category }: { currentId: string; category?: string }) {
+function SimilarCampaigns({ currentId }: { currentId: string }) {
   const { data } = useQuery({
-    queryKey: ["similar-campaigns", category],
-    queryFn: () => getCampaign(""), // reuse campaigns list
-    enabled: false, // disabled — we'll use a simpler approach
-  });
-
-  // Simple approach: fetch from campaigns list API
-  const { data: listData } = useQuery({
     queryKey: ["campaigns-for-similar"],
-    queryFn: async () => {
-      const { getCampaigns } = await import("@/lib/api");
-      return getCampaigns({ limit: 4 });
-    },
+    queryFn: () => getCampaigns({ limit: 4 }),
   });
-
-  const similar = (listData?.data || []).filter((c: any) => c.id !== currentId).slice(0, 3);
+  const similar = (data?.data || []).filter((c: any) => c.id !== currentId).slice(0, 3);
   if (similar.length === 0) return null;
 
   return (

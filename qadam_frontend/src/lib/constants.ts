@@ -19,9 +19,9 @@ export const MIN_BACKING_LAMPORTS = MIN_BACKING_SOL * LAMPORTS_PER_SOL;
 export const TIER_1_MAX_BACKERS = 50;
 export const TIER_2_MAX_BACKERS = 250;
 export const TIER_LABELS = {
-  1: { name: "Genesis", color: "text-green-500", ratio: "1.0x" },
-  2: { name: "Early", color: "text-yellow-500", ratio: "0.67x" },
-  3: { name: "Standard", color: "text-gray-500", ratio: "0.5x" },
+  1: { name: "Founders", color: "text-green-600", ratio: "1.0x", points: "1.0 pts/SOL" },
+  2: { name: "Early Backers", color: "text-amber-600", ratio: "0.67x", points: "0.67 pts/SOL" },
+  3: { name: "Supporters", color: "text-gray-500", ratio: "0.5x", points: "0.5 pts/SOL" },
 } as const;
 
 // Design
