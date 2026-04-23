@@ -64,7 +64,7 @@ export default function Home() {
 
               <motion.h1
                 variants={fadeUp}
-                className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6"
+                className="font-display text-3xl sm:text-5xl md:text-7xl tracking-tight leading-[1.1] mb-6"
               >
                 Crowdfunding where{" "}
                 <span className="text-amber-500">progress</span>{" "}
@@ -254,7 +254,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className={`${i % 2 === 0 ? "text-left" : "text-right"}`}
             >
-              <h3 className="text-2xl md:text-4xl font-bold tracking-tight mb-4">{block.headline}</h3>
+              <h3 className="font-display text-2xl md:text-4xl tracking-tight mb-4">{block.headline}</h3>
               <p className={`text-muted-foreground text-lg leading-relaxed max-w-2xl ${i % 2 === 0 ? "" : "ml-auto"}`}>
                 {block.body}
               </p>
@@ -368,7 +368,7 @@ export default function Home() {
         className="py-24 text-center"
       >
         <div className="container mx-auto px-4 max-w-2xl">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+          <h2 className="font-display text-3xl md:text-4xl tracking-tight mb-4">
             Ready to build?
           </h2>
           <p className="text-muted-foreground mb-10 text-lg">

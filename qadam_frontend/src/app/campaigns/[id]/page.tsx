@@ -131,7 +131,7 @@ function CampaignDetailContent() {
 
           {/* Right — Title + meta + CTA */}
           <div className="flex flex-col justify-center">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight">{campaign.title}</h1>
+            <h1 className="font-display text-3xl md:text-4xl tracking-tight leading-tight">{campaign.title}</h1>
             {descriptionFirst && (
               <p className="text-muted-foreground mt-3 leading-relaxed">{descriptionFirst}</p>
             )}
