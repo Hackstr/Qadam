@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatSol, formatPercent } from "@/lib/constants";
+import { MilestoneDots } from "@/components/qadam/milestone-dots";
+import { NextActionAlert } from "@/components/qadam/next-action-alert";
 import {
-  Loader2, Plus, Send, CheckCircle2, ArrowRight, Rocket, Eye,
-  BarChart2, Share2, ExternalLink, PenLine, Clock,
+  Loader2, Plus, CheckCircle2, ArrowRight, Rocket,
+  BarChart2, Share2, ExternalLink, PenLine,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -57,7 +59,7 @@ function DashboardContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-5xl">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       {/* Created banner */}
       {justCreated && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center justify-between gap-3">
@@ -130,7 +132,8 @@ function DashboardContent() {
         <div className="space-y-6">
           {myCampaigns.map((campaign) => {
             const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
-            const hasUnsubmitted = campaign.status === "active" && campaign.milestones_approved < campaign.milestones_count;
+            const nextMilestone = (campaign.milestones || [])[campaign.milestones_approved];
+            const hasUnsubmitted = campaign.status === "active" && nextMilestone && nextMilestone.status === "pending";
             const daysText = ""; // TODO: compute from milestone deadline
 
             return (
@@ -158,26 +161,13 @@ function DashboardContent() {
                     </div>
 
                     {/* Milestone path — dots with lines */}
-                    <div className="mt-4 flex items-center gap-0">
-                      {Array.from({ length: campaign.milestones_count }).map((_, i) => {
-                        const isDone = i < campaign.milestones_approved;
-                        const isCurrent = i === campaign.milestones_approved;
-                        return (
-                          <div key={i} className="flex items-center flex-1">
-                            <div className={`w-4 h-4 rounded-full flex-shrink-0 border-2 ${
-                              isDone ? "bg-green-500 border-green-500" :
-                              isCurrent ? "bg-amber-500 border-amber-500" :
-                              "bg-white border-gray-200"
-                            }`}>
-                              {isDone && <CheckCircle2 className="h-3 w-3 text-white m-auto" />}
-                            </div>
-                            {i < campaign.milestones_count - 1 && (
-                              <div className={`flex-1 h-0.5 ${isDone ? "bg-green-300" : "bg-gray-100"}`} />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                    <MilestoneDots
+                      total={campaign.milestones_count}
+                      approved={campaign.milestones_approved}
+                      variant="connected"
+                      size="sm"
+                      className="mt-4"
+                    />
                     <p className="text-xs text-muted-foreground mt-1.5">
                       {campaign.milestones_approved} of {campaign.milestones_count} milestones complete · {progress}% funded · {campaign.backers_count} backers
                     </p>
@@ -185,22 +175,11 @@ function DashboardContent() {
 
                   {/* Next action — prominent */}
                   {hasUnsubmitted && (
-                    <div className="mx-6 mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-amber-600 flex-shrink-0" />
-                        <div>
-                          <p className="text-sm font-semibold text-amber-800">Next action</p>
-                          <p className="text-xs text-amber-700">
-                            Submit evidence for Milestone {campaign.milestones_approved + 1}
-                          </p>
-                        </div>
-                      </div>
-                      <Link href={`/dashboard/${campaign.id}/submit`}>
-                        <Button size="sm" className="gap-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full">
-                          <Send className="h-3.5 w-3.5" />
-                          Submit Evidence
-                        </Button>
-                      </Link>
+                    <div className="mx-6 mb-4">
+                      <NextActionAlert
+                        campaignId={campaign.id}
+                        milestoneNumber={campaign.milestones_approved + 1}
+                      />
                     </div>
                   )}
 

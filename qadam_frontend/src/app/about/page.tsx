@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="font-display text-3xl tracking-tight mb-2">About Qadam</h1>
       <p className="text-muted-foreground mb-8">Build step by step.</p>
 
@@ -71,12 +71,12 @@ export default function AboutPage() {
 
         <div className="pt-4 flex gap-4">
           <Link href="/create">
-            <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+            <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full">
               Start a Campaign <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/how-it-works">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 rounded-full">
               How it works in detail
             </Button>
           </Link>

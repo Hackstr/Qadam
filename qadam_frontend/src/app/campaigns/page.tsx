@@ -49,7 +49,7 @@ export default function CampaignsPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-6 mb-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight mb-1">Discover</h1>
+          <h1 className="font-display text-3xl tracking-tight mb-1">Discover</h1>
           <p className="text-sm text-muted-foreground">
             Back projects you believe in. SOL stays in escrow until the community approves each milestone.
           </p>

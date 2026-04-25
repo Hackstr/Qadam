@@ -66,7 +66,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export default function FaqPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="font-display text-3xl tracking-tight mb-2">Frequently Asked Questions</h1>
       <p className="text-muted-foreground mb-8">
         Everything you need to know about backing and creating campaigns on Qadam.

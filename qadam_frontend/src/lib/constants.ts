@@ -48,3 +48,13 @@ export function formatPercent(value: number, total: number): number {
   if (total === 0) return 0;
   return Math.round((value / total) * 100);
 }
+
+export function getCurrentTier(backersCount: number): 1 | 2 | 3 {
+  if (backersCount < TIER_1_MAX_BACKERS) return 1;
+  if (backersCount < TIER_2_MAX_BACKERS) return 2;
+  return 3;
+}
+
+export function getExplorerUrl(address: string): string {
+  return `https://explorer.solana.com/address/${address}?cluster=${SOLANA_NETWORK}`;
+}

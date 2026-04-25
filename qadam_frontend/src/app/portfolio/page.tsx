@@ -4,13 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { getPortfolio } from "@/lib/api";
 import { useQadamProgram } from "@/hooks/use-qadam-program";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatSol, TIER_LABELS } from "@/lib/constants";
+import { formatSol } from "@/lib/constants";
+import { StatsGrid } from "@/components/qadam/stats-grid";
+import { ActionRequiredBanner } from "@/components/qadam/action-required-banner";
+import { PositionCard } from "@/components/qadam/position-card";
 import {
-  Loader2, Wallet, Gift, RotateCcw, Vote, CheckCircle2,
-  TrendingUp, Coins, AlertTriangle, ArrowRight, ExternalLink,
+  Loader2, Wallet, RotateCcw,
+  TrendingUp, Coins, ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -50,84 +51,23 @@ export default function PortfolioPage() {
   });
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-1">Your Portfolio</h1>
       <p className="text-muted-foreground mb-8">Track your backed projects, vote on milestones, claim tokens.</p>
 
       {/* Stats — 4 colored cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Card className="border-black/[0.06]">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Wallet className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Total backed</span>
-            </div>
-            <p className="text-2xl font-bold tabular-nums">{formatSol(totalBacked)}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">{positions.length} campaigns</p>
-          </CardContent>
-        </Card>
-        <Card className="border-black/[0.06]">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="h-4 w-4 text-green-500" />
-              <span className="text-xs text-muted-foreground">Active</span>
-            </div>
-            <p className="text-2xl font-bold tabular-nums text-green-600">{formatSol(activePositions.reduce((s, p) => s + p.amount_lamports, 0))}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">{activePositions.length} campaigns</p>
-          </CardContent>
-        </Card>
-        <Card className="border-black/[0.06]">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Coins className="h-4 w-4 text-purple-500" />
-              <span className="text-xs text-muted-foreground">Claimable</span>
-            </div>
-            <p className="text-2xl font-bold tabular-nums text-purple-600">{claimableTokens.toLocaleString()}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">tokens across campaigns</p>
-          </CardContent>
-        </Card>
-        <Card className="border-black/[0.06]">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <RotateCcw className="h-4 w-4 text-red-400" />
-              <span className="text-xs text-muted-foreground">Pending refunds</span>
-            </div>
-            <p className="text-2xl font-bold tabular-nums text-red-500">{pendingRefunds.length > 0 ? formatSol(pendingRefunds.reduce((s, p) => s + p.amount_lamports, 0)) : "0"}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">{pendingRefunds.length} campaigns</p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatsGrid
+        className="mb-8"
+        items={[
+          { icon: Wallet, label: "Total backed", value: formatSol(totalBacked), sublabel: `${positions.length} campaigns` },
+          { icon: TrendingUp, iconColor: "text-green-500", label: "Active", value: formatSol(activePositions.reduce((s, p) => s + p.amount_lamports, 0)), valueColor: "text-green-600", sublabel: `${activePositions.length} campaigns` },
+          { icon: Coins, iconColor: "text-purple-500", label: "Claimable", value: claimableTokens.toLocaleString(), valueColor: "text-purple-600", sublabel: "tokens across campaigns" },
+          { icon: RotateCcw, iconColor: "text-red-400", label: "Pending refunds", value: pendingRefunds.length > 0 ? formatSol(pendingRefunds.reduce((s, p) => s + p.amount_lamports, 0)) : "0", valueColor: "text-red-500", sublabel: `${pendingRefunds.length} campaigns` },
+        ]}
+      />
 
       {/* Action Required */}
-      {actions.length > 0 && (
-        <Card className="mb-8 border-amber-200 bg-amber-50/50">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
-              <p className="text-sm font-semibold text-amber-800">Action required ({actions.length})</p>
-            </div>
-            <div className="space-y-2">
-              {actions.slice(0, 5).map((a, i) => (
-                <div key={i} className="flex items-center justify-between bg-white rounded-lg border border-amber-100 p-3">
-                  <div className="flex items-center gap-2">
-                    {a.type === "vote" ? <Vote className="h-4 w-4 text-purple-500" /> : a.type === "claim" ? <Gift className="h-4 w-4 text-green-500" /> : <RotateCcw className="h-4 w-4 text-red-400" />}
-                    <span className="text-sm">{a.text}</span>
-                  </div>
-                  <Link href={a.href}>
-                    <Button size="sm" className={`rounded-full text-xs gap-1 ${
-                      a.type === "vote" ? "bg-purple-600 hover:bg-purple-700" :
-                      a.type === "claim" ? "bg-green-600 hover:bg-green-700" :
-                      "bg-red-500 hover:bg-red-600"
-                    } text-white`}>
-                      {a.type === "vote" ? "Cast vote" : a.type === "claim" ? "Claim" : "Refund"}
-                    </Button>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <ActionRequiredBanner actions={actions} className="mb-8" />
 
       {/* Positions */}
       {isLoading ? (
@@ -149,120 +89,27 @@ export default function PortfolioPage() {
         <>
           <h2 className="text-lg font-semibold mb-4">Active positions</h2>
           <div className="space-y-3">
-            {positions.map((pos, idx) => {
-              const tierInfo = TIER_LABELS[pos.tier as 1 | 2 | 3];
-              const hasUnclaimedTokens = pos.tokens_claimed < pos.tokens_allocated;
-              const canRefund = pos.campaign_status === "refunded" && !pos.refund_claimed;
-              const needsVote = pos.has_active_vote === true;
-              const msCount = pos.milestones_count || 0;
-              const msApproved = pos.milestones_approved || 0;
-
-              return (
-                <Card key={idx} className="hover:shadow-sm transition-shadow border-black/[0.06]">
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <Link href={`/campaigns/${pos.campaign_id}`} className="hover:underline">
-                          <h3 className="font-semibold">{pos.campaign_title || "Campaign"}</h3>
-                        </Link>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="secondary" className="text-xs">{pos.campaign_status}</Badge>
-                          <span className={`text-xs ${tierInfo.color}`}>{tierInfo.name} tier</span>
-                          <span className="text-xs text-muted-foreground">·</span>
-                          <span className="text-xs text-muted-foreground">{pos.tokens_claimed.toLocaleString()} / {pos.tokens_allocated.toLocaleString()} share</span>
-                        </div>
-
-                        {/* Milestone dots */}
-                        {msCount > 0 && (
-                          <div className="flex items-center gap-0 mt-3">
-                            {Array.from({ length: msCount }).map((_, i) => {
-                              const isDone = i < msApproved;
-                              return (
-                                <div key={i} className="flex items-center flex-1">
-                                  <div className={`w-3 h-3 rounded-full flex-shrink-0 ${isDone ? "bg-green-500" : "bg-gray-200"}`} />
-                                  {i < msCount - 1 && (
-                                    <div className={`flex-1 h-px ${isDone ? "bg-green-300" : "bg-gray-100"}`} />
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="text-right flex-shrink-0">
-                        <p className="font-bold tabular-nums">{formatSol(pos.amount_lamports)}</p>
-                      </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    {(hasUnclaimedTokens || canRefund || needsVote) && (
-                      <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t">
-                        {needsVote && (
-                          <Link href={`/campaigns/${pos.campaign_id}/vote`}>
-                            <Button size="sm" className="gap-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs">
-                              <Vote className="h-3 w-3" /> Vote on milestone
-                            </Button>
-                          </Link>
-                        )}
-                        {hasUnclaimedTokens && pos.campaign_status !== "refunded" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="gap-1.5 rounded-full text-xs"
-                            disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              const pubkey = pos.campaign_pubkey || pos.campaign_id;
-                              claimTokens(pubkey).then(() => {
-                                import("@/lib/api").then(({ syncClaimTokens }) =>
-                                  syncClaimTokens({
-                                    campaign_pubkey: pubkey,
-                                    wallet: pos.wallet_address,
-                                    tokens_claimed: pos.tokens_allocated,
-                                  }).catch(() => { /* sync best-effort */ })
-                                );
-                              }).catch(() => {});
-                            }}
-                          >
-                            <Gift className="h-3 w-3" />
-                            Claim Share
-                          </Button>
-                        )}
-                        {canRefund && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            className="gap-1.5 rounded-full text-xs"
-                            disabled={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              const pubkey = pos.campaign_pubkey || pos.campaign_id;
-                              claimRefund(pubkey).then(() => {
-                                import("@/lib/api").then(({ syncRefund }) =>
-                                  syncRefund({
-                                    campaign_pubkey: pubkey,
-                                    wallet: pos.wallet_address,
-                                  }).catch(() => { /* sync best-effort */ })
-                                );
-                              }).catch(() => {});
-                            }}
-                          >
-                            <RotateCcw className="h-3 w-3" />
-                            Claim Refund
-                          </Button>
-                        )}
-                        <Link href={`/campaigns/${pos.campaign_id}`}>
-                          <Button size="sm" variant="ghost" className="gap-1 text-xs">
-                            <ExternalLink className="h-3 w-3" /> View Campaign
-                          </Button>
-                        </Link>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {positions.map((pos, idx) => (
+              <PositionCard
+                key={idx}
+                position={pos}
+                txBusy={txStatus !== "idle" && txStatus !== "done" && txStatus !== "error"}
+                onClaimTokens={(pubkey, wallet, tokensAllocated) => {
+                  claimTokens(pubkey).then(() => {
+                    import("@/lib/api").then(({ syncClaimTokens }) =>
+                      syncClaimTokens({ campaign_pubkey: pubkey, wallet, tokens_claimed: tokensAllocated }).catch(() => {})
+                    );
+                  }).catch(() => {});
+                }}
+                onClaimRefund={(pubkey, wallet) => {
+                  claimRefund(pubkey).then(() => {
+                    import("@/lib/api").then(({ syncRefund }) =>
+                      syncRefund({ campaign_pubkey: pubkey, wallet }).catch(() => {})
+                    );
+                  }).catch(() => {});
+                }}
+              />
+            ))}
           </div>
         </>
       )}

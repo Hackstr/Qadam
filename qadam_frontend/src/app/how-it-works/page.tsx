@@ -53,7 +53,7 @@ const TIERS = [
 
 export default function HowItWorksPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="font-display text-3xl tracking-tight mb-2">How Qadam Works</h1>
       <p className="text-muted-foreground mb-12">The complete flow from idea to funded project.</p>
 
@@ -83,7 +83,7 @@ export default function HowItWorksPage() {
 
       {/* Backer Tiers */}
       <div className="mb-16">
-        <h2 className="text-xl font-bold mb-4">Backer Tiers</h2>
+        <h2 className="font-display text-2xl tracking-tight mb-4">Backer Tiers</h2>
         <p className="text-sm text-muted-foreground mb-6">
           Early backers earn a higher share of the project. The earlier you back, the more project tokens you receive per SOL.
         </p>
@@ -102,7 +102,7 @@ export default function HowItWorksPage() {
 
       {/* Key numbers */}
       <div className="mb-16">
-        <h2 className="text-xl font-bold mb-4">Key Numbers</h2>
+        <h2 className="font-display text-2xl tracking-tight mb-4">Key Numbers</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { value: "2.5%", label: "Platform fee", desc: "Per milestone release" },
@@ -123,16 +123,16 @@ export default function HowItWorksPage() {
 
       {/* CTA */}
       <div className="text-center">
-        <h2 className="text-xl font-bold mb-2">Ready?</h2>
+        <h2 className="font-display text-2xl tracking-tight mb-2">Ready?</h2>
         <p className="text-muted-foreground mb-6">Whether you are building or backing — Qadam protects both sides.</p>
         <div className="flex gap-4 justify-center">
           <Link href="/create">
-            <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+            <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full">
               Start a Campaign <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/campaigns">
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 rounded-full">
               Explore Campaigns
             </Button>
           </Link>

@@ -106,7 +106,7 @@ export default function BackCampaignPage() {
         Back to campaign
       </Link>
 
-      <h1 className="text-2xl font-bold mb-2">Back &ldquo;{campaign.title}&rdquo;</h1>
+      <h1 className="font-display text-3xl tracking-tight mb-2">Back &ldquo;{campaign.title}&rdquo;</h1>
       <p className="text-muted-foreground mb-8">
         Your SOL goes to escrow. Released only when milestones are verified.
       </p>
@@ -200,7 +200,7 @@ export default function BackCampaignPage() {
           <Button
             onClick={handleBack}
             disabled={amountNum < MIN_BACKING_SOL || loading}
-            className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white"
+            className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full"
             size="lg"
           >
             {loading ? (

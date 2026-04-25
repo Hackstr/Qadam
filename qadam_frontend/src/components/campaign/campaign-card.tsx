@@ -1,13 +1,10 @@
 import Link from "next/link";
-import { formatSol, formatPercent, TIER_LABELS, TIER_1_MAX_BACKERS, TIER_2_MAX_BACKERS } from "@/lib/constants";
+import { formatSol, formatPercent, getCurrentTier } from "@/lib/constants";
 import type { Campaign } from "@/types";
-import { Users, CheckCircle2, Circle, ArrowUpRight, Lock, Smartphone, Gamepad2, BarChart3, Wrench, Globe, Rocket, type LucideIcon } from "lucide-react";
-
-function getCurrentTier(backersCount: number): 1 | 2 | 3 {
-  if (backersCount < TIER_1_MAX_BACKERS) return 1;
-  if (backersCount < TIER_2_MAX_BACKERS) return 2;
-  return 3;
-}
+import { Users, ArrowUpRight, Smartphone, Gamepad2, BarChart3, Wrench, Globe, Rocket, type LucideIcon } from "lucide-react";
+import { MilestoneDots } from "@/components/qadam/milestone-dots";
+import { EscrowIndicator } from "@/components/qadam/escrow-indicator";
+import { TierBadge } from "@/components/qadam/tier-badge";
 
 const statusDot: Record<string, string> = {
   active: "bg-green-500",
@@ -19,19 +16,18 @@ const statusDot: Record<string, string> = {
 };
 
 // Category covers — per DESIGN_SYSTEM.md
-const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
+export const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
   Apps:           { from: "#1E3A8A", to: "#3B82F6", icon: Smartphone },
   Games:          { from: "#5B21B6", to: "#A855F7", icon: Gamepad2 },
   SaaS:           { from: "#065F46", to: "#10B981", icon: BarChart3 },
   Tools:          { from: "#92400E", to: "#F59E0B", icon: Wrench },
   Infrastructure: { from: "#1E293B", to: "#475569", icon: Globe },
 };
-const DEFAULT_COVER = { from: "#374151", to: "#6B7280", icon: Rocket };
+export const DEFAULT_COVER = { from: "#374151", to: "#6B7280", icon: Rocket };
 
 export function CampaignCard({ campaign }: { campaign: Campaign }) {
   const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
   const tier = getCurrentTier(campaign.backers_count);
-  const tierInfo = TIER_LABELS[tier];
   const cover = CATEGORY_COVERS[campaign.category || ""] || DEFAULT_COVER;
   const CoverIcon = cover.icon;
 
@@ -102,24 +98,20 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
                 <Users className="h-3 w-3" />
                 {campaign.backers_count}
               </span>
-              <span className="flex items-center gap-0.5">
-                {Array.from({ length: campaign.milestones_count }).map((_, i) => (
-                  i < campaign.milestones_approved
-                    ? <CheckCircle2 key={i} className="h-2.5 w-2.5 text-green-500" />
-                    : <Circle key={i} className="h-2.5 w-2.5 text-black/[0.10]" />
-                ))}
-              </span>
+              <MilestoneDots
+                total={campaign.milestones_count}
+                approved={campaign.milestones_approved}
+                variant="simple"
+                size="sm"
+              />
             </div>
             <div className="flex items-center gap-2">
-              {campaign.solana_pubkey && !campaign.solana_pubkey.startsWith("demo_") && (
-                <span className="flex items-center gap-0.5 text-[10px] text-green-600">
-                  <Lock className="h-2.5 w-2.5" />
-                  Escrow
-                </span>
-              )}
-              <span className={`text-[11px] font-medium ${tierInfo.color}`}>
-                {tierInfo.name}
-              </span>
+              <EscrowIndicator
+                variant="compact"
+                solanaAddress={campaign.solana_pubkey}
+                isDemo={campaign.solana_pubkey?.startsWith("demo_")}
+              />
+              <TierBadge tier={tier} variant="text" className="text-[11px]" />
             </div>
           </div>
         </div>

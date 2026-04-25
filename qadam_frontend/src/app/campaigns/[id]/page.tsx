@@ -7,39 +7,29 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { getCampaign, getCampaignBackers, getCampaignUpdates, getCampaigns } from "@/lib/api";
 import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
 import { MilestoneComments } from "@/components/campaign/milestone-comments";
+import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   formatSol, formatPercent, TIER_LABELS,
-  TIER_1_MAX_BACKERS, TIER_2_MAX_BACKERS, SOLANA_NETWORK,
+  SOLANA_NETWORK, getExplorerUrl,
 } from "@/lib/constants";
+import { MilestoneDots } from "@/components/qadam/milestone-dots";
+import { FundingCard } from "@/components/qadam/funding-card";
+import { TierRewardsCard } from "@/components/qadam/tier-rewards-card";
+import { ActiveVoteWidget } from "@/components/qadam/active-vote-widget";
+import { CreatorStrip } from "@/components/qadam/creator-strip";
 import {
   Users, Wallet, ArrowRight, Loader2, ArrowLeft,
-  ExternalLink, Share2, Smartphone, Gamepad2,
-  BarChart3, Wrench, Globe, Rocket, AlertCircle,
-  MapPin, Calendar, Crown, Star, UserCheck,
-  Copy, CheckCircle2, Clock, Vote,
+  ExternalLink, Share2, AlertCircle, Sparkles,
+  Calendar, Copy, CheckCircle2, Clock, Vote,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { LucideIcon } from "lucide-react";
-
-const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
-  Apps:           { from: "#1E3A8A", to: "#3B82F6", icon: Smartphone },
-  Games:          { from: "#5B21B6", to: "#A855F7", icon: Gamepad2 },
-  SaaS:           { from: "#065F46", to: "#10B981", icon: BarChart3 },
-  Tools:          { from: "#92400E", to: "#F59E0B", icon: Wrench },
-  Infrastructure: { from: "#1E293B", to: "#475569", icon: Globe },
-};
-const DEFAULT_COVER = { from: "#374151", to: "#6B7280", icon: Rocket };
-
-function getExplorerUrl(address: string) {
-  const cluster = SOLANA_NETWORK === "mainnet-beta" ? "" : `?cluster=${SOLANA_NETWORK}`;
-  return `https://explorer.solana.com/address/${address}${cluster}`;
-}
+import { CATEGORY_COVERS, DEFAULT_COVER } from "@/components/campaign/campaign-card";
 
 export default function CampaignDetailPage() {
   return <Suspense><CampaignDetailContent /></Suspense>;
@@ -95,15 +85,12 @@ function CampaignDetailContent() {
   );
 
   const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
-  const tier = campaign.backers_count < TIER_1_MAX_BACKERS ? 1 : campaign.backers_count < TIER_2_MAX_BACKERS ? 2 : 3;
-  const tierInfo = TIER_LABELS[tier as 1 | 2 | 3];
   const backers = backersData?.data || [];
   const updates = updatesData?.data || [];
   const cover = CATEGORY_COVERS[campaign.category || ""] || DEFAULT_COVER;
   const CoverIcon = cover.icon;
   const isOwner = publicKey?.toBase58() === campaign.creator_wallet;
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
-  const foundersSpotsLeft = Math.max(0, TIER_1_MAX_BACKERS - campaign.backers_count);
   const descriptionFirst = campaign.description?.split("\n")[0] || "";
 
   return (
@@ -137,7 +124,6 @@ function CampaignDetailContent() {
             )}
 
             <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> Almaty, Kazakhstan</span>
               <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {new Date(campaign.inserted_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
             </div>
 
@@ -179,22 +165,10 @@ function CampaignDetailContent() {
       </div>
 
       {/* ═══ CREATOR STRIP ═══ */}
-      <div className="border-y border-black/[0.06]">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href={`/profile/${campaign.creator_wallet}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-sm font-bold">
-              {(campaign.creator_display_name || campaign.creator_wallet)[0].toUpperCase()}
-            </div>
-            <div>
-              <p className="font-semibold text-sm">{campaign.creator_display_name || `${campaign.creator_wallet.slice(0, 6)}...${campaign.creator_wallet.slice(-4)}`}</p>
-              <p className="text-xs text-muted-foreground">Creator · Almaty, Kazakhstan</p>
-            </div>
-          </Link>
-          <Link href={`/profile/${campaign.creator_wallet}`} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
-            View profile <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-      </div>
+      <CreatorStrip
+        walletAddress={campaign.creator_wallet}
+        displayName={campaign.creator_display_name}
+      />
 
       {/* ═══ MAIN CONTENT + SIDEBAR ═══ */}
       <div className="container mx-auto px-4 py-8">
@@ -246,31 +220,23 @@ function CampaignDetailContent() {
                       <h3 className="font-semibold">Milestone journey</h3>
                       <button onClick={() => {}} className="text-xs text-amber-600 hover:underline">View all milestones →</button>
                     </div>
-                    <div className="flex items-center gap-0">
-                      {campaign.milestones.map((m, i) => {
+                    <MilestoneDots
+                      total={campaign.milestones.length}
+                      approved={campaign.milestones_approved}
+                      variant="connected"
+                      size="md"
+                    />
+                    <div className="flex mt-2">
+                      {campaign.milestones.map((m: any, i: number) => {
                         const isDone = m.status === "approved";
                         const isVoting = ["voting_active", "submitted", "extension_requested"].includes(m.status);
                         return (
-                          <div key={m.id} className="flex items-center flex-1">
-                            <div className="flex flex-col items-center gap-1.5">
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                                isDone ? "bg-green-500" : isVoting ? "bg-purple-500 ring-4 ring-purple-100" : "bg-gray-200"
-                              }`}>
-                                {isDone && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
-                                {isVoting && <div className="w-2 h-2 rounded-full bg-white" />}
-                                {!isDone && !isVoting && <span className="text-[9px] font-bold text-gray-400">{i + 1}</span>}
-                              </div>
-                              <div className="text-center">
-                                <p className="text-[10px] font-medium truncate max-w-[80px]">{m.title || `M${i + 1}`}</p>
-                                <p className={`text-[9px] ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
-                                  {isDone ? "Approved" : isVoting ? "Voting" : "Pending"}
-                                </p>
-                                <p className="text-[9px] text-muted-foreground">{formatSol(m.amount_lamports)}</p>
-                              </div>
-                            </div>
-                            {i < campaign.milestones!.length - 1 && (
-                              <div className={`flex-1 h-0.5 mx-1 ${isDone ? "bg-green-300" : "bg-gray-100"}`} />
-                            )}
+                          <div key={m.id} className="flex-1 text-center">
+                            <p className="text-[10px] font-medium truncate">{m.title || `M${i + 1}`}</p>
+                            <p className={`text-[9px] ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
+                              {isDone ? "Approved" : isVoting ? "Voting" : "Pending"}
+                            </p>
+                            <p className="text-[9px] text-muted-foreground">{formatSol(m.amount_lamports)}</p>
                           </div>
                         );
                       })}
@@ -348,121 +314,8 @@ function CampaignDetailContent() {
 
           {/* ═══ SIDEBAR ═══ */}
           <div className="space-y-4">
-            {/* Funding card */}
-            <Card>
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-1">
-                  <p className="text-3xl font-bold tabular-nums">{formatSol(campaign.raised_lamports)}</p>
-                  {progress >= 100 && <Badge className="bg-green-50 text-green-700 text-xs">Funded</Badge>}
-                  {progress > 0 && progress < 100 && <Badge className="bg-amber-50 text-amber-700 text-xs">{progress}% funded</Badge>}
-                </div>
-                <p className="text-sm text-muted-foreground mb-3">raised of {formatSol(campaign.goal_lamports)} goal</p>
-
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
-                  <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${Math.min(progress, 100)}%` }} />
-                </div>
-
-                {/* Escrow */}
-                {campaign.solana_pubkey && !campaign.solana_pubkey.startsWith("demo_") ? (
-                  <a href={getExplorerUrl(campaign.solana_pubkey)} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs p-2.5 bg-green-50 border border-green-100 rounded-lg mb-4 hover:bg-green-100 transition-colors">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-green-700">{campaign.raised_lamports > 0 ? `${formatSol(campaign.raised_lamports)} locked in on-chain escrow` : "Funds go directly to on-chain escrow"}</span>
-                    <ExternalLink className="h-3 w-3 ml-auto text-green-500" />
-                  </a>
-                ) : (
-                  <div className="flex items-center gap-2 text-xs p-2.5 bg-green-50 border border-green-100 rounded-lg mb-4">
-                    <span className="w-2 h-2 rounded-full bg-green-500" />
-                    <span className="text-green-700">Funds locked in smart contract</span>
-                  </div>
-                )}
-
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-3 text-center mb-5">
-                  <div>
-                    <p className="text-lg font-bold tabular-nums">{campaign.backers_count}</p>
-                    <p className="text-[10px] text-muted-foreground">backers</p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-bold tabular-nums">{campaign.milestones_approved}/{campaign.milestones_count}</p>
-                    <p className="text-[10px] text-muted-foreground">milestones</p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-bold tabular-nums">2.5%</p>
-                    <p className="text-[10px] text-muted-foreground">platform fee</p>
-                  </div>
-                </div>
-
-                {/* CTA */}
-                {campaign.status === "active" && (
-                  <Link href={`/campaigns/${campaign.id}/back`}>
-                    <Button className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full" size="lg">
-                      <Wallet className="h-4 w-4" /> Back This Project <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                )}
-
-                {/* Founders spots */}
-                {tier === 1 && foundersSpotsLeft > 0 && (
-                  <div className="mt-3 flex items-center gap-2 text-xs text-amber-700">
-                    <Crown className="h-3.5 w-3.5 text-amber-500" />
-                    <span><strong>{foundersSpotsLeft} Founders spots left</strong> — back now for the full 1.0 points/SOL</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Backer rewards */}
-            <Card>
-              <CardContent className="p-5">
-                <h3 className="font-semibold text-sm mb-1">What you get as a backer</h3>
-                <p className="text-xs text-muted-foreground mb-4">For every SOL you back, you earn ownership points. Earlier backers earn more.</p>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-green-50 border border-green-100">
-                    <div className="flex items-center gap-2">
-                      <Crown className="h-4 w-4 text-green-600" />
-                      <div>
-                        <p className="font-semibold text-sm text-green-700">Founders</p>
-                        <p className="text-[10px] text-green-600">First 50 backers</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-sm text-green-700">1.0 pts/SOL</p>
-                      <p className="text-[10px] text-green-600">{foundersSpotsLeft} of 50 left</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50 border border-amber-100">
-                    <div className="flex items-center gap-2">
-                      <Star className="h-4 w-4 text-amber-600" />
-                      <div>
-                        <p className="font-semibold text-sm text-amber-700">Early Backers</p>
-                        <p className="text-[10px] text-amber-600">Backers 51–250</p>
-                      </div>
-                    </div>
-                    <p className="font-bold text-sm text-amber-700">0.67 pts/SOL</p>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
-                    <div className="flex items-center gap-2">
-                      <UserCheck className="h-4 w-4 text-gray-500" />
-                      <div>
-                        <p className="font-semibold text-sm text-gray-600">Supporters</p>
-                        <p className="text-[10px] text-gray-500">Everyone after 250</p>
-                      </div>
-                    </div>
-                    <p className="font-bold text-sm text-gray-600">0.5 pts/SOL</p>
-                  </div>
-                </div>
-
-                <div className="mt-3 p-3 bg-muted/30 rounded-lg">
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    <strong>What are ownership points?</strong> Points give you a voting share in the project and a claim on tokens released as milestones are approved. 1 point = 1 vote.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <FundingCard campaign={campaign} />
+            <TierRewardsCard backersCount={campaign.backers_count} />
 
             {/* Active vote widget */}
             {(() => {
@@ -470,42 +323,36 @@ function CampaignDetailContent() {
                 (m: any) => m.status === "voting_active" || m.status === "extension_requested" || m.status === "submitted"
               );
               if (!votingMs) return null;
-              return (
-                <Card className="border-purple-200 bg-purple-50/30">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                        <p className="text-sm font-semibold text-purple-700">Community is voting</p>
-                      </div>
-                      {votingMs.extension_deadline && (
-                        <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> {Math.ceil((new Date(votingMs.extension_deadline).getTime() - Date.now()) / 86400000)}d left</span>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground mb-3">Milestone {votingMs.index + 1}: {votingMs.title || "Untitled"}</p>
-                    {votingMs.votes_approve_percent != null && (
-                      <div className="mb-3">
-                        <div className="h-2 bg-purple-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-purple-500 rounded-full" style={{ width: `${votingMs.votes_approve_percent}%` }} />
-                        </div>
-                        <p className="text-[10px] text-muted-foreground mt-1">{votingMs.votes_approve_percent}% YES · {votingMs.votes_count || 0} votes</p>
-                      </div>
-                    )}
-                    <Link href={`/campaigns/${campaign.id}/vote`}>
-                      <Button size="sm" className="w-full gap-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-full">
-                        <Vote className="h-3.5 w-3.5" /> Cast your vote
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              );
+              return <ActiveVoteWidget campaignId={campaign.id} milestone={votingMs} />;
             })()}
+
+            {/* AI Helper trigger */}
+            <div className="border border-amber-200 bg-amber-50/30 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-4 w-4 text-amber-600" />
+                <p className="text-sm font-semibold">Ask Qadam AI</p>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">Get instant analysis of this project — risks, team, budget, milestones.</p>
+              <div className="space-y-1.5">
+                {["Is this project realistic?", "What are the risks?", "Compare to similar campaigns"].map((q) => (
+                  <button key={q} className="w-full text-left text-xs px-3 py-2 rounded-lg bg-white border border-black/[0.06] hover:border-amber-200 transition-colors">
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {/* Governance link */}
             <Link href={`/campaigns/${campaign.id}/vote`}>
-              <div className="border border-black/[0.06] rounded-xl p-4 text-center hover:border-black/[0.12] transition-colors">
-                <p className="text-sm font-medium">Governance</p>
-                <p className="text-xs text-muted-foreground mt-0.5">View or cast votes on milestones</p>
+              <div className="border border-black/[0.06] rounded-xl p-4 flex items-center gap-3 hover:border-black/[0.12] transition-colors">
+                <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
+                  <Vote className="h-4 w-4 text-purple-500" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Governance</p>
+                  <p className="text-xs text-muted-foreground">{campaign.milestones_approved} of {campaign.milestones_count} milestones resolved</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground" />
               </div>
             </Link>
           </div>
@@ -531,14 +378,7 @@ function SimilarCampaigns({ currentId }: { currentId: string }) {
       <h3 className="text-lg font-semibold mb-4">Other campaigns</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {similar.map((c: any) => (
-          <Link key={c.id} href={`/campaigns/${c.id}`} className="border border-black/[0.06] rounded-xl p-4 hover:border-black/[0.12] transition-colors">
-            <p className="font-medium text-sm truncate">{c.title}</p>
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{c.description}</p>
-            <div className="flex justify-between items-center mt-3 text-xs text-muted-foreground">
-              <span>{formatSol(c.raised_lamports)} raised</span>
-              <Badge variant="secondary" className="text-[10px]">{c.status}</Badge>
-            </div>
-          </Link>
+          <CampaignCard key={c.id} campaign={c} />
         ))}
       </div>
     </div>

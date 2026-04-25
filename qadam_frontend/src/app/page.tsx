@@ -81,13 +81,13 @@ export default function Home() {
 
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3">
                 <Link href="/create">
-                  <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+                  <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full">
                     Start a Campaign
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/campaigns">
-                  <Button size="lg" variant="outline" className="gap-2 border-black/[0.15]">
+                  <Button size="lg" variant="outline" className="gap-2 border-black/[0.15] rounded-full">
                     Explore Campaigns
                   </Button>
                 </Link>
@@ -157,7 +157,7 @@ export default function Home() {
         className="py-16 md:py-24"
       >
         <div className="container mx-auto px-4">
-          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-16">
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl tracking-tight text-center mb-16">
             How It Works
           </motion.h2>
 
@@ -200,7 +200,7 @@ export default function Home() {
         className="py-16 md:py-24"
       >
         <div className="container mx-auto px-4 max-w-5xl">
-          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold text-center mb-12">
+          <motion.h2 variants={fadeUp} className="font-display text-3xl md:text-4xl tracking-tight text-center mb-12">
             Why Qadam
           </motion.h2>
 
@@ -337,7 +337,7 @@ export default function Home() {
       {/* FAQ preview */}
       <section className="py-16">
         <div className="container mx-auto px-4 max-w-3xl">
-          <h2 className="text-2xl font-bold text-center mb-8">Common Questions</h2>
+          <h2 className="font-display text-3xl tracking-tight text-center mb-8">Common Questions</h2>
           <div className="space-y-3">
             {[
               { q: "How does escrow work?", a: "Your SOL goes directly into a smart contract on Solana — not to the creator. Released only when community votes to approve each milestone." },
@@ -377,13 +377,13 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/create">
-              <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white">
+              <Button size="lg" className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full">
                 Start a Campaign
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link href="/campaigns">
-              <Button size="lg" variant="outline" className="gap-2 border-black/[0.15]">
+              <Button size="lg" variant="outline" className="gap-2 border-black/[0.15] rounded-full">
                 Explore Campaigns
               </Button>
             </Link>
@@ -426,7 +426,7 @@ function ActiveCampaignsSection() {
       <div className="container mx-auto px-4">
         <motion.div variants={fadeUp} className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-2xl font-bold">Live on Qadam</h2>
+            <h2 className="font-display text-3xl tracking-tight">Live on Qadam</h2>
             <p className="text-sm text-muted-foreground mt-1">
               {activeCampaigns} campaigns · {formatSol(totalRaised)} raised · {totalBackers} backers
             </p>
