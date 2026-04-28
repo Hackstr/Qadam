@@ -168,6 +168,7 @@ function CampaignDetailContent() {
       <CreatorStrip
         walletAddress={campaign.creator_wallet}
         displayName={campaign.creator_display_name}
+        location={campaign.creator_location}
       />
 
       {/* ═══ MAIN CONTENT + SIDEBAR ═══ */}
@@ -186,10 +187,62 @@ function CampaignDetailContent() {
                 )}
               </TabsList>
 
-              {/* About */}
+              {/* About — Foundation v1 story split */}
               <TabsContent value="about" className="mt-8 space-y-8">
-                {campaign.description && (
+                {/* Story split sections */}
+                {campaign.problem && (
+                  <div>
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">The Problem</h3>
+                    <p className="text-base leading-relaxed">{campaign.problem}</p>
+                  </div>
+                )}
+                {campaign.solution && (
+                  <div>
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">The Solution</h3>
+                    <p className="text-base leading-relaxed">{campaign.solution}</p>
+                  </div>
+                )}
+                {campaign.why_now && (
+                  <div>
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">Why Now</h3>
+                    <p className="text-base leading-relaxed">{campaign.why_now}</p>
+                  </div>
+                )}
+                {campaign.background && (
+                  <div>
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">Background</h3>
+                    <p className="text-base leading-relaxed">{campaign.background}</p>
+                  </div>
+                )}
+
+                {/* Fallback to old description if no story split */}
+                {!campaign.problem && !campaign.solution && campaign.description && (
                   <p className="text-lg leading-relaxed">{campaign.description}</p>
+                )}
+
+                {/* Team */}
+                {campaign.team_members && campaign.team_members.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">Team</h3>
+                    <div className="space-y-2">
+                      {campaign.team_members.map((member: any, i: number) => (
+                        <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-black/[0.06]">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                            {(member.name || "?")[0].toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{member.name}</p>
+                            <p className="text-xs text-muted-foreground">{member.role}</p>
+                          </div>
+                          {member.social_link && (
+                            <a href={member.social_link} target="_blank" rel="noopener noreferrer" className="ml-auto text-xs text-amber-600 hover:underline">
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {/* Pitch video */}
@@ -315,7 +368,19 @@ function CampaignDetailContent() {
           {/* ═══ SIDEBAR ═══ */}
           <div className="space-y-4">
             <FundingCard campaign={campaign} />
-            <TierRewardsCard backersCount={campaign.backers_count} />
+            <TierRewardsCard backersCount={campaign.backers_count} tierConfig={campaign.tier_config} />
+
+            {/* Voting rules */}
+            {campaign.vote_period_days && (
+              <div className="border border-black/[0.06] rounded-xl p-4">
+                <p className="text-sm font-medium mb-2">Voting rules</p>
+                <div className="flex gap-4 text-xs text-muted-foreground">
+                  <span>Period: <strong className="text-foreground">{campaign.vote_period_days}d</strong></span>
+                  <span>Quorum: <strong className="text-foreground">{Math.round((campaign.quorum_pct || 0.2) * 100)}%</strong></span>
+                  <span>Threshold: <strong className="text-foreground">{Math.round((campaign.approval_threshold_pct || 0.5) * 100)}%</strong></span>
+                </div>
+              </div>
+            )}
 
             {/* Active vote widget */}
             {(() => {

@@ -1,15 +1,40 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { TIER_1_MAX_BACKERS } from "@/lib/constants";
 import { Crown, Star, UserCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const TIER_ICONS = [Crown, Star, UserCheck, Star, UserCheck];
+const TIER_COLORS = [
+  { bg: "bg-green-50", border: "border-green-100", text: "text-green-700", sub: "text-green-600", icon: "text-green-600" },
+  { bg: "bg-amber-50", border: "border-amber-100", text: "text-amber-700", sub: "text-amber-600", icon: "text-amber-600" },
+  { bg: "bg-gray-50", border: "border-gray-100", text: "text-gray-600", sub: "text-gray-500", icon: "text-gray-500" },
+  { bg: "bg-blue-50", border: "border-blue-100", text: "text-blue-700", sub: "text-blue-600", icon: "text-blue-600" },
+  { bg: "bg-purple-50", border: "border-purple-100", text: "text-purple-700", sub: "text-purple-600", icon: "text-purple-600" },
+];
+
 export interface TierRewardsCardProps {
   backersCount: number;
+  tierConfig?: { name: string; multiplier: number; max_spots: number | null }[];
   className?: string;
 }
 
-export function TierRewardsCard({ backersCount, className }: TierRewardsCardProps) {
-  const foundersSpotsLeft = Math.max(0, TIER_1_MAX_BACKERS - backersCount);
+export function TierRewardsCard({ backersCount, tierConfig, className }: TierRewardsCardProps) {
+  // Default to standard 3-tier if no config provided
+  const tiers = tierConfig && tierConfig.length > 0
+    ? tierConfig
+    : [
+        { name: "Founders", multiplier: 1.0, max_spots: 50 },
+        { name: "Early Backers", multiplier: 0.7, max_spots: 200 },
+        { name: "Supporters", multiplier: 0.5, max_spots: null },
+      ];
+
+  // Compute spots remaining per tier
+  let cumulativeSpots = 0;
+  const tiersWithSpots = tiers.map((t, i) => {
+    const spotsUsed = Math.max(0, Math.min(backersCount - cumulativeSpots, t.max_spots || Infinity));
+    const spotsLeft = t.max_spots ? Math.max(0, t.max_spots - spotsUsed) : null;
+    cumulativeSpots += t.max_spots || 0;
+    return { ...t, spotsLeft, index: i };
+  });
 
   return (
     <Card className={cn(className)}>
@@ -18,41 +43,31 @@ export function TierRewardsCard({ backersCount, className }: TierRewardsCardProp
         <p className="text-xs text-muted-foreground mb-4">For every SOL you back, you earn ownership points. Earlier backers earn more.</p>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between p-3 rounded-xl bg-green-50 border border-green-100">
-            <div className="flex items-center gap-2">
-              <Crown className="h-4 w-4 text-green-600" />
-              <div>
-                <p className="font-semibold text-sm text-green-700">Founders</p>
-                <p className="text-[10px] text-green-600">First 50 backers</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="font-bold text-sm text-green-700">1.0 pts/SOL</p>
-              <p className="text-[10px] text-green-600">{foundersSpotsLeft} of 50 left</p>
-            </div>
-          </div>
+          {tiersWithSpots.map((t) => {
+            const colors = TIER_COLORS[t.index % TIER_COLORS.length];
+            const Icon = TIER_ICONS[t.index % TIER_ICONS.length];
+            const pctLabel = `${Math.round(t.multiplier * 100)}%`;
 
-          <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50 border border-amber-100">
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-amber-600" />
-              <div>
-                <p className="font-semibold text-sm text-amber-700">Early Backers</p>
-                <p className="text-[10px] text-amber-600">Backers 51–250</p>
+            return (
+              <div key={t.index} className={`flex items-center justify-between p-3 rounded-xl ${colors.bg} border ${colors.border}`}>
+                <div className="flex items-center gap-2">
+                  <Icon className={`h-4 w-4 ${colors.icon}`} />
+                  <div>
+                    <p className={`font-semibold text-sm ${colors.text}`}>{t.name}</p>
+                    <p className={`text-[10px] ${colors.sub}`}>
+                      {t.max_spots ? `${t.max_spots} spots` : "Unlimited"}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className={`font-bold text-sm ${colors.text}`}>{pctLabel}</p>
+                  {t.spotsLeft !== null && (
+                    <p className={`text-[10px] ${colors.sub}`}>{t.spotsLeft} left</p>
+                  )}
+                </div>
               </div>
-            </div>
-            <p className="font-bold text-sm text-amber-700">0.67 pts/SOL</p>
-          </div>
-
-          <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
-            <div className="flex items-center gap-2">
-              <UserCheck className="h-4 w-4 text-gray-500" />
-              <div>
-                <p className="font-semibold text-sm text-gray-600">Supporters</p>
-                <p className="text-[10px] text-gray-500">Everyone after 250</p>
-              </div>
-            </div>
-            <p className="font-bold text-sm text-gray-600">0.5 pts/SOL</p>
-          </div>
+            );
+          })}
         </div>
 
         <div className="mt-3 p-3 bg-muted/30 rounded-lg">

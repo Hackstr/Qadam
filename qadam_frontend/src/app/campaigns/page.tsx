@@ -10,7 +10,11 @@ import { Loader2, Search } from "lucide-react";
 import { SkeletonCards } from "@/components/ui/skeleton-card";
 import { useState, useEffect } from "react";
 
-const CATEGORIES = ["Apps", "Games", "SaaS", "Tools", "Infrastructure"];
+const CATEGORIES = [
+  "Tech", "Hardware", "Software", "Art & Design", "Music",
+  "Film", "Education", "Community", "Research", "Climate",
+  "Apps", "Games", "SaaS", "Tools", "Infrastructure",
+];
 const STATUSES = [
   { label: "Active", value: "active" },
   { label: "Completed", value: "completed" },
