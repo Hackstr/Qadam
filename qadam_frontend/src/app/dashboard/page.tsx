@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatSol, formatPercent } from "@/lib/constants";
 import { MilestoneDots } from "@/components/qadam/milestone-dots";
 import { NextActionAlert } from "@/components/qadam/next-action-alert";
+import { DailyNudge } from "@/components/ai/daily-nudge";
 import {
   Loader2, Plus, CheckCircle2, ArrowRight, Rocket,
   BarChart2, Share2, ExternalLink, PenLine,
@@ -130,6 +131,11 @@ function DashboardContent() {
         </div>
       ) : (
         <div className="space-y-6">
+          {/* AI Companion Daily Nudge */}
+          {myCampaigns.filter(c => c.status === "active").slice(0, 1).map(c => (
+            <DailyNudge key={`nudge-${c.id}`} campaignId={c.id} />
+          ))}
+
           {myCampaigns.map((campaign) => {
             const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
             const nextMilestone = (campaign.milestones || [])[campaign.milestones_approved];

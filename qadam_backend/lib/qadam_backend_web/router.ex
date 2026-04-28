@@ -92,6 +92,13 @@ defmodule QadamBackendWeb.Router do
     # AI Helper
     post "/ai/help", AiHelperController, :help
 
+    # AI Companion
+    get "/ai/nudges", CompanionController, :nudges
+    post "/ai/nudges/:id/dismiss", CompanionController, :dismiss_nudge
+    post "/ai/evidence_draft", CompanionController, :evidence_draft
+    post "/ai/update_draft", CompanionController, :update_draft
+    post "/ai/companion_chat", CompanionController, :companion_chat
+
     # GitHub OAuth
     get "/auth/github", GithubAuthController, :authorize
     post "/auth/github/callback", GithubAuthController, :callback
