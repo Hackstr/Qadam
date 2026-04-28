@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import { AiHelperButton } from "@/components/ai-helper/ai-helper-button";
 import { useProfile } from "@/hooks/use-profile";
 import { ProfileSetupModal } from "@/components/profile/profile-setup-modal";
+import { TierConfigurator, type TierConfigItem } from "@/components/wizard/tier-configurator";
+import { VotingParamsConfigurator, type VotingParams } from "@/components/wizard/voting-params-configurator";
 
 interface MilestoneInput {
   title: string;
@@ -88,6 +90,16 @@ export default function CreateCampaignPage() {
     { title: "", description: "", acceptance_criteria: "", amount: "", deadline: "" },
   ]);
   const [fundingDeadline, setFundingDeadline] = useState("");
+  const [tierConfig, setTierConfig] = useState<TierConfigItem[]>([
+    { name: "Founders", multiplier: 1.0, max_spots: 50 },
+    { name: "Early Backers", multiplier: 0.7, max_spots: 200 },
+    { name: "Supporters", multiplier: 0.5, max_spots: null },
+  ]);
+  const [votingParams, setVotingParams] = useState<VotingParams>({
+    vote_period_days: 7,
+    quorum_pct: 0.2,
+    approval_threshold_pct: 0.5,
+  });
   const [faqItems, setFaqItems] = useState<{ q: string; a: string }[]>([]);
 
   // Keep old description for backwards compat in draft restore
@@ -226,6 +238,10 @@ export default function CreateCampaignPage() {
           location: projectLocation || undefined,
           tags: tags.length > 0 ? tags : undefined,
           funding_deadline: fundingDeadline ? new Date(fundingDeadline).toISOString() : undefined,
+          tier_config: tierConfig,
+          vote_period_days: votingParams.vote_period_days,
+          quorum_pct: votingParams.quorum_pct,
+          approval_threshold_pct: votingParams.approval_threshold_pct,
           milestones: milestones.map((m, idx) => ({
             index: idx,
             title: m.title,
@@ -691,6 +707,20 @@ export default function CreateCampaignPage() {
                 </div>
               </div>
 
+              {/* Tier configurator */}
+              <Card>
+                <CardContent className="p-5">
+                  <TierConfigurator value={tierConfig} onChange={setTierConfig} />
+                </CardContent>
+              </Card>
+
+              {/* Voting params */}
+              <Card>
+                <CardContent className="p-5">
+                  <VotingParamsConfigurator value={votingParams} onChange={setVotingParams} />
+                </CardContent>
+              </Card>
+
               {/* Funding deadline */}
               <div>
                 <label className="text-sm font-medium mb-1 block">Funding deadline</label>
@@ -812,6 +842,29 @@ export default function CreateCampaignPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Security deposit</span>
                   <span>{securityDeposit.toFixed(3)} SOL (refundable)</span>
+                </div>
+
+                {/* Tier config preview */}
+                <div className="pt-3 border-t">
+                  <p className="text-sm font-medium mb-2">Tier structure</p>
+                  <div className="space-y-1.5">
+                    {tierConfig.map((t, i) => (
+                      <div key={i} className="flex justify-between text-xs">
+                        <span>{t.name} — {Math.round(t.multiplier * 100)}%</span>
+                        <span className="text-muted-foreground">{t.max_spots ? `${t.max_spots} spots` : "Unlimited"}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Voting params preview */}
+                <div className="pt-3 border-t">
+                  <p className="text-sm font-medium mb-2">Voting rules</p>
+                  <div className="flex gap-4 text-xs">
+                    <span>Period: <strong>{votingParams.vote_period_days}d</strong></span>
+                    <span>Quorum: <strong>{Math.round(votingParams.quorum_pct * 100)}%</strong></span>
+                    <span>Threshold: <strong>{Math.round(votingParams.approval_threshold_pct * 100)}%</strong></span>
+                  </div>
                 </div>
               </CardContent>
             </Card>

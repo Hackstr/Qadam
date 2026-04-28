@@ -166,6 +166,10 @@ export async function syncCampaignCreation(data: {
   location?: string;
   tags?: string[];
   funding_deadline?: string;
+  tier_config?: { name: string; multiplier: number; max_spots: number | null }[];
+  vote_period_days?: number;
+  quorum_pct?: number;
+  approval_threshold_pct?: number;
   milestones: { index: number; title: string; description?: string; acceptance_criteria?: string; amount_lamports: number; deadline: string; grace_deadline: string }[];
 }) {
   return fetchApi<{ data: { id: string; solana_pubkey: string } }>("/webhooks/sync-campaign", {
