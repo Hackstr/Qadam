@@ -25,6 +25,7 @@ defmodule QadamBackendWeb.UserController do
 
       user ->
         allowed = Map.take(params, ~w(display_name email avatar_url
+          bio location socials previous_work
           notify_milestone_approved notify_milestone_rejected
           notify_governance_vote notify_refund_available notify_campaign_updates))
 
@@ -78,6 +79,12 @@ defmodule QadamBackendWeb.UserController do
       email: user.email,
       email_verified: user.email_verified,
       avatar_url: user.avatar_url,
+      # Foundation v1 Creator Profile
+      bio: user.bio,
+      location: user.location,
+      socials: user.socials || %{},
+      previous_work: user.previous_work || [],
+      # Notification preferences
       notify_milestone_approved: user.notify_milestone_approved,
       notify_milestone_rejected: user.notify_milestone_rejected,
       notify_governance_vote: user.notify_governance_vote,

@@ -29,6 +29,10 @@ defmodule QadamBackendWeb.ProfileController do
         wallet_address: wallet,
         display_name: user && user.display_name,
         avatar_url: user && user.avatar_url,
+        bio: user && user.bio,
+        location: user && user.location,
+        socials: (user && user.socials) || %{},
+        previous_work: (user && user.previous_work) || [],
         github_username: user && user.github_username,
         github_verified: (user && user.github_verified) || false,
         reputation: reputation && %{

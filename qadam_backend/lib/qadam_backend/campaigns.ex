@@ -13,6 +13,7 @@ defmodule QadamBackend.Campaigns do
     |> filter_by_category(opts[:category])
     |> filter_by_creator(opts[:creator_wallet])
     |> filter_by_search(opts[:search])
+    |> filter_by_tag(opts[:tag])
     |> sort_by(opts[:sort])
     |> maybe_limit(opts[:limit])
     |> Repo.all()
@@ -71,9 +72,14 @@ defmodule QadamBackend.Campaigns do
     where(query, [c], ilike(c.title, ^search) or ilike(c.description, ^search))
   end
 
+  defp filter_by_tag(query, nil), do: query
+  defp filter_by_tag(query, ""), do: query
+  defp filter_by_tag(query, tag), do: where(query, [c], ^tag in c.tags)
+
   defp sort_by(query, "trending"), do: order_by(query, desc: :raised_lamports)
   defp sort_by(query, "newest"), do: order_by(query, desc: :inserted_at)
-  defp sort_by(query, "ending"), do: order_by(query, asc: :inserted_at)
+  defp sort_by(query, "ending"), do: order_by(query, asc: :funding_deadline)
+  defp sort_by(query, "ending_soon"), do: order_by(query, asc: :funding_deadline)
   defp sort_by(query, "most_backed"), do: order_by(query, desc: :backers_count)
   defp sort_by(query, _), do: order_by(query, desc: :inserted_at)
 

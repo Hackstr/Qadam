@@ -13,6 +13,7 @@ defmodule QadamBackendWeb.CampaignController do
       category: params["category"],
       sort: params["sort"],
       search: params["search"],
+      tag: params["tag"],
       limit: parse_int(params["limit"], 50)
     )
 
@@ -41,7 +42,17 @@ defmodule QadamBackendWeb.CampaignController do
     if campaign.creator_wallet != wallet do
       conn |> put_status(:forbidden) |> json(%{error: "Not the campaign creator"})
     else
-      allowed = Map.take(params, ~w(description cover_image_url pitch_video_url))
+      # Foundation v1: allow story split + team + discovery fields when editing
+      allowed_fields = ~w(description cover_image_url pitch_video_url
+                          problem solution why_now background risks
+                          team_members location tags)
+      # Voting params and tier_config only editable in draft status
+      allowed_fields = if campaign.status == "draft" do
+        allowed_fields ++ ~w(tier_config vote_period_days quorum_pct approval_threshold_pct funding_deadline)
+      else
+        allowed_fields
+      end
+      allowed = Map.take(params, allowed_fields)
       case Campaigns.update_campaign(campaign, allowed) do
         {:ok, updated} -> json(conn, %{data: %{id: updated.id, status: "updated"}})
         {:error, changeset} -> {:error, changeset}
@@ -71,14 +82,40 @@ defmodule QadamBackendWeb.CampaignController do
       status: c.status,
       milestones_count: c.milestones_count,
       milestones_approved: c.milestones_approved,
+      # Foundation v1 fields
+      problem: c.problem,
+      solution: c.solution,
+      why_now: c.why_now,
+      background: c.background,
+      risks: c.risks,
+      team_members: c.team_members || [],
+      tier_config: c.tier_config || [],
+      vote_period_days: c.vote_period_days,
+      quorum_pct: c.quorum_pct,
+      approval_threshold_pct: c.approval_threshold_pct,
+      funding_deadline: c.funding_deadline,
+      location: c.location,
+      tags: c.tags || [],
+      slug: c.slug,
+      launched_at: c.launched_at,
+      funded_at: c.funded_at,
       inserted_at: c.inserted_at
     }
   end
 
   defp campaign_detail_json(c) do
-    # Look up creator display_name
-    creator_name = case QadamBackend.Accounts.get_user_by_wallet(c.creator_wallet) do
+    # Look up creator profile
+    creator = QadamBackend.Accounts.get_user_by_wallet(c.creator_wallet)
+    creator_name = case creator do
       %{display_name: name} when is_binary(name) and name != "" -> name
+      _ -> nil
+    end
+
+    # Compute days until funding deadline
+    days_to_deadline = case c.funding_deadline do
+      %DateTime{} = deadline ->
+        diff = DateTime.diff(deadline, DateTime.utc_now(), :second)
+        max(0, div(diff, 86400))
       _ -> nil
     end
 
@@ -87,6 +124,11 @@ defmodule QadamBackendWeb.CampaignController do
     |> Map.put(:token_mint_address, c.token_mint_address)
     |> Map.put(:tokens_per_lamport, c.tokens_per_lamport)
     |> Map.put(:creator_display_name, creator_name)
+    |> Map.put(:creator_avatar_url, creator && creator.avatar_url)
+    |> Map.put(:creator_bio, creator && creator.bio)
+    |> Map.put(:creator_location, creator && creator.location)
+    |> Map.put(:creator_socials, (creator && creator.socials) || %{})
+    |> Map.put(:days_to_funding_deadline, days_to_deadline)
     |> Map.put(:milestones, Enum.map(c.milestones || [], &milestone_json/1))
   end
 
@@ -97,6 +139,8 @@ defmodule QadamBackendWeb.CampaignController do
       title: m.title,
       description: m.description,
       acceptance_criteria: m.acceptance_criteria,
+      acceptance_criteria_list: m.acceptance_criteria_list || [],
+      deliverables: m.deliverables,
       amount_lamports: m.amount_lamports,
       deadline: m.deadline,
       extension_deadline: m.extension_deadline,
@@ -106,7 +150,8 @@ defmodule QadamBackendWeb.CampaignController do
       evidence_text: m.evidence_text,
       evidence_links: m.evidence_links,
       submitted_at: m.submitted_at,
-      decided_at: m.decided_at
+      decided_at: m.decided_at,
+      released_at: m.released_at
     }
 
     # Add vote counts for milestones in voting state
