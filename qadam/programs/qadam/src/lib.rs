@@ -43,8 +43,15 @@ pub mod qadam {
         milestones_count: u8,
         total_goal_lamports: u64,
         tokens_per_lamport: u64,
+        tier_configs_input: Vec<state::TierConfig>,
+        vote_period_days: u8,
+        quorum_bps: u16,
+        approval_threshold_bps: u16,
     ) -> Result<()> {
-        instructions::create_campaign::handler(ctx, title, nonce, milestones_count, total_goal_lamports, tokens_per_lamport)
+        instructions::create_campaign::handler(
+            ctx, title, nonce, milestones_count, total_goal_lamports, tokens_per_lamport,
+            tier_configs_input, vote_period_days, quorum_bps, approval_threshold_bps,
+        )
     }
 
     pub fn add_milestone(

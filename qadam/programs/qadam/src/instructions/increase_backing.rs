@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
 use crate::state::{Campaign, CampaignStatus, BackerPosition, QadamConfig};
-use crate::constants::{MIN_BACKING_LAMPORTS, TIER_2_RATIO_BPS, TIER_3_RATIO_BPS, BPS_DENOMINATOR};
+use crate::constants::{MIN_BACKING_LAMPORTS, BPS_DENOMINATOR};
 use crate::errors::QadamError;
 use crate::helpers::math::{mul_div, safe_add};
 
@@ -19,11 +19,15 @@ pub fn handler(ctx: Context<IncreaseBacking>, additional_lamports: u64) -> Resul
         .checked_mul(campaign.tokens_per_lamport)
         .ok_or(QadamError::MathOverflow)?;
 
-    let additional_tokens = match position.tier {
-        1 => base_tokens,
-        2 => mul_div(base_tokens, TIER_2_RATIO_BPS, BPS_DENOMINATOR)?,
-        _ => mul_div(base_tokens, TIER_3_RATIO_BPS, BPS_DENOMINATOR)?,
+    // Look up multiplier from campaign's tier_configs using stored tier index
+    let tier_idx = (position.tier as usize).saturating_sub(1); // tier is 1-indexed
+    let multiplier_bps = if tier_idx < campaign.tiers_count as usize {
+        campaign.tier_configs[tier_idx].multiplier_bps as u64
+    } else {
+        // Fallback: last tier
+        campaign.tier_configs[(campaign.tiers_count as usize).saturating_sub(1)].multiplier_bps as u64
     };
+    let additional_tokens = mul_div(base_tokens, multiplier_bps, BPS_DENOMINATOR)?;
 
     // Transfer SOL
     system_program::transfer(

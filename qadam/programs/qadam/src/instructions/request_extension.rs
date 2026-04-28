@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::state::{Campaign, CampaignStatus, MilestoneAccount, MilestoneStatus, ExtensionVotingState, QadamConfig};
-use crate::constants::{VOTING_PERIOD_SECONDS, MAX_EXTENSION_SECONDS};
+use crate::constants::MAX_EXTENSION_SECONDS;
 use crate::errors::QadamError;
 use crate::events::ExtensionRequested;
 
@@ -48,7 +48,9 @@ pub fn handler(
     voting.milestone = milestone_key;
     voting.total_approve_power = 0;
     voting.total_reject_power = 0;
-    voting.voting_deadline = now + VOTING_PERIOD_SECONDS;
+    // Use per-campaign vote_period_days
+    let vote_period_secs = (campaign.vote_period_days as i64) * 24 * 60 * 60;
+    voting.voting_deadline = now + vote_period_secs;
     voting.proposed_deadline = new_deadline;
     voting.executed = false;
     voting.bump = ctx.bumps.voting_state;

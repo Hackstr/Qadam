@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::state::{Campaign, CampaignStatus, MilestoneAccount, MilestoneStatus, ExtensionVotingState, QadamConfig};
-use crate::constants::{QUORUM_BPS, GRACE_PERIOD_SECONDS};
+use crate::constants::GRACE_PERIOD_SECONDS;
 use crate::errors::QadamError;
 use crate::helpers::math::mul_div;
 use crate::events::{ExtensionExecuted, CampaignRefunded};
@@ -18,19 +18,26 @@ pub fn handler(
     let campaign = &mut ctx.accounts.campaign;
     let milestone = &mut ctx.accounts.milestone;
 
-    // Calculate quorum: 20% of total_tokens_allocated
-    let quorum_threshold = mul_div(campaign.total_tokens_allocated, QUORUM_BPS, 10_000)?;
+    // Calculate quorum using per-campaign quorum_bps
+    let quorum_threshold = mul_div(campaign.total_tokens_allocated, campaign.quorum_bps as u64, 10_000)?;
     let total_voted = voting.total_approve_power
         .checked_add(voting.total_reject_power)
         .ok_or(QadamError::MathOverflow)?;
 
-    // Determine outcome
+    // Determine outcome using per-campaign approval_threshold_bps
     let extend = if total_voted < quorum_threshold {
         // No quorum → default: extend (benefit of doubt)
         true
     } else {
-        // Quorum met → majority decides
-        voting.total_approve_power >= voting.total_reject_power
+        // Quorum met → check approval threshold
+        // approved if approve_power * 10000 >= total_voted * threshold_bps
+        let approve_scaled = (voting.total_approve_power as u128)
+            .checked_mul(10_000)
+            .ok_or(QadamError::MathOverflow)?;
+        let threshold_scaled = (total_voted as u128)
+            .checked_mul(campaign.approval_threshold_bps as u128)
+            .ok_or(QadamError::MathOverflow)?;
+        approve_scaled >= threshold_scaled
     };
 
     if extend {

@@ -1037,6 +1037,28 @@
         {
           "name": "tokens_per_lamport",
           "type": "u64"
+        },
+        {
+          "name": "tier_configs_input",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "TierConfig"
+              }
+            }
+          }
+        },
+        {
+          "name": "vote_period_days",
+          "type": "u8"
+        },
+        {
+          "name": "quorum_bps",
+          "type": "u16"
+        },
+        {
+          "name": "approval_threshold_bps",
+          "type": "u16"
         }
       ]
     },
@@ -2572,8 +2594,7 @@
           {
             "name": "milestone_amounts",
             "docs": [
-              "Amount of each milestone in lamports (indexed by milestone index)",
-              "Stored here so claim_tokens doesn't need milestone accounts"
+              "Amount of each milestone in lamports (indexed by milestone index)"
             ],
             "type": {
               "array": [
@@ -2599,8 +2620,7 @@
           {
             "name": "refund_snapshot_vault_balance",
             "docs": [
-              "Vault balance snapshot taken when entering Refunded status",
-              "Prevents race condition in concurrent claim_refund calls"
+              "Vault balance snapshot taken when entering Refunded status"
             ],
             "type": "u64"
           },
@@ -2617,6 +2637,50 @@
               "Unix timestamp of campaign creation"
             ],
             "type": "i64"
+          },
+          {
+            "name": "tiers_count",
+            "docs": [
+              "Number of active tiers (1-10). Only first `tiers_count` entries in `tier_configs` are used."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "tier_configs",
+            "docs": [
+              "Fixed-size array of tier configs. Only first `tiers_count` entries matter."
+            ],
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "TierConfig"
+                  }
+                },
+                10
+              ]
+            }
+          },
+          {
+            "name": "vote_period_days",
+            "docs": [
+              "How many days voting stays open (3-14)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "quorum_bps",
+            "docs": [
+              "Quorum in basis points (1000 = 10%, 5000 = 50%)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "approval_threshold_bps",
+            "docs": [
+              "Approval threshold in basis points (5000 = 50%, 7500 = 75%)"
+            ],
+            "type": "u16"
           },
           {
             "name": "bump",
@@ -2743,6 +2807,9 @@
           },
           {
             "name": "Paused"
+          },
+          {
+            "name": "Cancelled"
           }
         ]
       }
@@ -3206,6 +3273,31 @@
           {
             "name": "amount_lamports",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TierConfig",
+      "docs": [
+        "Per-tier configuration stored on-chain"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "multiplier_bps",
+            "docs": [
+              "Multiplier in basis points (10000 = 100%, 7000 = 70%)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "max_spots",
+            "docs": [
+              "Max spots for this tier. 0 = unlimited (used for last tier)"
+            ],
+            "type": "u32"
           }
         ]
       }
