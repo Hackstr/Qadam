@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AiHelperButton } from "@/components/ai-helper/ai-helper-button";
+import { useProfile } from "@/hooks/use-profile";
+import { ProfileSetupModal } from "@/components/profile/profile-setup-modal";
 
 interface MilestoneInput {
   title: string;
@@ -37,6 +39,15 @@ export default function CreateCampaignPage() {
   const { connected, publicKey } = useWallet();
   const { createCampaign: createCampaignTx } = useQadamProgram();
   const router = useRouter();
+  const { hasProfile, updateProfile, isUpdating, isLoading: profileLoading } = useProfile(publicKey?.toBase58());
+  const [showProfileModal, setShowProfileModal] = useState(false);
+
+  // Show profile modal if connected but no profile
+  useEffect(() => {
+    if (connected && !profileLoading && !hasProfile) {
+      setShowProfileModal(true);
+    }
+  }, [connected, profileLoading, hasProfile]);
 
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -211,6 +222,32 @@ export default function CreateCampaignPage() {
         <h1 className="text-2xl font-bold mb-2">Create a Campaign</h1>
         <p className="text-muted-foreground">Connect your wallet to get started.</p>
       </div>
+    );
+  }
+
+  // Profile setup gate
+  if (showProfileModal || (!profileLoading && !hasProfile)) {
+    return (
+      <>
+        <div className="container mx-auto px-4 py-20 text-center">
+          <h1 className="font-display text-3xl tracking-tight mb-2">Almost there</h1>
+          <p className="text-muted-foreground">Set up your creator profile before launching a campaign.</p>
+        </div>
+        <ProfileSetupModal
+          open={true}
+          isSubmitting={isUpdating}
+          onComplete={async (data) => {
+            try {
+              await updateProfile(data);
+              setShowProfileModal(false);
+              toast.success("Profile saved!");
+            } catch {
+              toast.error("Failed to save profile");
+            }
+          }}
+          onCancel={() => router.push("/")}
+        />
+      </>
     );
   }
 

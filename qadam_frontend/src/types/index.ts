@@ -17,11 +17,33 @@ export interface Campaign {
   token_mint_address?: string;
   tokens_per_lamport?: number;
   creator_display_name?: string;
+  creator_avatar_url?: string;
+  creator_bio?: string;
+  creator_location?: string;
+  creator_socials?: Record<string, string>;
   status: CampaignStatus;
   milestones_count: number;
   milestones_approved: number;
   milestones?: Milestone[];
+  // Foundation v1 — Story split
+  problem?: string;
+  solution?: string;
+  why_now?: string;
+  background?: string;
   risks?: string;
+  // Foundation v1 — Team & Discovery
+  team_members?: { name: string; role: string; avatar_url?: string; social_link?: string }[];
+  tier_config?: { name: string; multiplier: number; max_spots: number | null }[];
+  vote_period_days?: number;
+  quorum_pct?: number;
+  approval_threshold_pct?: number;
+  funding_deadline?: string;
+  days_to_funding_deadline?: number;
+  location?: string;
+  tags?: string[];
+  slug?: string;
+  launched_at?: string;
+  funded_at?: string;
   faq?: { q: string; a: string }[];
   inserted_at: string;
 }
@@ -34,6 +56,8 @@ export interface Milestone {
   title?: string;
   description?: string;
   acceptance_criteria?: string;
+  acceptance_criteria_list?: string[];
+  deliverables?: string;
   amount_lamports: number;
   deadline: string;
   status: MilestoneStatus;
@@ -44,6 +68,7 @@ export interface Milestone {
   extension_deadline?: string;
   submitted_at?: string;
   decided_at?: string;
+  released_at?: string;
   votes_count?: number;
   votes_approve?: number;
   votes_reject?: number;
@@ -102,6 +127,12 @@ export interface User {
   display_name?: string;
   email?: string;
   avatar_url?: string;
+  // Foundation v1 Creator Profile
+  bio?: string;
+  location?: string;
+  socials?: Record<string, string>;
+  previous_work?: { title: string; url: string; description?: string }[];
+  // Notifications
   notify_milestone_approved: boolean;
   notify_milestone_rejected: boolean;
   notify_governance_vote: boolean;
