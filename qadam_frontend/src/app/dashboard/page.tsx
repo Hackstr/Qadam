@@ -140,7 +140,7 @@ function DashboardContent() {
             const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
             const nextMilestone = (campaign.milestones || [])[campaign.milestones_approved];
             const hasUnsubmitted = campaign.status === "active" && nextMilestone && nextMilestone.status === "pending";
-            const daysText = ""; // TODO: compute from milestone deadline
+            const daysLeft = nextMilestone?.deadline ? Math.max(0, Math.ceil((new Date(nextMilestone.deadline).getTime() - Date.now()) / 86400000)) : null;
 
             return (
               <Card key={campaign.id} className="overflow-hidden hover:shadow-md transition-shadow border-black/[0.06]">

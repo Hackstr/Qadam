@@ -29,3 +29,9 @@ qadam_frontend/.next
 *.swp
 .next
 qadam_backend/priv/solana/node_modules/
+
+# Design artifacts
+design-system-full.png
+design-system-v3.png
+ds-final-check.png
+.playwright-mcp/

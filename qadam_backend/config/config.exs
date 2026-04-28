@@ -46,14 +46,17 @@ config :qadam_backend, Oban,
     ai_verification: 2,
     solana_tx: 3,
     notifications: 5,
-    deadline_monitor: 1
+    deadline_monitor: 1,
+    companion: 1
   ],
   plugins: [
     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
     {Oban.Plugins.Cron,
      crontab: [
        # Check overdue milestones every 5 minutes
-       {"*/5 * * * *", QadamBackend.Workers.DeadlineMonitorWorker}
+       {"*/5 * * * *", QadamBackend.Workers.DeadlineMonitorWorker},
+       # AI Companion daily nudge — 9am UTC
+       {"0 9 * * *", QadamBackend.AI.Companion.DigestWorker}
      ]}
   ]
 
