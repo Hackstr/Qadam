@@ -31,6 +31,10 @@ defmodule QadamBackend.Milestones.Milestone do
     field :ai_decision_hash, :string
     field :ai_solana_tx, :string
 
+    # Foundation v1 — structured acceptance criteria + deliverables
+    field :acceptance_criteria_list, {:array, :string}, default: []
+    field :deliverables, :string
+
     field :submitted_at, :utc_datetime
     field :decided_at, :utc_datetime
     field :released_at, :utc_datetime
@@ -50,10 +54,27 @@ defmodule QadamBackend.Milestones.Milestone do
       :amount_lamports, :deadline, :grace_deadline, :extension_deadline,
       :status, :evidence_text, :evidence_links, :evidence_files, :evidence_hash,
       :ai_decision, :ai_explanation, :ai_decision_hash, :ai_solana_tx,
-      :submitted_at, :decided_at, :released_at
+      :submitted_at, :decided_at, :released_at,
+      :acceptance_criteria_list, :deliverables
     ])
     |> validate_required([:campaign_id, :index, :amount_lamports, :deadline, :status])
     |> validate_inclusion(:status, @valid_statuses)
+    |> validate_acceptance_criteria_list()
     |> unique_constraint([:campaign_id, :index])
+  end
+
+  defp validate_acceptance_criteria_list(changeset) do
+    case get_change(changeset, :acceptance_criteria_list) do
+      nil -> changeset
+      items when is_list(items) ->
+        cond do
+          length(items) > 5 ->
+            add_error(changeset, :acceptance_criteria_list, "max 5 criteria")
+          Enum.any?(items, &(String.length(&1) > 200)) ->
+            add_error(changeset, :acceptance_criteria_list, "each criterion max 200 chars")
+          true -> changeset
+        end
+      _ -> changeset
+    end
   end
 end

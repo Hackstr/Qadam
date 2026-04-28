@@ -17,6 +17,12 @@ defmodule QadamBackend.Accounts.User do
     field :notify_refund_available, :boolean, default: true
     field :notify_campaign_updates, :boolean, default: true
 
+    # Creator Profile (Foundation v1)
+    field :bio, :string
+    field :location, :string
+    field :socials, :map, default: %{}
+    field :previous_work, {:array, :map}, default: []
+
     # Verification
     field :github_username, :string
     field :github_verified, :boolean, default: false
@@ -28,7 +34,7 @@ defmodule QadamBackend.Accounts.User do
   end
 
   @required_fields ~w(wallet_address)a
-  @optional_fields ~w(display_name email avatar_url
+  @optional_fields ~w(display_name email avatar_url bio location socials previous_work
                       notify_milestone_approved notify_milestone_rejected
                       notify_governance_vote notify_refund_available
                       notify_campaign_updates github_username github_verified
@@ -40,7 +46,16 @@ defmodule QadamBackend.Accounts.User do
     |> validate_required(@required_fields)
     |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must be a valid email")
     |> validate_length(:display_name, max: 50)
+    |> validate_length(:bio, max: 280)
     |> unique_constraint(:wallet_address)
     |> unique_constraint(:email)
+  end
+
+  def profile_changeset(user, attrs) do
+    user
+    |> cast(attrs, ~w(display_name avatar_url bio location socials previous_work)a)
+    |> validate_required(~w(display_name)a)
+    |> validate_length(:display_name, min: 1, max: 50)
+    |> validate_length(:bio, max: 280)
   end
 end
