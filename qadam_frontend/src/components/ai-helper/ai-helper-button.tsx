@@ -9,7 +9,7 @@ import { Sparkles, X, Loader2, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 
 interface AiHelperButtonProps {
-  context: "title" | "description" | "milestones" | "evidence" | "update";
+  context: "title" | "description" | "milestones" | "evidence" | "update" | "problem" | "solution" | "why_now" | "background" | "risks";
   placeholder?: string;
   onApply: (text: string) => void;
   className?: string;

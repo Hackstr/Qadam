@@ -156,6 +156,16 @@ export async function syncCampaignCreation(data: {
   goal_lamports: number;
   milestones_count: number;
   tokens_per_lamport: number;
+  // Foundation v1
+  problem?: string;
+  solution?: string;
+  why_now?: string;
+  background?: string;
+  risks?: string;
+  team_members?: { name: string; role: string; social_link?: string }[];
+  location?: string;
+  tags?: string[];
+  funding_deadline?: string;
   milestones: { index: number; title: string; description?: string; acceptance_criteria?: string; amount_lamports: number; deadline: string; grace_deadline: string }[];
 }) {
   return fetchApi<{ data: { id: string; solana_pubkey: string } }>("/webhooks/sync-campaign", {

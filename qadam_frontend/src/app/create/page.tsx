@@ -28,11 +28,20 @@ interface MilestoneInput {
   deadline: string;
 }
 
+import { Users } from "lucide-react";
+
 const STEPS = [
   { num: 1, title: "Idea", icon: Lightbulb },
   { num: 2, title: "Story", icon: Image },
-  { num: 3, title: "Plan", icon: Target },
-  { num: 4, title: "Preview", icon: Eye },
+  { num: 3, title: "Team", icon: Users },
+  { num: 4, title: "Plan", icon: Target },
+  { num: 5, title: "Preview", icon: Eye },
+];
+
+const CATEGORIES = [
+  "Tech", "Hardware", "Software", "Art & Design", "Music",
+  "Film", "Education", "Community", "Research", "Climate",
+  "Apps", "Games", "SaaS", "Tools", "Infrastructure",
 ];
 
 export default function CreateCampaignPage() {
@@ -57,19 +66,32 @@ export default function CreateCampaignPage() {
   const [pitch, setPitch] = useState("");
   const [category, setCategory] = useState("Apps");
   const [goal, setGoal] = useState("");
-
-  // Step 2 — Story
-  const [description, setDescription] = useState("");
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState("");
   const [pitchVideoUrl, setPitchVideoUrl] = useState("");
-  const [risks, setRisks] = useState("");
-  const [faqItems, setFaqItems] = useState<{ q: string; a: string }[]>([]);
+  const [projectLocation, setProjectLocation] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
 
-  // Step 3 — Plan
+  // Step 2 — Story (Foundation v1: split fields)
+  const [problem, setProblem] = useState("");
+  const [solution, setSolution] = useState("");
+  const [whyNow, setWhyNow] = useState("");
+  const [background, setBackground] = useState("");
+  const [risks, setRisks] = useState("");
+
+  // Step 3 — Team
+  const [teamMembers, setTeamMembers] = useState<{ name: string; role: string; social_link: string }[]>([]);
+
+  // Step 4 — Plan
   const [milestones, setMilestones] = useState<MilestoneInput[]>([
     { title: "", description: "", acceptance_criteria: "", amount: "", deadline: "" },
   ]);
+  const [fundingDeadline, setFundingDeadline] = useState("");
+  const [faqItems, setFaqItems] = useState<{ q: string; a: string }[]>([]);
+
+  // Keep old description for backwards compat in draft restore
+  const [description, setDescription] = useState("");
 
   // Draft save/restore
   const DRAFT_KEY = "qadam_campaign_draft";
@@ -85,9 +107,17 @@ export default function CreateCampaignPage() {
         if (d.goal) setGoal(d.goal);
         if (d.description) setDescription(d.description);
         if (d.pitchVideoUrl) setPitchVideoUrl(d.pitchVideoUrl);
+        if (d.projectLocation) setProjectLocation(d.projectLocation);
+        if (d.tags) setTags(d.tags);
+        if (d.problem) setProblem(d.problem);
+        if (d.solution) setSolution(d.solution);
+        if (d.whyNow) setWhyNow(d.whyNow);
+        if (d.background) setBackground(d.background);
         if (d.risks) setRisks(d.risks);
+        if (d.teamMembers) setTeamMembers(d.teamMembers);
         if (d.faqItems) setFaqItems(d.faqItems);
         if (d.milestones?.length) setMilestones(d.milestones);
+        if (d.fundingDeadline) setFundingDeadline(d.fundingDeadline);
         if (d.step) setStep(d.step);
       }
     } catch { /* ignore corrupt draft */ }
@@ -98,7 +128,9 @@ export default function CreateCampaignPage() {
     const timer = setInterval(() => {
       if (title || description || milestones[0]?.title) {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
-          title, pitch, category, goal, description, pitchVideoUrl, risks, faqItems, milestones, step,
+          title, pitch, category, goal, description, pitchVideoUrl, projectLocation, tags,
+          problem, solution, whyNow, background, risks, teamMembers,
+          faqItems, milestones, fundingDeadline, step,
         }));
       }
     }, 5000);
@@ -113,8 +145,8 @@ export default function CreateCampaignPage() {
   const tokensPerSol = goalNum > 0 ? Math.floor(AUTO_SUPPLY / goalNum) : 100;
   const securityDeposit = goalNum * 0.005;
 
-  // Full description combines pitch + description + risks
-  const fullDescription = [pitch, description].filter(Boolean).join("\n\n");
+  // Full description for backwards compat (combines story fields)
+  const fullDescription = [problem, solution, whyNow, background, description].filter(Boolean).join("\n\n");
 
   // Milestone helpers
   const addMilestone = () => {
@@ -131,13 +163,14 @@ export default function CreateCampaignPage() {
     setMilestones(updated);
   };
 
-  // Validation per step
+  // Validation per step (5 steps now)
   const canProceed = (s: number): boolean => {
     switch (s) {
       case 1: return !!title && !!goal && goalNum >= 0.5;
-      case 2: return true; // story is optional
-      case 3: return amountsMatch && milestones.every(m => !!m.title && !!m.amount && !!m.deadline);
-      case 4: return true;
+      case 2: return true; // story fields optional but encouraged
+      case 3: return true; // team is optional
+      case 4: return amountsMatch && milestones.every(m => !!m.title && !!m.amount && !!m.deadline);
+      case 5: return true;
       default: return false;
     }
   };
@@ -183,6 +216,16 @@ export default function CreateCampaignPage() {
           goal_lamports: Math.floor(goalNum * SOL),
           milestones_count: milestones.length,
           tokens_per_lamport: tokensPerSol || 100,
+          // Foundation v1 fields
+          problem: problem || undefined,
+          solution: solution || undefined,
+          why_now: whyNow || undefined,
+          background: background || undefined,
+          risks: risks || undefined,
+          team_members: teamMembers.length > 0 ? teamMembers : undefined,
+          location: projectLocation || undefined,
+          tags: tags.length > 0 ? tags : undefined,
+          funding_deadline: fundingDeadline ? new Date(fundingDeadline).toISOString() : undefined,
           milestones: milestones.map((m, idx) => ({
             index: idx,
             title: m.title,
@@ -262,7 +305,7 @@ export default function CreateCampaignPage() {
               const Icon = s.icon;
               const isActive = step === s.num;
               const isDone = step > s.num;
-              const labels = ["Name, pitch, goal", "Cover, description, risks", "Milestones and criteria", "Review and launch"];
+              const labels = ["Name, pitch, goal", "Problem, solution, risks", "Your team", "Milestones and criteria", "Review and launch"];
               return (
                 <button
                   key={s.num}
@@ -316,7 +359,7 @@ export default function CreateCampaignPage() {
         {step === 1 && (
           <>
             <div className="mb-6">
-              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 1 of 4</p>
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 1 of 5</p>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Tell us about your project</h2>
               <p className="text-muted-foreground mt-2">This is what backers will see first. Make it count.</p>
             </div>
@@ -360,7 +403,7 @@ export default function CreateCampaignPage() {
                       onChange={(e) => setCategory(e.target.value)}
                       className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
-                      {["Apps", "Games", "SaaS", "Tools", "Infrastructure"].map((c) => (
+                      {CATEGORIES.map((c) => (
                         <option key={c} value={c}>{c}</option>
                       ))}
                     </select>
@@ -383,61 +426,56 @@ export default function CreateCampaignPage() {
           </>
         )}
 
-        {/* ═══ STEP 2: STORY ═══ */}
+        {/* ═══ STEP 2: STORY (Foundation v1 — split fields) ═══ */}
         {step === 2 && (
           <>
             <div className="mb-6">
-              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 2 of 4</p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Make them feel it</h2>
-              <p className="text-muted-foreground mt-2">Backers invest in stories, not in forms. Show them what you're building.</p>
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 2 of 5</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Tell the story</h2>
+              <p className="text-muted-foreground mt-2">Backers invest in stories, not forms. Structure helps them understand.</p>
             </div>
 
             <Card>
-              <CardContent className="p-5 space-y-4">
+              <CardContent className="p-5 space-y-5">
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Cover image</label>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      if (file.size > 5_000_000) {
-                        toast.error("Image must be under 5MB");
-                        return;
-                      }
-                      setCoverFile(file);
-                      setCoverPreview(URL.createObjectURL(file));
-                    }}
-                    className="w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-amber-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-amber-700 hover:file:bg-amber-100"
-                  />
-                  {coverPreview && (
-                    <img src={coverPreview} alt="Cover" className="mt-2 h-40 w-full object-cover rounded-lg border" />
-                  )}
-                  <p className="text-xs text-muted-foreground mt-1">1200 x 630 recommended. Max 5MB.</p>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Pitch video (optional)</label>
-                  <Input
-                    value={pitchVideoUrl}
-                    onChange={(e) => setPitchVideoUrl(e.target.value)}
-                    placeholder="https://youtube.com/... or https://loom.com/..."
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-1 block">About this project</label>
+                  <label className="text-sm font-medium mb-1 block">The Problem</label>
                   <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="What problem do you solve? Why now? Who benefits? What makes it different?"
-                    rows={6}
+                    value={problem}
+                    onChange={(e) => setProblem((e.target as HTMLTextAreaElement).value)}
+                    placeholder="What's broken in the world that this project fixes? For whom? How serious?"
+                    rows={3}
                   />
-                  <AiHelperButton
-                    context="description"
-                    onApply={(text) => setDescription(text)}
-                    className="mt-2"
+                  <AiHelperButton context="problem" onApply={(t) => setProblem(t)} className="mt-1" />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1 block">The Solution</label>
+                  <Textarea
+                    value={solution}
+                    onChange={(e) => setSolution((e.target as HTMLTextAreaElement).value)}
+                    placeholder="How does this project solve the problem?"
+                    rows={3}
+                  />
+                  <AiHelperButton context="solution" onApply={(t) => setSolution(t)} className="mt-1" />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Why Now</label>
+                  <Textarea
+                    value={whyNow}
+                    onChange={(e) => setWhyNow((e.target as HTMLTextAreaElement).value)}
+                    placeholder="What changed in the world (technology, market, regulation) that makes this the right time?"
+                    rows={3}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Background <span className="text-xs text-muted-foreground">(optional)</span></label>
+                  <Textarea
+                    value={background}
+                    onChange={(e) => setBackground((e.target as HTMLTextAreaElement).value)}
+                    placeholder="The personal story behind this — how you arrived at this idea."
+                    rows={2}
                   />
                 </div>
 
@@ -445,42 +483,75 @@ export default function CreateCampaignPage() {
                   <label className="text-sm font-medium mb-1 block">Risks & Challenges</label>
                   <Textarea
                     value={risks}
-                    onChange={(e) => setRisks(e.target.value)}
-                    placeholder="Be honest. Backers respect transparency more than perfection."
+                    onChange={(e) => setRisks((e.target as HTMLTextAreaElement).value)}
+                    placeholder="What could go wrong? Be uncomfortable. Backers respect honesty more than confidence."
                     rows={3}
                   />
-                  <p className="text-xs text-muted-foreground mt-1">What could go wrong? How will you handle it?</p>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
+        {/* ═══ STEP 3: TEAM ═══ */}
+        {step === 3 && (
+          <>
+            <div className="mb-6">
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 3 of 5</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Who's building this?</h2>
+              <p className="text-muted-foreground mt-2">Your profile is auto-loaded. Add team members if you have a team.</p>
+            </div>
+
+            <Card>
+              <CardContent className="p-5 space-y-4">
+                {/* Creator profile preview */}
+                <div className="flex items-center gap-3 p-4 bg-[#FAFAFA] rounded-xl">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white font-bold">
+                    {(publicKey?.toBase58() || "?")[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold">You (Creator)</p>
+                    <p className="text-xs text-muted-foreground font-mono">{publicKey?.toBase58().slice(0, 8)}...{publicKey?.toBase58().slice(-4)}</p>
+                  </div>
+                  <Badge variant="secondary" className="text-xs">Auto-loaded</Badge>
                 </div>
 
-                {/* FAQ */}
+                {/* Team members */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">FAQ (optional)</label>
-                  <p className="text-xs text-muted-foreground mb-3">Common questions backers might ask. Shows as a tab on your campaign page.</p>
-                  {faqItems.map((item, idx) => (
+                  <label className="text-sm font-medium mb-2 block">Team members <span className="text-xs text-muted-foreground">(optional)</span></label>
+                  {teamMembers.map((member, idx) => (
                     <div key={idx} className="border rounded-lg p-3 mb-2 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-muted-foreground">Q{idx + 1}</span>
-                        <Button type="button" variant="ghost" size="sm" onClick={() => setFaqItems(faqItems.filter((_, i) => i !== idx))} className="h-6 w-6 p-0">
+                        <span className="text-xs font-medium text-muted-foreground">Member {idx + 1}</span>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => setTeamMembers(teamMembers.filter((_, i) => i !== idx))} className="h-6 w-6 p-0">
                           <Trash2 className="h-3 w-3 text-red-400" />
                         </Button>
                       </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          value={member.name}
+                          onChange={(e) => { const u = [...teamMembers]; u[idx] = { ...u[idx], name: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
+                          placeholder="Name"
+                          className="text-sm"
+                        />
+                        <Input
+                          value={member.role}
+                          onChange={(e) => { const u = [...teamMembers]; u[idx] = { ...u[idx], role: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
+                          placeholder="Role (e.g. Design Lead)"
+                          className="text-sm"
+                        />
+                      </div>
                       <Input
-                        value={item.q}
-                        onChange={(e) => { const u = [...faqItems]; u[idx] = { ...u[idx], q: e.target.value }; setFaqItems(u); }}
-                        placeholder="Question"
-                        className="text-sm"
-                      />
-                      <Input
-                        value={item.a}
-                        onChange={(e) => { const u = [...faqItems]; u[idx] = { ...u[idx], a: e.target.value }; setFaqItems(u); }}
-                        placeholder="Answer"
+                        value={member.social_link}
+                        onChange={(e) => { const u = [...teamMembers]; u[idx] = { ...u[idx], social_link: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
+                        placeholder="Social link (optional)"
                         className="text-sm"
                       />
                     </div>
                   ))}
-                  {faqItems.length < 5 && (
-                    <Button type="button" variant="outline" size="sm" onClick={() => setFaqItems([...faqItems, { q: "", a: "" }])} className="gap-1">
-                      <Plus className="h-3.5 w-3.5" /> Add FAQ
+                  {teamMembers.length < 10 && (
+                    <Button type="button" variant="outline" size="sm" onClick={() => setTeamMembers([...teamMembers, { name: "", role: "", social_link: "" }])} className="gap-1">
+                      <Plus className="h-3.5 w-3.5" /> Add team member
                     </Button>
                   )}
                 </div>
@@ -489,11 +560,11 @@ export default function CreateCampaignPage() {
           </>
         )}
 
-        {/* ═══ STEP 3: PLAN ═══ */}
-        {step === 3 && (
+        {/* ═══ STEP 4: PLAN ═══ */}
+        {step === 4 && (
           <>
             <div className="mb-6">
-              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 3 of 4</p>
+              <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 4 of 5</p>
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Break down your path</h2>
               <p className="text-muted-foreground mt-1">
                 Your goal: <strong>{goalNum} SOL</strong>. Split into 1-5 milestones. Each unlocks part of funding when approved.
@@ -620,6 +691,17 @@ export default function CreateCampaignPage() {
                 </div>
               </div>
 
+              {/* Funding deadline */}
+              <div>
+                <label className="text-sm font-medium mb-1 block">Funding deadline</label>
+                <Input
+                  type="date"
+                  value={fundingDeadline}
+                  onChange={(e) => setFundingDeadline((e.target as HTMLInputElement).value)}
+                />
+                <p className="text-xs text-muted-foreground mt-1">When backing window closes. Must be before first milestone deadline.</p>
+              </div>
+
               {/* Security deposit */}
               {goalNum > 0 && (
                 <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-100 rounded-lg text-xs text-amber-700">
@@ -631,12 +713,12 @@ export default function CreateCampaignPage() {
           </>
         )}
 
-        {/* ═══ STEP 4: PREVIEW ═══ */}
-        {step === 4 && (
+        {/* ═══ STEP 5: PREVIEW ═══ */}
+        {step === 5 && (
           <>
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 4 of 4</p>
+                <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 5 of 5</p>
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Preview your campaign</h2>
                 <p className="text-muted-foreground mt-2">This is exactly what backers will see. Launch when ready.</p>
               </div>
@@ -663,10 +745,28 @@ export default function CreateCampaignPage() {
                   {pitch && <p className="text-muted-foreground mt-1">{pitch}</p>}
                 </div>
 
-                {fullDescription && (
+                {problem && (
                   <div>
-                    <p className="text-sm font-medium mb-1">About</p>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{fullDescription}</p>
+                    <p className="text-sm font-medium mb-1">The Problem</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{problem}</p>
+                  </div>
+                )}
+                {solution && (
+                  <div>
+                    <p className="text-sm font-medium mb-1">The Solution</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{solution}</p>
+                  </div>
+                )}
+                {whyNow && (
+                  <div>
+                    <p className="text-sm font-medium mb-1">Why Now</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{whyNow}</p>
+                  </div>
+                )}
+                {background && (
+                  <div>
+                    <p className="text-sm font-medium mb-1">Background</p>
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{background}</p>
                   </div>
                 )}
 
@@ -739,7 +839,7 @@ export default function CreateCampaignPage() {
             <div />
           )}
 
-          {step < 4 ? (
+          {step < 5 ? (
             <Button
               onClick={() => setStep(step + 1)}
               disabled={!canProceed(step)}
@@ -750,7 +850,7 @@ export default function CreateCampaignPage() {
           ) : (
             <Button
               onClick={handleLaunch}
-              disabled={loading || !canProceed(3)}
+              disabled={loading || !canProceed(4)}
               className="gap-2 bg-[#0F1724] hover:bg-[#1a2538] text-white"
               size="lg"
             >
