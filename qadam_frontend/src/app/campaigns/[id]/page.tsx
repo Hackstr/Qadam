@@ -23,7 +23,7 @@ import { ActiveVoteWidget } from "@/components/qadam/active-vote-widget";
 import { CreatorStrip } from "@/components/qadam/creator-strip";
 import {
   Users, Wallet, ArrowRight, Loader2, ArrowLeft,
-  ExternalLink, Share2, AlertCircle, Sparkles,
+  ExternalLink, Share2, AlertCircle,
   Calendar, Copy, CheckCircle2, Clock, Vote,
 } from "lucide-react";
 import Link from "next/link";
@@ -391,21 +391,7 @@ function CampaignDetailContent() {
               return <ActiveVoteWidget campaignId={campaign.id} milestone={votingMs} />;
             })()}
 
-            {/* AI Helper trigger */}
-            <div className="border border-amber-200 bg-amber-50/30 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-4 w-4 text-amber-600" />
-                <p className="text-sm font-semibold">Ask Qadam AI</p>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">Get instant analysis of this project — risks, team, budget, milestones.</p>
-              <div className="space-y-1.5">
-                {["Is this project realistic?", "What are the risks?", "Compare to similar campaigns"].map((q) => (
-                  <button key={q} className="w-full text-left text-xs px-3 py-2 rounded-lg bg-white border border-black/[0.06] hover:border-amber-200 transition-colors">
-                    {q}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* AI Helper removed — Foundation §06: AI is creator-only, no backer-side surfaces */}
 
             {/* Governance link */}
             <Link href={`/campaigns/${campaign.id}/vote`}>

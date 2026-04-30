@@ -208,7 +208,7 @@ export default function Home() {
             {[
               { icon: Shield, title: "Milestone Escrow", desc: "Funds physically cannot leave without proof of progress. The smart contract enforces it — no trust required." },
               { icon: Users, title: "Community Governance", desc: "Backers vote on every milestone approval, extension, and refund. Decisions are on-chain, transparent, and final." },
-              { icon: Coins, title: "Backer Equity", desc: "Your contribution earns you a share in the project. Early backers get higher allocation. Vote on key decisions." },
+              { icon: Coins, title: "Backer Ownership", desc: "Your contribution earns you ownership points in the project. Earlier backers earn more. Vote on key decisions." },
               { icon: Eye, title: "On-chain Transparency", desc: "Every vote, every transaction, every release — publicly verifiable on Solana. Nothing hidden." },
             ].map((feature) => (
               <motion.div
@@ -288,7 +288,7 @@ export default function Home() {
             <motion.div variants={fadeUp} className="border border-black/[0.06] rounded-2xl p-8">
               <h3 className="text-xl font-bold mb-2">For Backers</h3>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Invest in early projects, safely. Funds in escrow. You vote on progress.
+                Back early projects, safely. Funds in escrow. You vote on progress.
                 Refunds if things don't work out.
               </p>
               <Link href="/campaigns">

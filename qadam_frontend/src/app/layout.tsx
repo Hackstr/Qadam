@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Qadam — Build step by step",
-    description: "Decentralized crowdfunding on Solana with AI milestone verification.",
+    description: "Community-governed crowdfunding on Solana. SOL stays in escrow until backers approve each milestone.",
   },
 };
 
