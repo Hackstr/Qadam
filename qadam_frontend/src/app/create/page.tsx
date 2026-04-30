@@ -52,7 +52,14 @@ export default function CreateCampaignPage() {
   // Profile setup removed from /create gate — creators can fill profile in /settings anytime
 
   const [step, setStep] = useState(1);
+  const [maxStepVisited, setMaxStepVisited] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  // Track highest step visited for sidebar navigation
+  const goToStep = (s: number) => {
+    setStep(s);
+    setMaxStepVisited((prev) => Math.max(prev, s));
+  };
 
   // Step 1 — Idea
   const [title, setTitle] = useState("");
@@ -121,7 +128,7 @@ export default function CreateCampaignPage() {
         if (d.faqItems) setFaqItems(d.faqItems);
         if (d.milestones?.length) setMilestones(d.milestones);
         if (d.fundingDeadline) setFundingDeadline(d.fundingDeadline);
-        if (d.step) setStep(d.step);
+        if (d.step) { setStep(d.step); setMaxStepVisited(d.step); }
       }
     } catch { /* ignore corrupt draft */ }
   }, []);
@@ -290,8 +297,8 @@ export default function CreateCampaignPage() {
               return (
                 <button
                   key={s.num}
-                  onClick={() => isDone && setStep(s.num)}
-                  disabled={!isDone && !isActive}
+                  onClick={() => s.num <= maxStepVisited && goToStep(s.num)}
+                  disabled={s.num > maxStepVisited}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all ${
                     isActive ? "bg-amber-50 border border-amber-200" :
                     isDone ? "hover:bg-gray-50 cursor-pointer" :
@@ -850,7 +857,7 @@ export default function CreateCampaignPage() {
         {/* Navigation */}
         <div className="flex items-center justify-between pt-4 border-t">
           {step > 1 ? (
-            <Button variant="ghost" onClick={() => setStep(step - 1)} className="gap-2">
+            <Button variant="ghost" onClick={() => goToStep(step - 1)} className="gap-2">
               <ArrowLeft className="h-4 w-4" /> Back
             </Button>
           ) : (
@@ -859,7 +866,7 @@ export default function CreateCampaignPage() {
 
           {step < 5 ? (
             <Button
-              onClick={() => setStep(step + 1)}
+              onClick={() => goToStep(step + 1)}
               disabled={!canProceed(step)}
               className="gap-2 bg-amber-500 hover:bg-amber-600 text-white"
             >

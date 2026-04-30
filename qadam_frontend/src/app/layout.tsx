@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/sonner";
 import { AccountSetupModal } from "@/components/account/account-setup-modal";
+import { GlobalAiChat } from "@/components/ai/global-ai-chat";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -56,6 +57,7 @@ export default function RootLayout({
           <main className="flex-1 pt-16">{children}</main>
           <Footer />
           <AccountSetupModal />
+          <GlobalAiChat />
           <Toaster richColors position="top-right" />
         </Providers>
       </body>

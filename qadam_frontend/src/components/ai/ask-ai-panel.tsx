@@ -57,25 +57,34 @@ export function AskAiPanel({
 
     try {
       const token = localStorage.getItem("qadam_token");
-      const res = await fetch(`${API_URL}/ai/companion_chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          campaign_id: campaignId,
-          conversation_id: conversationId,
-          message: msg,
-        }),
-      });
 
-      if (res.ok) {
-        const data = await res.json();
-        setConversationId(data.data.conversation_id);
-        setMessages((prev) => [...prev, { role: "assistant", content: data.data.response }]);
+      if (campaignId) {
+        // Campaign-specific companion chat
+        const res = await fetch(`${API_URL}/ai/companion_chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ campaign_id: campaignId, conversation_id: conversationId, message: msg }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setConversationId(data.data.conversation_id);
+          setMessages((prev) => [...prev, { role: "assistant", content: data.data.response }]);
+        } else {
+          setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I couldn't process that. Try again." }]);
+        }
       } else {
-        setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I couldn't process that request. Try again." }]);
+        // General AI help (no campaign context)
+        const res = await fetch(`${API_URL}/ai/help`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ context: "general", prompt: msg }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setMessages((prev) => [...prev, { role: "assistant", content: data.data?.text || data.text || "I'm here to help with your Qadam projects." }]);
+        } else {
+          setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I couldn't process that. Try again." }]);
+        }
       }
     } catch {
       setMessages((prev) => [...prev, { role: "assistant", content: "Connection error. Please try again." }]);
