@@ -57,8 +57,9 @@ export default function TermsPage() {
           <h2 className="text-lg font-semibold text-foreground">6. Milestone Verification</h2>
           <p>
             Milestone verification is performed by the community of backers through on-chain governance
-            voting. Each backer's voting weight is proportional to their contribution, with a 20% cap
-            per position to prevent whale dominance. A 20% quorum is required for votes to be valid.
+            voting. Each backer&apos;s voting weight is their ownership points in that campaign, computed
+            at the time of backing. Voting parameters — vote period, quorum, and approval threshold —
+            are configured by the creator at campaign launch and locked from that point on.
           </p>
         </section>
 
