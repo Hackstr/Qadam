@@ -1,4 +1,7 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = { title: "How It Works — Qadam" };
 import { Button } from "@/components/ui/button";
 import { MilestoneDots } from "@/components/qadam/milestone-dots";
 import { EscrowIndicator } from "@/components/qadam/escrow-indicator";

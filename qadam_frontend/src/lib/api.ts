@@ -34,6 +34,7 @@ export async function getCampaigns(params?: {
   category?: string;
   sort?: string;
   search?: string;
+  tag?: string;
   limit?: number;
 }) {
   const query = new URLSearchParams();
@@ -41,6 +42,7 @@ export async function getCampaigns(params?: {
   if (params?.category) query.set("category", params.category);
   if (params?.sort) query.set("sort", params.sort);
   if (params?.search) query.set("search", params.search);
+  if (params?.tag) query.set("tag", params.tag);
   if (params?.limit) query.set("limit", String(params.limit));
 
   const qs = query.toString();

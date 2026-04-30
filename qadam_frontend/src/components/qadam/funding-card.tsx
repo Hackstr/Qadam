@@ -18,7 +18,7 @@ export interface FundingCardProps {
 
 export function FundingCard({ campaign, className }: FundingCardProps) {
   const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
-  const tier = getCurrentTier(campaign.backers_count);
+  const tier = getCurrentTier(campaign.backers_count, campaign.tier_config);
   const foundersSpotsLeft = Math.max(0, TIER_1_MAX_BACKERS - campaign.backers_count);
 
   return (

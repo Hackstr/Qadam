@@ -316,9 +316,9 @@ export default function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {[
               { value: "2.5%", label: "Platform fee", sub: "vs 8-10% on Kickstarter" },
-              { value: "On-chain", label: "Every vote verified", sub: "Transparent governance" },
-              { value: "Free", label: "First 20 creators", sub: "Zero commission forever" },
-              { value: "100%", label: "On-chain", sub: "Every tx verifiable" },
+              { value: "On-chain", label: "Community votes", sub: "Transparent governance" },
+              { value: "Creator-set", label: "Tier structure", sub: "1-10 tiers, you decide" },
+              { value: "100%", label: "Verifiable", sub: "Every tx on Solana Explorer" },
             ].map((stat) => (
               <motion.div
                 key={stat.label}

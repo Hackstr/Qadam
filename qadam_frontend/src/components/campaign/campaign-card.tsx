@@ -43,7 +43,7 @@ export const DEFAULT_COVER = { from: "#374151", to: "#6B7280", icon: Rocket };
 
 export function CampaignCard({ campaign }: { campaign: Campaign }) {
   const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
-  const tier = getCurrentTier(campaign.backers_count);
+  const tier = getCurrentTier(campaign.backers_count, campaign.tier_config);
   const cover = CATEGORY_COVERS[campaign.category || ""] || DEFAULT_COVER;
   const CoverIcon = cover.icon;
 

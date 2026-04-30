@@ -49,7 +49,25 @@ export function formatPercent(value: number, total: number): number {
   return Math.round((value / total) * 100);
 }
 
-export function getCurrentTier(backersCount: number): 1 | 2 | 3 {
+/**
+ * Determine current tier from campaign's tier_config.
+ * Falls back to legacy hardcoded thresholds if no tier_config provided.
+ */
+export function getCurrentTier(
+  backersCount: number,
+  tierConfig?: { name: string; multiplier: number; max_spots: number | null }[]
+): number {
+  if (tierConfig && tierConfig.length > 0) {
+    let cumulative = 0;
+    for (let i = 0; i < tierConfig.length; i++) {
+      const spots = tierConfig[i].max_spots;
+      if (spots === null || spots === 0 || i === tierConfig.length - 1) return i + 1;
+      cumulative += spots;
+      if (backersCount < cumulative) return i + 1;
+    }
+    return tierConfig.length;
+  }
+  // Legacy fallback
   if (backersCount < TIER_1_MAX_BACKERS) return 1;
   if (backersCount < TIER_2_MAX_BACKERS) return 2;
   return 3;

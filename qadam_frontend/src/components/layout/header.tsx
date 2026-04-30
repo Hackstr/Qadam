@@ -42,7 +42,12 @@ export function Header() {
   const visibleLinks = NAV_LINKS.filter((l) => l.public || connected);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 pointer-events-none">
+    <>
+    {/* Devnet warning banner */}
+    <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-white text-center py-1 text-[11px] font-medium tracking-wide pointer-events-auto">
+      ⚠️ Solana Devnet — test mode, not real funds
+    </div>
+    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-10 px-4 pointer-events-none">
       {/* Desktop nav */}
       <nav className="pointer-events-auto hidden md:flex items-center gap-1 bg-white/90 backdrop-blur-xl border border-black/[0.08] shadow-lg rounded-full px-2 py-1.5">
         <Link href="/" className="flex items-center px-4 py-1.5 rounded-full hover:bg-black/[0.04] transition-colors">
@@ -176,5 +181,6 @@ export function Header() {
         </div>
       )}
     </header>
+    </>
   );
 }
