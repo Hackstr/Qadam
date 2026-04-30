@@ -115,14 +115,31 @@ export async function createCampaignTx(
   nonce: BN,
   milestonesCount: number,
   goalLamports: BN,
-  tokensPerLamport: BN
+  tokensPerLamport: BN,
+  tierConfigs?: { multiplierBps: number; maxSpots: number }[],
+  votePeriodDays?: number,
+  quorumBps?: number,
+  approvalThresholdBps?: number,
 ) {
   const campaignPda = getCampaignPda(creator, nonce);
   const vaultPda = getVaultPda(campaignPda);
   const mintPda = getMintPda(campaignPda);
 
+  // Foundation v1: default tier config if not provided
+  const tiers = tierConfigs || [
+    { multiplierBps: 10000, maxSpots: 50 },
+    { multiplierBps: 7000, maxSpots: 200 },
+    { multiplierBps: 5000, maxSpots: 0 },  // 0 = unlimited
+  ];
+
   return program.methods
-    .createCampaign(title, nonce, milestonesCount, goalLamports, tokensPerLamport)
+    .createCampaign(
+      title, nonce, milestonesCount, goalLamports, tokensPerLamport,
+      tiers,
+      votePeriodDays || 7,
+      quorumBps || 2000,
+      approvalThresholdBps || 5000,
+    )
     .accounts({
       creator,
       config: getConfigPda(),

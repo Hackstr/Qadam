@@ -81,6 +81,10 @@ export function useQadamProgram() {
     goalSol: number;
     tokensPerLamport: number;
     milestones: { amountSol: number; deadline: Date }[];
+    tierConfigs?: { multiplierBps: number; maxSpots: number }[];
+    votePeriodDays?: number;
+    quorumBps?: number;
+    approvalThresholdBps?: number;
   }) => {
     if (!program || !publicKey) throw new Error("Wallet not connected");
 
@@ -93,7 +97,9 @@ export function useQadamProgram() {
 
     const createTx = await createCampaignTx(
       program, publicKey, params.title, nonceBN,
-      params.milestonesCount, goalLamports, tokensPerLamport
+      params.milestonesCount, goalLamports, tokensPerLamport,
+      params.tierConfigs, params.votePeriodDays,
+      params.quorumBps, params.approvalThresholdBps,
     );
 
     const campaignPda = getCampaignPda(publicKey, nonceBN);

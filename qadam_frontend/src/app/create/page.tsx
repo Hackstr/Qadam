@@ -191,6 +191,12 @@ export default function CreateCampaignPage() {
     setLoading(true);
     try {
       const nonce = Date.now();
+      // Convert tier_config to Anchor format (multiplierBps + maxSpots)
+      const anchorTiers = tierConfig.map((t) => ({
+        multiplierBps: Math.round(t.multiplier * 10000),
+        maxSpots: t.max_spots === null ? 0 : t.max_spots, // 0 = unlimited on-chain
+      }));
+
       const result = await createCampaignTx({
         title,
         nonce,
@@ -201,6 +207,10 @@ export default function CreateCampaignPage() {
           amountSol: parseFloat(m.amount) || 0,
           deadline: new Date(m.deadline),
         })),
+        tierConfigs: anchorTiers,
+        votePeriodDays: votingParams.vote_period_days,
+        quorumBps: Math.round(votingParams.quorum_pct * 10000),
+        approvalThresholdBps: Math.round(votingParams.approval_threshold_pct * 10000),
       });
 
       try {
