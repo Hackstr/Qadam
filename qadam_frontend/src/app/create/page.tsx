@@ -128,7 +128,7 @@ export default function CreateCampaignPage() {
         if (d.faqItems) setFaqItems(d.faqItems);
         if (d.milestones?.length) setMilestones(d.milestones);
         if (d.fundingDeadline) setFundingDeadline(d.fundingDeadline);
-        if (d.step) { setStep(d.step); setMaxStepVisited(d.step); }
+        if (d.step) { setStep(d.step); setMaxStepVisited(d.maxStepVisited || d.step); }
       }
     } catch { /* ignore corrupt draft */ }
   }, []);
@@ -140,7 +140,7 @@ export default function CreateCampaignPage() {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
           title, pitch, category, goal, description, pitchVideoUrl, projectLocation, tags,
           problem, solution, whyNow, background, risks, teamMembers,
-          faqItems, milestones, fundingDeadline, step,
+          faqItems, milestones, fundingDeadline, step, maxStepVisited,
         }));
       }
     }, 5000);
@@ -292,28 +292,29 @@ export default function CreateCampaignPage() {
             {STEPS.map((s) => {
               const Icon = s.icon;
               const isActive = step === s.num;
-              const isDone = step > s.num;
+              const isVisited = s.num <= maxStepVisited && !isActive;
+              const isLocked = s.num > maxStepVisited;
               const labels = ["Name, pitch, goal", "Problem, solution, risks", "Your team", "Milestones and criteria", "Review and launch"];
               return (
                 <button
                   key={s.num}
-                  onClick={() => s.num <= maxStepVisited && goToStep(s.num)}
-                  disabled={s.num > maxStepVisited}
+                  onClick={() => !isLocked && goToStep(s.num)}
+                  disabled={isLocked}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all ${
                     isActive ? "bg-amber-50 border border-amber-200" :
-                    isDone ? "hover:bg-gray-50 cursor-pointer" :
-                    "opacity-40"
+                    isVisited ? "hover:bg-gray-50 cursor-pointer border border-transparent" :
+                    "opacity-40 cursor-not-allowed"
                   }`}
                 >
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
                     isActive ? "bg-amber-500 text-white" :
-                    isDone ? "bg-green-500 text-white" :
+                    isVisited ? "bg-green-500 text-white" :
                     "bg-gray-100 text-gray-400"
                   }`}>
-                    {isDone ? <Check className="h-3.5 w-3.5" /> : s.num}
+                    {isVisited ? <Check className="h-3.5 w-3.5" /> : s.num}
                   </div>
                   <div>
-                    <p className={`text-sm font-medium ${isActive ? "text-amber-700" : isDone ? "text-foreground" : "text-muted-foreground"}`}>
+                    <p className={`text-sm font-medium ${isActive ? "text-amber-700" : isVisited ? "text-foreground" : "text-muted-foreground"}`}>
                       {s.num}. {s.title}
                     </p>
                     <p className="text-[10px] text-muted-foreground leading-tight">{labels[s.num - 1]}</p>
