@@ -96,7 +96,7 @@ export default function Home() {
 
             {/* Right — illustration */}
             <motion.div
-              initial={{ opacity: 0, x: 24 }}
+              initial={{ opacity: 1, x: 0 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
               className="hidden lg:flex items-center justify-center py-4"
@@ -150,7 +150,7 @@ export default function Home() {
 
       {/* How It Works — numbered cards */}
       <motion.section
-        initial="hidden"
+        initial="visible"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={stagger}
@@ -193,7 +193,7 @@ export default function Home() {
 
       {/* Why Qadam — 2-column grid */}
       <motion.section
-        initial="hidden"
+        initial="visible"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={stagger}
@@ -248,7 +248,7 @@ export default function Home() {
           ].map((block, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 1, y: 0 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.1 }}
@@ -265,7 +265,7 @@ export default function Home() {
 
       {/* For Creators / For Backers */}
       <motion.section
-        initial="hidden"
+        initial="visible"
         whileInView="visible"
         viewport={{ once: true }}
         variants={stagger}
@@ -306,7 +306,7 @@ export default function Home() {
 
       {/* Stats — light, with border cards */}
       <motion.section
-        initial="hidden"
+        initial="visible"
         whileInView="visible"
         viewport={{ once: true }}
         variants={stagger}
@@ -361,7 +361,7 @@ export default function Home() {
 
       {/* CTA — clean, centered */}
       <motion.section
-        initial="hidden"
+        initial="visible"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeUp}
@@ -417,7 +417,7 @@ function ActiveCampaignsSection() {
 
   return (
     <motion.section
-      initial="hidden"
+      initial="visible"
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={stagger}
