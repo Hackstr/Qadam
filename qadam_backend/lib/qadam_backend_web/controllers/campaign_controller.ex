@@ -68,10 +68,17 @@ defmodule QadamBackendWeb.CampaignController do
   # JSON serializers
 
   defp campaign_json(c) do
+    # Lookup creator display_name for list view
+    creator_name = case QadamBackend.Accounts.get_user_by_wallet(c.creator_wallet) do
+      %{display_name: name} when is_binary(name) and name != "" -> name
+      _ -> nil
+    end
+
     %{
       id: c.id,
       solana_pubkey: c.solana_pubkey,
       creator_wallet: c.creator_wallet,
+      creator_display_name: creator_name,
       title: c.title,
       description: c.description,
       category: c.category,

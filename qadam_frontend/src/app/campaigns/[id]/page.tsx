@@ -333,16 +333,26 @@ function CampaignDetailContent() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {backers.map((b, idx) => (
+                    {backers.map((b: any, idx: number) => (
                       <div key={idx} className="flex items-center justify-between py-2.5 border-b border-black/[0.04] last:border-0">
                         <div className="flex items-center gap-3">
-                          <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-medium">{idx + 1}</span>
-                          <a href={getExplorerUrl(b.wallet_address)} target="_blank" rel="noopener noreferrer" className="font-mono text-xs hover:text-amber-600">
-                            {b.wallet_address.slice(0, 4)}...{b.wallet_address.slice(-4)}
-                          </a>
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-[9px] font-bold">
+                            {(b.display_name || b.wallet_address)[0].toUpperCase()}
+                          </div>
+                          <div>
+                            {b.display_name ? (
+                              <span className="text-sm font-medium">{b.display_name}</span>
+                            ) : (
+                              <a href={getExplorerUrl(b.wallet_address)} target="_blank" rel="noopener noreferrer" className="font-mono text-xs hover:text-amber-600">
+                                {b.wallet_address.slice(0, 4)}...{b.wallet_address.slice(-4)}
+                              </a>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center gap-3 text-sm">
-                          <span className="text-xs text-muted-foreground">{TIER_LABELS[b.tier as 1|2|3]?.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {campaign.tier_config?.[((b.tier || 1) - 1)]?.name || TIER_LABELS[b.tier as 1|2|3]?.name}
+                          </span>
                           <span className="font-medium tabular-nums">{formatSol(b.amount_lamports)}</span>
                         </div>
                       </div>

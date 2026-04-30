@@ -116,6 +116,7 @@ export default function CampaignsPage() {
           {[
             { label: "Newest", value: undefined },
             { label: "Trending", value: "trending" },
+            { label: "Ending Soon", value: "ending_soon" },
             { label: "Most Backed", value: "most_backed" },
           ].map((s) => (
             <button

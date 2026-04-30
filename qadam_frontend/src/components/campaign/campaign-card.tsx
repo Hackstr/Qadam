@@ -74,6 +74,16 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
             </p>
           )}
 
+          {/* Creator */}
+          {campaign.creator_display_name && (
+            <div className="flex items-center gap-1.5 mb-2">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-[7px] font-bold flex-shrink-0">
+                {campaign.creator_display_name[0].toUpperCase()}
+              </div>
+              <span className="text-[11px] text-muted-foreground truncate">by {campaign.creator_display_name}</span>
+            </div>
+          )}
+
           {/* Spacer */}
           <div className="flex-1" />
 
