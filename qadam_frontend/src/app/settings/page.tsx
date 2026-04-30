@@ -7,6 +7,7 @@ import { getMe, updateMe } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Save, Settings, GitBranch, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -23,6 +24,12 @@ export default function SettingsPage() {
   const user = data?.data;
 
   const [displayName, setDisplayName] = useState("");
+  const [bio, setBio] = useState("");
+  const [location, setLocation] = useState("");
+  const [socialTwitter, setSocialTwitter] = useState("");
+  const [socialTelegram, setSocialTelegram] = useState("");
+  const [socialGithub, setSocialGithub] = useState("");
+  const [socialWebsite, setSocialWebsite] = useState("");
   const [email, setEmail] = useState("");
   const [notifyApproved, setNotifyApproved] = useState(true);
   const [notifyRejected, setNotifyRejected] = useState(true);
@@ -33,6 +40,12 @@ export default function SettingsPage() {
   useEffect(() => {
     if (user) {
       setDisplayName(user.display_name || "");
+      setBio(user.bio || "");
+      setLocation(user.location || "");
+      setSocialTwitter(user.socials?.twitter || "");
+      setSocialTelegram(user.socials?.telegram || "");
+      setSocialGithub(user.socials?.github || "");
+      setSocialWebsite(user.socials?.website || "");
       setEmail(user.email || "");
       setNotifyApproved(user.notify_milestone_approved ?? true);
       setNotifyRejected(user.notify_milestone_rejected ?? true);
@@ -46,6 +59,9 @@ export default function SettingsPage() {
     mutationFn: () =>
       updateMe({
         display_name: displayName,
+        bio,
+        location,
+        socials: { twitter: socialTwitter, telegram: socialTelegram, github: socialGithub, website: socialWebsite },
         email,
         notify_milestone_approved: notifyApproved,
         notify_milestone_rejected: notifyRejected,
@@ -96,6 +112,48 @@ export default function SettingsPage() {
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Your name"
               />
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-sm font-medium">Bio</label>
+                <span className={`text-xs ${bio.length > 260 ? "text-amber-600" : "text-muted-foreground"}`}>{bio.length}/280</span>
+              </div>
+              <Textarea
+                value={bio}
+                onChange={(e) => setBio((e.target as HTMLTextAreaElement).value)}
+                placeholder="A short intro about you"
+                maxLength={280}
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1 block">Location</label>
+              <Input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="City, Country"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Social links</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Twitter / X</label>
+                  <Input value={socialTwitter} onChange={(e) => setSocialTwitter(e.target.value)} placeholder="@handle" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Telegram</label>
+                  <Input value={socialTelegram} onChange={(e) => setSocialTelegram(e.target.value)} placeholder="@username" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">GitHub</label>
+                  <Input value={socialGithub} onChange={(e) => setSocialGithub(e.target.value)} placeholder="username" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Website</label>
+                  <Input value={socialWebsite} onChange={(e) => setSocialWebsite(e.target.value)} placeholder="https://..." />
+                </div>
+              </div>
             </div>
             <div>
               <label className="text-sm font-medium mb-1 block">Email</label>

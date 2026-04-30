@@ -62,7 +62,13 @@ export default function ProfilePage() {
           <h1 className="text-2xl font-bold tracking-tight">
             {profile.display_name || `${wallet.slice(0, 8)}...${wallet.slice(-4)}`}
           </h1>
-          <div className="flex items-center gap-3 mt-1 flex-wrap">
+          {profile.bio && (
+            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{profile.bio}</p>
+          )}
+          <div className="flex items-center gap-3 mt-2 flex-wrap">
+            {profile.location && (
+              <span className="text-xs text-muted-foreground">📍 {profile.location}</span>
+            )}
             <a
               href={explorerUrl}
               target="_blank"
@@ -85,6 +91,23 @@ export default function ProfilePage() {
               </span>
             )}
           </div>
+          {/* Social links */}
+          {profile.socials && Object.values(profile.socials).some(Boolean) && (
+            <div className="flex items-center gap-3 mt-2">
+              {profile.socials.twitter && (
+                <a href={`https://x.com/${profile.socials.twitter.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground">𝕏 {profile.socials.twitter}</a>
+              )}
+              {profile.socials.telegram && (
+                <a href={`https://t.me/${profile.socials.telegram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground">TG {profile.socials.telegram}</a>
+              )}
+              {profile.socials.github && (
+                <a href={`https://github.com/${profile.socials.github}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground">GH {profile.socials.github}</a>
+              )}
+              {profile.socials.website && (
+                <a href={profile.socials.website} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground">🌐 Website</a>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

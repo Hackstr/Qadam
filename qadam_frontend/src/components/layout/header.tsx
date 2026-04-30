@@ -8,7 +8,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNotifications, markNotificationsRead } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
-import { Bell as BellIcon, Menu, X } from "lucide-react";
+import { Bell as BellIcon, Menu, X, User, Settings } from "lucide-react";
 
 const WalletMultiButton = dynamic(
   () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
@@ -24,7 +24,7 @@ const NAV_LINKS = [
 ];
 
 export function Header() {
-  const { connected } = useWallet();
+  const { connected, publicKey } = useWallet();
   const pathname = usePathname();
   const { isAuthenticated } = useAuthStore();
   const queryClient = useQueryClient();
@@ -82,6 +82,24 @@ export function Header() {
                 <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" />
               )}
             </Link>
+          )}
+          {connected && publicKey && (
+            <>
+              <Link
+                href={`/profile/${publicKey.toBase58()}`}
+                className="p-2 rounded-full hover:bg-black/[0.04] transition-colors"
+                title="My Profile"
+              >
+                <User className="h-4 w-4 text-muted-foreground" />
+              </Link>
+              <Link
+                href="/settings"
+                className="p-2 rounded-full hover:bg-black/[0.04] transition-colors"
+                title="Settings"
+              >
+                <Settings className="h-4 w-4 text-muted-foreground" />
+              </Link>
+            </>
           )}
           <WalletMultiButton
             style={{
