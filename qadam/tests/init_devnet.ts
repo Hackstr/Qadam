@@ -37,10 +37,22 @@ async function main() {
     }
   }
 
-  // 2. Create a real campaign
+  // 2. Create a campaign with Foundation v1 tier_config + voting params
   const nonce = new anchor.BN(Date.now());
   const goal = new anchor.BN(2 * LAMPORTS_PER_SOL);
   const tokensPerLamport = new anchor.BN(10000);
+
+  // Foundation v1: per-campaign tier config
+  const tierConfigs = [
+    { multiplierBps: 10000, maxSpots: 50 },   // Founders 100%, 50 spots
+    { multiplierBps: 7000, maxSpots: 200 },    // Early Backers 70%, 200 spots
+    { multiplierBps: 5000, maxSpots: 0 },      // Supporters 50%, unlimited (0 = unlimited)
+  ];
+
+  // Foundation v1: per-campaign voting params
+  const votePeriodDays = 7;
+  const quorumBps = 2000;              // 20%
+  const approvalThresholdBps = 5000;   // 50%
 
   const [campaignPda] = PublicKey.findProgramAddressSync(
     [Buffer.from("campaign"), admin.publicKey.toBuffer(), nonce.toArrayLike(Buffer, "le", 8)],
@@ -56,7 +68,17 @@ async function main() {
   );
 
   await program.methods
-    .createCampaign("Qadam Platform Development", nonce, 2, goal, tokensPerLamport)
+    .createCampaign(
+      "Qadam Platform Development",
+      nonce,
+      2,                    // milestones_count
+      goal,
+      tokensPerLamport,
+      tierConfigs,
+      votePeriodDays,
+      quorumBps,
+      approvalThresholdBps,
+    )
     .accounts({
       creator: admin.publicKey,
       config: configPda,
@@ -94,6 +116,8 @@ async function main() {
   console.log("Campaign PDA:", campaignPda.toBase58());
   console.log("Vault PDA:", vaultPda.toBase58());
   console.log("Mint PDA:", mintPda.toBase58());
+  console.log("\nTier config: Founders (100%, 50 spots) / Early Backers (70%, 200) / Supporters (50%, unlimited)");
+  console.log("Voting: 7-day period, 20% quorum, 50% threshold");
   console.log("\nAnyone can now back this campaign on devnet!");
 }
 
