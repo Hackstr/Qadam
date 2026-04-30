@@ -14,11 +14,12 @@ import {
 } from "lucide-react";
 
 const fadeUp: any = {
-  hidden: { opacity: 1, y: 0 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  hidden: { opacity: 0.3, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 const stagger: any = {
-  visible: { transition: { staggerChildren: 0.1 } },
+  hidden: { opacity: 1 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
 };
 
 
@@ -96,7 +97,7 @@ export default function Home() {
 
             {/* Right — illustration */}
             <motion.div
-              initial={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0.3, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
               className="hidden lg:flex items-center justify-center py-4"
@@ -150,9 +151,9 @@ export default function Home() {
 
       {/* How It Works — numbered cards */}
       <motion.section
-        initial="visible"
+        initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: "-50px" }}
         variants={stagger}
         className="py-16 md:py-24"
       >
@@ -193,9 +194,9 @@ export default function Home() {
 
       {/* Why Qadam — 2-column grid */}
       <motion.section
-        initial="visible"
+        initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
+        viewport={{ once: true, margin: "-50px" }}
         variants={stagger}
         className="py-16 md:py-24"
       >
@@ -248,7 +249,7 @@ export default function Home() {
           ].map((block, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0.3, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: 0.1 }}
@@ -265,9 +266,9 @@ export default function Home() {
 
       {/* For Creators / For Backers */}
       <motion.section
-        initial="visible"
+        initial="hidden"
         whileInView="visible"
-        viewport={{ once: true }}
+        viewport={{ once: true, margin: "-50px" }}
         variants={stagger}
         className="py-16"
       >
@@ -306,9 +307,9 @@ export default function Home() {
 
       {/* Stats — light, with border cards */}
       <motion.section
-        initial="visible"
+        initial="hidden"
         whileInView="visible"
-        viewport={{ once: true }}
+        viewport={{ once: true, margin: "-50px" }}
         variants={stagger}
         className="py-16"
       >
@@ -361,9 +362,9 @@ export default function Home() {
 
       {/* CTA — clean, centered */}
       <motion.section
-        initial="visible"
+        initial="hidden"
         whileInView="visible"
-        viewport={{ once: true }}
+        viewport={{ once: true, margin: "-50px" }}
         variants={fadeUp}
         className="py-24 text-center"
       >
@@ -417,9 +418,9 @@ function ActiveCampaignsSection() {
 
   return (
     <motion.section
-      initial="visible"
+      initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin: "-50px" }}
       variants={stagger}
       className="py-16"
     >
