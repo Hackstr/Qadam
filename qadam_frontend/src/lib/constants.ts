@@ -26,13 +26,15 @@ export const TIER_LABELS = {
 
 // Design
 export const BRAND_COLORS = {
-  primary: "#0F1724",
-  accent: "#F5A623",
+  primary: "#2D5F4E",
+  accent: "#7A9985",
+  ink: "#1A2421",
   success: "#22C55E",
-  warning: "#F59E0B",
+  warning: "#D97706",
   error: "#EF4444",
-  surface: "#FAFAF8",
-  muted: "#6B7280",
+  surface: "#F7F4ED",
+  muted: "#6B7065",
+  governance: "#8B5CF6",
 } as const;
 
 // Formatting helpers

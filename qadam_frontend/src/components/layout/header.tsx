@@ -108,7 +108,7 @@ export function Header() {
           )}
           <WalletMultiButton
             style={{
-              backgroundColor: "#1A2421",
+              backgroundColor: "var(--foreground)",
               height: "32px",
               borderRadius: "9999px",
               fontSize: "13px",
@@ -125,7 +125,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <WalletMultiButton
             style={{
-              backgroundColor: "#1A2421",
+              backgroundColor: "var(--foreground)",
               height: "28px",
               borderRadius: "9999px",
               fontSize: "12px",

@@ -504,7 +504,7 @@ export default function CreateCampaignPage() {
             <Card>
               <CardContent className="p-5 space-y-4">
                 {/* Creator profile preview */}
-                <div className="flex items-center gap-3 p-4 bg-[#FAFAFA] rounded-xl">
+                <div className="flex items-center gap-3 p-4 bg-secondary rounded-xl">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white font-bold">
                     {(publicKey?.toBase58() || "?")[0].toUpperCase()}
                   </div>
@@ -887,7 +887,7 @@ export default function CreateCampaignPage() {
             <Button
               onClick={handleLaunch}
               disabled={loading || !canProceed(4)}
-              className="gap-2 bg-[#1A2421] hover:bg-[#244D3F] text-white"
+              className="gap-2 bg-foreground hover:bg-foreground/90 text-white"
               size="lg"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4" />}

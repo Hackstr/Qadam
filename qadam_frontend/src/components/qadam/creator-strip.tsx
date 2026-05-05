@@ -27,7 +27,7 @@ export function CreatorStrip({
 
   if (variant === "full") {
     return (
-      <div className={cn("flex items-center gap-3 bg-[#FAFAFA] rounded-xl p-3.5", className)}>
+      <div className={cn("flex items-center gap-3 bg-secondary rounded-xl p-3.5", className)}>
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white font-bold flex-shrink-0">
           {initial}
         </div>

@@ -107,21 +107,9 @@
   --sidebar-border: rgba(26, 36, 33, 0.08);
   --sidebar-ring: #7A9985;
 
-  /* ═══ Qadam Brand Tokens ═══ */
-  --qadam-primary: #2D5F4E;
-  --qadam-primary-hover: #244D3F;
-  --qadam-primary-soft: #E8F0EC;
-  --qadam-sage: #7A9985;
-  --qadam-surface: #F7F4ED;
-  --qadam-card: #FFFFFF;
-  --qadam-border: rgba(26, 36, 33, 0.08);
-  --qadam-border-hover: rgba(26, 36, 33, 0.15);
-  --qadam-muted: #6B7065;
-  --qadam-ink: #1A2421;
-
-  --qadam-success: #22C55E;
-  --qadam-danger: #EF4444;
-  --qadam-governance: #8B5CF6;
+  /* Brand colors are defined via @theme inline (amber→green remap)
+     and :root CSS variables above. No separate --qadam-* tokens needed.
+     Single source of truth: @theme for Tailwind, :root for CSS vars. */
 }
 
 /* Display heading — Instrument Serif */

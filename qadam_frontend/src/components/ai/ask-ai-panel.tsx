@@ -121,7 +121,7 @@ export function AskAiPanel({
             <button
               key={q}
               onClick={() => { setInput(q); }}
-              className="w-full text-left text-xs px-3 py-2.5 rounded-lg bg-[#FAFAFA] border border-black/[0.04] hover:border-amber-200 transition-colors"
+              className="w-full text-left text-xs px-3 py-2.5 rounded-lg bg-secondary border border-black/[0.04] hover:border-amber-200 transition-colors"
             >
               {q}
             </button>
@@ -140,8 +140,8 @@ export function AskAiPanel({
             )}
             <div className={`max-w-[80%] px-3.5 py-2.5 text-sm leading-relaxed ${
               msg.role === "user"
-                ? "bg-[#1A2421] text-white rounded-[14px_14px_4px_14px]"
-                : "bg-[#FAFAFA] border border-black/[0.04] rounded-[14px_14px_14px_4px]"
+                ? "bg-foreground text-white rounded-[14px_14px_4px_14px]"
+                : "bg-secondary border border-black/[0.04] rounded-[14px_14px_14px_4px]"
             }`}>
               {msg.content}
             </div>
@@ -152,7 +152,7 @@ export function AskAiPanel({
             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center flex-shrink-0">
               <Sparkles className="h-3 w-3 text-white animate-spin" style={{ animationDuration: "3s" }} />
             </div>
-            <div className="bg-[#FAFAFA] border border-black/[0.04] rounded-2xl px-3.5 py-2.5">
+            <div className="bg-secondary border border-black/[0.04] rounded-2xl px-3.5 py-2.5">
               <div className="flex gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                 <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" style={{ animationDelay: "150ms" }} />
