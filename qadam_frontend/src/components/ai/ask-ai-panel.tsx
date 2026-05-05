@@ -140,7 +140,7 @@ export function AskAiPanel({
             )}
             <div className={`max-w-[80%] px-3.5 py-2.5 text-sm leading-relaxed ${
               msg.role === "user"
-                ? "bg-[#0F172A] text-white rounded-[14px_14px_4px_14px]"
+                ? "bg-[#1A2421] text-white rounded-[14px_14px_4px_14px]"
                 : "bg-[#FAFAFA] border border-black/[0.04] rounded-[14px_14px_14px_4px]"
             }`}>
               {msg.content}

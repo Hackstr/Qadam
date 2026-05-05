@@ -22,7 +22,7 @@ const statusDot: Record<string, string> = {
 // Category covers — Foundation v1 + legacy
 export const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
   // Foundation v1 categories
-  Tech:             { from: "#0F172A", to: "#334155", icon: Cpu },
+  Tech:             { from: "#1A2421", to: "#334155", icon: Cpu },
   Hardware:         { from: "#78350F", to: "#D97706", icon: HardDrive },
   Software:         { from: "#1E3A8A", to: "#3B82F6", icon: Code },
   "Art & Design":   { from: "#831843", to: "#EC4899", icon: Palette },

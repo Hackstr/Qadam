@@ -7,6 +7,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+// Real qadam/ components — used in showcase sections below
+import { MilestoneDots } from "@/components/qadam/milestone-dots";
+import { EscrowIndicator } from "@/components/qadam/escrow-indicator";
+import { TierBadge } from "@/components/qadam/tier-badge";
+import { TierRewardsCard } from "@/components/qadam/tier-rewards-card";
+import { StatsGrid, type StatItem } from "@/components/qadam/stats-grid";
+import { ActiveVoteWidget } from "@/components/qadam/active-vote-widget";
+import { CreatorStrip } from "@/components/qadam/creator-strip";
+import { FundingCard } from "@/components/qadam/funding-card";
+import { NextActionAlert } from "@/components/qadam/next-action-alert";
 import {
   Crown, Star, UserCheck, Lock, ExternalLink, CheckCircle2,
   Vote, Clock, AlertTriangle, Loader2, Sparkles, Send,
@@ -1585,10 +1595,107 @@ export default function DesignSystemPage() {
         </SubCard>
       </S>
 
+      {/* ═══ 15 LIVE COMPONENTS (from qadam/) ═══ */}
+      <S id="live-components" title="15 · Live Components" sub="Real components from @/components/qadam/ — imported directly, not inline code.">
+        <div className="space-y-8">
+          {/* MilestoneDots */}
+          <SubCard>
+            <p className="text-base font-bold mb-4">MilestoneDots</p>
+            <div className="space-y-4">
+              <div>
+                <Label>Connected, size md (2 of 5 approved)</Label>
+                <MilestoneDots total={5} approved={2} variant="connected" size="md" />
+              </div>
+              <div>
+                <Label>Simple, size sm (3 of 4 approved)</Label>
+                <MilestoneDots total={4} approved={3} variant="simple" size="sm" />
+              </div>
+            </div>
+          </SubCard>
+
+          {/* EscrowIndicator */}
+          <SubCard>
+            <p className="text-base font-bold mb-4">EscrowIndicator</p>
+            <div className="space-y-3">
+              <div>
+                <Label>Full variant (with explorer link)</Label>
+                <EscrowIndicator variant="full" amountLamports={2_500_000_000} solanaAddress="7t92Yx5LPVHPUkyo26tvFu8FXoT3E5FX3H3qiiDzzgis" />
+              </div>
+              <div>
+                <Label>Compact variant (badge)</Label>
+                <EscrowIndicator variant="compact" solanaAddress="7t92Yx5LPVHPUkyo26tvFu8FXoT3E5FX3H3qiiDzzgis" />
+              </div>
+            </div>
+          </SubCard>
+
+          {/* TierBadge */}
+          <SubCard>
+            <p className="text-base font-bold mb-4">TierBadge</p>
+            <div className="flex gap-4 items-center">
+              <TierBadge tier={1} variant="text" />
+              <TierBadge tier={2} variant="text" />
+              <TierBadge tier={3} variant="text" />
+              <TierBadge tier={1} variant="badge" showRatio />
+            </div>
+          </SubCard>
+
+          {/* TierRewardsCard */}
+          <SubCard>
+            <p className="text-base font-bold mb-4">TierRewardsCard</p>
+            <TierRewardsCard backersCount={12} tierConfig={[
+              { name: "Founders", multiplier: 1.0, max_spots: 50 },
+              { name: "Early Backers", multiplier: 0.7, max_spots: 200 },
+              { name: "Supporters", multiplier: 0.5, max_spots: null },
+            ]} />
+          </SubCard>
+
+          {/* ActiveVoteWidget */}
+          <SubCard>
+            <p className="text-base font-bold mb-4">ActiveVoteWidget</p>
+            <ActiveVoteWidget
+              campaignId="demo"
+              milestone={{ index: 1, title: "Core API Release", extension_deadline: new Date(Date.now() + 3 * 86400000).toISOString(), votes_approve_percent: 73, votes_count: 15 }}
+            />
+          </SubCard>
+
+          {/* CreatorStrip */}
+          <SubCard>
+            <p className="text-base font-bold mb-4">CreatorStrip</p>
+            <div className="space-y-3">
+              <div>
+                <Label>Compact (default)</Label>
+                <CreatorStrip walletAddress="EpJiBvWpW6yeLdBKGkKyLjvGapAej2h3zji9mN6zfcEo" displayName="Khakim" location="Almaty, Kazakhstan" />
+              </div>
+              <div>
+                <Label>Full variant</Label>
+                <CreatorStrip walletAddress="EpJiBvWpW6yeLdBKGkKyLjvGapAej2h3zji9mN6zfcEo" displayName="Khakim" location="Almaty, Kazakhstan" variant="full" />
+              </div>
+            </div>
+          </SubCard>
+
+          {/* NextActionAlert */}
+          <SubCard>
+            <p className="text-base font-bold mb-4">NextActionAlert</p>
+            <NextActionAlert campaignId="demo" milestoneNumber={2} />
+          </SubCard>
+
+          {/* StatsGrid */}
+          <SubCard>
+            <p className="text-base font-bold mb-4">StatsGrid</p>
+            <StatsGrid items={[
+              { icon: Wallet, label: "Total backed", value: "12.5 SOL", sublabel: "3 campaigns" },
+              { icon: TrendingUp, iconColor: "text-green-500", label: "Active", value: "8.2 SOL", valueColor: "text-green-600", sublabel: "2 campaigns" },
+              { icon: Coins, iconColor: "text-purple-500", label: "Claimable", value: "4,200", valueColor: "text-purple-600", sublabel: "tokens" },
+              { icon: RotateCcw, iconColor: "text-red-400", label: "Refunds", value: "0", valueColor: "text-red-500", sublabel: "0 campaigns" },
+            ]} />
+          </SubCard>
+        </div>
+      </S>
+
       {/* Footer */}
       <div className="text-center py-8 border-t">
-        <p className="text-xs text-muted-foreground">Qadam Design System v2 · April 2026</p>
-        <p className="text-xs text-muted-foreground mt-1">Open this page to see all live components. Edit tokens in globals.css.</p>
+        <p className="text-xs text-muted-foreground">Qadam Design System v2 · May 2026</p>
+        <p className="text-xs text-muted-foreground mt-1">Live components imported from @/components/qadam/. Edit tokens in globals.css.</p>
       </div>
     </div>
   );
