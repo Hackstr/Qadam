@@ -327,7 +327,7 @@ export default function SubmitEvidencePage() {
             <Button
               onClick={handleSubmit}
               disabled={!text.trim() || loading}
-              className="gap-2 bg-[#0F1724] hover:bg-[#1a2538] text-white"
+              className="gap-2 bg-[#1A2421] hover:bg-[#244D3F] text-white"
               size="lg"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}

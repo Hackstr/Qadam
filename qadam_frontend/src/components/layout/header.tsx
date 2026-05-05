@@ -44,7 +44,7 @@ export function Header() {
   return (
     <>
     {/* Devnet warning banner */}
-    <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-white text-center py-1 text-[11px] font-medium tracking-wide pointer-events-auto">
+    <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-700 text-white text-center py-1 text-[11px] font-medium tracking-wide pointer-events-auto">
       ⚠️ Solana Devnet — test mode, not real funds
     </div>
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-10 px-4 pointer-events-none">
@@ -108,7 +108,7 @@ export function Header() {
           )}
           <WalletMultiButton
             style={{
-              backgroundColor: "#0F1724",
+              backgroundColor: "#1A2421",
               height: "32px",
               borderRadius: "9999px",
               fontSize: "13px",
@@ -125,7 +125,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <WalletMultiButton
             style={{
-              backgroundColor: "#0F1724",
+              backgroundColor: "#1A2421",
               height: "28px",
               borderRadius: "9999px",
               fontSize: "12px",

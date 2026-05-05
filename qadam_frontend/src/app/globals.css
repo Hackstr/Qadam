@@ -46,59 +46,80 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ═══ Qadam Brand Palette Override ═══
+     Remap Tailwind amber-* to our deep forest green palette.
+     Every bg-amber-500, text-amber-600 etc. now renders green. */
+  --color-amber-50: #E8F0EC;
+  --color-amber-100: #D1E1D8;
+  --color-amber-200: #A3C3B1;
+  --color-amber-300: #75A58A;
+  --color-amber-400: #478763;
+  --color-amber-500: #2D5F4E;
+  --color-amber-600: #244D3F;
+  --color-amber-700: #1B3B30;
+  --color-amber-800: #122921;
+  --color-amber-900: #091712;
+  --color-amber-950: #040B09;
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* ═══ Base surfaces ═══ */
+  --background: #F7F4ED;
+  --foreground: #1A2421;
+  --card: #FFFFFF;
+  --card-foreground: #1A2421;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A2421;
+
+  /* ═══ Semantic ═══ */
+  --primary: #2D5F4E;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0ECE3;
+  --secondary-foreground: #1A2421;
+  --muted: #F0ECE3;
+  --muted-foreground: #6B7065;
+  --accent: #F0ECE3;
+  --accent-foreground: #1A2421;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+
+  /* ═══ Borders & inputs ═══ */
+  --border: rgba(26, 36, 33, 0.1);
+  --input: rgba(26, 36, 33, 0.1);
+  --ring: #7A9985;
+
+  /* ═══ Charts ═══ */
+  --chart-1: #2D5F4E;
+  --chart-2: #7A9985;
+  --chart-3: #478763;
+  --chart-4: #A3C3B1;
+  --chart-5: #1B3B30;
+
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
 
-  /* ═══ Qadam Design Tokens ═══ */
-  --qadam-amber-50: #FFF8E7;
-  --qadam-amber-100: #FFEFC2;
-  --qadam-amber-200: #FFE08A;
-  --qadam-amber-400: #F5A623;
-  --qadam-amber-500: #E8961E;
-  --qadam-amber-600: #C47B12;
-  --qadam-amber-900: #5C3A08;
+  /* ═══ Sidebar ═══ */
+  --sidebar: #F0ECE3;
+  --sidebar-foreground: #1A2421;
+  --sidebar-primary: #2D5F4E;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #E8F0EC;
+  --sidebar-accent-foreground: #1A2421;
+  --sidebar-border: rgba(26, 36, 33, 0.08);
+  --sidebar-ring: #7A9985;
 
-  --qadam-surface: #FAFAFA;
+  /* ═══ Qadam Brand Tokens ═══ */
+  --qadam-primary: #2D5F4E;
+  --qadam-primary-hover: #244D3F;
+  --qadam-primary-soft: #E8F0EC;
+  --qadam-sage: #7A9985;
+  --qadam-surface: #F7F4ED;
   --qadam-card: #FFFFFF;
-  --qadam-border: rgba(0,0,0,0.06);
-  --qadam-border-hover: rgba(0,0,0,0.12);
-  --qadam-muted: #6B7280;
-  --qadam-ink: #0F172A;
+  --qadam-border: rgba(26, 36, 33, 0.08);
+  --qadam-border-hover: rgba(26, 36, 33, 0.15);
+  --qadam-muted: #6B7065;
+  --qadam-ink: #1A2421;
 
-  --qadam-success: #10B981;
+  --qadam-success: #22C55E;
   --qadam-danger: #EF4444;
   --qadam-governance: #8B5CF6;
 }
@@ -116,37 +137,37 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #0F1614;
+  --foreground: #E8F0EC;
+  --card: #1A2421;
+  --card-foreground: #E8F0EC;
+  --popover: #1A2421;
+  --popover-foreground: #E8F0EC;
+  --primary: #7A9985;
+  --primary-foreground: #0F1614;
+  --secondary: #1A2421;
+  --secondary-foreground: #E8F0EC;
+  --muted: #1A2421;
+  --muted-foreground: #7A9985;
+  --accent: #1A2421;
+  --accent-foreground: #E8F0EC;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: rgba(232, 240, 236, 0.1);
+  --input: rgba(232, 240, 236, 0.15);
+  --ring: #478763;
+  --chart-1: #7A9985;
+  --chart-2: #478763;
+  --chart-3: #2D5F4E;
+  --chart-4: #A3C3B1;
+  --chart-5: #E8F0EC;
+  --sidebar: #1A2421;
+  --sidebar-foreground: #E8F0EC;
+  --sidebar-primary: #7A9985;
+  --sidebar-primary-foreground: #0F1614;
+  --sidebar-accent: #1A2421;
+  --sidebar-accent-foreground: #E8F0EC;
+  --sidebar-border: rgba(232, 240, 236, 0.1);
+  --sidebar-ring: #478763;
 }
 
 @layer base {
