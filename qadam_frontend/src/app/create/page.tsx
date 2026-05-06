@@ -327,9 +327,9 @@ export default function CreateCampaignPage() {
                   key={s.num}
                   onClick={() => !isLocked && goToStep(s.num)}
                   disabled={isLocked}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all ${
-                    isActive ? "bg-amber-50 border border-amber-200" :
-                    isVisited ? "hover:bg-gray-50 cursor-pointer border border-transparent" :
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
+                    isActive ? "bg-amber-50 border border-amber-200 shadow-sm" :
+                    isVisited ? "hover:bg-secondary cursor-pointer border border-transparent" :
                     "opacity-40 cursor-not-allowed"
                   }`}
                 >

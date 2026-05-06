@@ -59,7 +59,7 @@ export default function ProfilePage() {
           {(profile.display_name || wallet)[0].toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="font-display text-2xl tracking-tight">
+          <h1 className="font-display text-3xl tracking-tight">
             {profile.display_name || `${wallet.slice(0, 8)}...${wallet.slice(-4)}`}
           </h1>
           {profile.bio && (
@@ -184,12 +184,15 @@ export default function ProfilePage() {
       {/* Campaigns */}
       <h3 className="font-display text-xl tracking-tight mb-4">Campaigns</h3>
       {profile.campaigns.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No campaigns yet</p>
+        <div className="text-center py-10">
+          <Rocket className="h-8 w-8 text-muted-foreground/15 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">No campaigns yet</p>
+        </div>
       ) : (
         <div className="space-y-3">
           {profile.campaigns.map((c: { id: string; title: string; status: string; category?: string; raised_lamports: number; milestones_count: number; milestones_approved: number }) => (
             <Link key={c.id} href={`/campaigns/${c.id}`}>
-              <div className="border border-black/[0.06] rounded-xl p-4 hover:border-black/[0.12] transition-colors flex items-center justify-between">
+              <div className="border border-black/[0.06] rounded-xl p-4 hover:border-black/[0.12] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex items-center justify-between">
                 <div>
                   <p className="font-semibold text-sm">{c.title}</p>
                   <div className="flex items-center gap-2 mt-1">
@@ -198,7 +201,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div className="text-right text-sm">
-                  <p className="font-semibold tabular-nums">{formatSol(c.raised_lamports)}</p>
+                  <p className="font-mono font-semibold tabular-nums">{formatSol(c.raised_lamports)}</p>
                   <p className="text-xs text-muted-foreground">
                     {c.milestones_approved}/{c.milestones_count} milestones
                   </p>

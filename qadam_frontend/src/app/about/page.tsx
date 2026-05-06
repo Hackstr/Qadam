@@ -51,7 +51,7 @@ export default function AboutPage() {
             { icon: Coins, title: "Release", desc: "Community approves a milestone. 97.5% to creator, 2.5% fee." },
             { icon: RotateCcw, title: "Refund", desc: "If milestones fail, remaining SOL returns to all backers." },
           ].map((s) => (
-            <div key={s.title} className="border border-black/[0.06] rounded-2xl p-5">
+            <div key={s.title} className="border border-black/[0.06] rounded-2xl p-5 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
               <s.icon className="h-5 w-5 text-amber-500 mb-3" />
               <h3 className="font-semibold mb-1">{s.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>

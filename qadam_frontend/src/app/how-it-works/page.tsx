@@ -31,7 +31,7 @@ export default function HowItWorksPage() {
             { icon: Coins, title: "Release", desc: "Community votes to approve a milestone. The smart contract releases that milestone's amount: 97.5% to creator, 2.5% to Qadam.", highlight: true },
             { icon: RotateCcw, title: "Refund", desc: "If a milestone fails and backers vote to refund, remaining vault balance returns to all backers, proportional to their original contribution.", highlight: false },
           ].map((s) => (
-            <div key={s.title} className={`rounded-2xl p-6 border ${s.highlight ? "bg-amber-500 text-white border-amber-500" : "bg-white border-black/[0.06]"}`}>
+            <div key={s.title} className={`rounded-2xl p-6 border hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 ${s.highlight ? "bg-amber-500 text-white border-amber-500" : "bg-white border-black/[0.06]"}`}>
               <s.icon className={`h-6 w-6 mb-3 ${s.highlight ? "text-white" : "text-amber-500"}`} />
               <h3 className={`font-semibold mb-1 ${s.highlight ? "text-white" : ""}`}>{s.title}</h3>
               <p className={`text-sm leading-relaxed ${s.highlight ? "text-white/80" : "text-muted-foreground"}`}>{s.desc}</p>

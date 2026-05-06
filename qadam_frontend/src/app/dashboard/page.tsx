@@ -153,7 +153,7 @@ function DashboardContent() {
             const daysLeft = nextMilestone?.deadline ? Math.max(0, Math.ceil((new Date(nextMilestone.deadline).getTime() - Date.now()) / 86400000)) : null;
 
             return (
-              <Card key={campaign.id} className="overflow-hidden hover:shadow-md transition-shadow border-black/[0.06]">
+              <Card key={campaign.id} className="overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-black/[0.06]">
                 <CardContent className="p-0">
                   {/* Campaign header */}
                   <div className="p-6 pb-4">

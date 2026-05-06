@@ -25,7 +25,7 @@ export function FundingCard({ campaign, className }: FundingCardProps) {
     <Card className={cn(className)}>
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-1">
-          <p className="text-3xl font-bold tabular-nums">{formatSol(campaign.raised_lamports)}</p>
+          <p className="text-3xl font-mono font-bold tabular-nums">{formatSol(campaign.raised_lamports)}</p>
           {progress >= 100 && <Badge className="bg-green-50 text-green-700 text-xs">Funded</Badge>}
           {progress > 0 && progress < 100 && <Badge className="bg-amber-50 text-amber-700 text-xs">{progress}% funded</Badge>}
         </div>
@@ -45,15 +45,15 @@ export function FundingCard({ campaign, className }: FundingCardProps) {
 
         <div className="grid grid-cols-3 gap-3 text-center mb-5">
           <div>
-            <p className="text-lg font-bold tabular-nums">{campaign.backers_count}</p>
+            <p className="text-lg font-mono font-bold tabular-nums">{campaign.backers_count}</p>
             <p className="text-[10px] text-muted-foreground">backers</p>
           </div>
           <div>
-            <p className="text-lg font-bold tabular-nums">{campaign.milestones_approved}/{campaign.milestones_count}</p>
+            <p className="text-lg font-mono font-bold tabular-nums">{campaign.milestones_approved}/{campaign.milestones_count}</p>
             <p className="text-[10px] text-muted-foreground">milestones</p>
           </div>
           <div>
-            <p className="text-lg font-bold tabular-nums">{(QADAM_FEE_BPS / 100).toFixed(1)}%</p>
+            <p className="text-lg font-mono font-bold tabular-nums">{(QADAM_FEE_BPS / 100).toFixed(1)}%</p>
             <p className="text-[10px] text-muted-foreground">platform fee</p>
           </div>
         </div>
