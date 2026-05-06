@@ -8,9 +8,11 @@ defmodule QadamBackendWeb.AnalyticsController do
   alias QadamBackend.Milestones.Milestone
   alias QadamBackend.Milestones.StateTransition
 
-  @foundation_categories [
+  # Foundation 10 + legacy (until data migration)
+  @all_categories [
     "Tech", "Hardware", "Software", "Art & Design", "Music",
-    "Film", "Education", "Community", "Research", "Climate"
+    "Film", "Education", "Community", "Research", "Climate",
+    "Apps", "Games", "SaaS", "Tools", "Infrastructure"
   ]
 
   def summary(conn, _params) do
@@ -60,7 +62,7 @@ defmodule QadamBackendWeb.AnalyticsController do
   def categories(conn, _params) do
     results =
       from(c in Campaign,
-        where: c.category in ^@foundation_categories,
+        where: c.category in ^@all_categories,
         group_by: c.category,
         select: %{
           category: c.category,
@@ -94,8 +96,13 @@ defmodule QadamBackendWeb.AnalyticsController do
       )
       |> Repo.all()
       |> Enum.map(fn r ->
+        week_str = case r.week do
+          %DateTime{} -> DateTime.to_iso8601(r.week)
+          %NaiveDateTime{} -> NaiveDateTime.to_iso8601(r.week) <> "Z"
+          other -> to_string(other)
+        end
         %{
-          week: DateTime.to_iso8601(r.week),
+          week: week_str,
           sol_lamports: r.sol_lamports,
           backers: r.backers
         }
