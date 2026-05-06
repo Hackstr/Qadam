@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight, PenLine, Users, Banknote,
-  CheckCircle, Lock,
+  CheckCircle, Lock, Wallet, Vote,
 } from "lucide-react";
 
 const fadeUp: any = {
@@ -137,14 +137,14 @@ export default function Home() {
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-5">
             {[
               { num: "01", icon: PenLine, title: "Create", desc: "Define your project, milestones, and funding goal on Solana" },
-              { num: "02", icon: Users, title: "Fund", desc: "Backers send SOL directly to smart contract escrow" },
-              { num: "03", icon: Users, title: "Community Votes", desc: "Backers vote on-chain to approve or reject milestone completion", highlight: true },
+              { num: "02", icon: Wallet, title: "Fund", desc: "Backers send SOL directly to smart contract escrow" },
+              { num: "03", icon: Vote, title: "Community Votes", desc: "Backers vote on-chain to approve or reject milestone completion", highlight: true },
               { num: "04", icon: Banknote, title: "Release", desc: "Approved? SOL transfers to creator automatically" },
             ].map((step) => (
               <motion.div
                 key={step.num}
                 variants={fadeUp}
-                className={`rounded-2xl p-7 border transition-shadow hover:shadow-lg ${
+                className={`rounded-2xl p-7 border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${
                   step.highlight
                     ? "bg-amber-500 text-white border-amber-500"
                     : "bg-white border-black/[0.06]"
@@ -208,8 +208,8 @@ export default function Home() {
       >
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <motion.div variants={fadeUp} className="bg-white border border-black/[0.06] rounded-2xl p-8 hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-bold mb-3">For Creators</h3>
+            <motion.div variants={fadeUp} className="bg-white border border-black/[0.06] rounded-2xl p-8 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+              <h3 className="font-display text-xl tracking-tight mb-3">For Creators</h3>
               <p className="text-muted-foreground leading-relaxed mb-6">
                 Get funded without losing control. Structured milestones. Community backing.
                 No VC, no equity dilution, no geography limits.
@@ -220,8 +220,8 @@ export default function Home() {
                 </Button>
               </Link>
             </motion.div>
-            <motion.div variants={fadeUp} className="bg-white border border-black/[0.06] rounded-2xl p-8 hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-bold mb-3">For Backers</h3>
+            <motion.div variants={fadeUp} className="bg-white border border-black/[0.06] rounded-2xl p-8 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+              <h3 className="font-display text-xl tracking-tight mb-3">For Backers</h3>
               <p className="text-muted-foreground leading-relaxed mb-6">
                 Back early projects, safely. Funds in escrow. You vote on progress.
                 Refunds if things don't work out.

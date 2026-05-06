@@ -24,25 +24,25 @@ const statusDot: Record<string, string> = {
 
 // Category covers — Foundation v1 + legacy
 export const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
-  // Foundation v1 categories
+  // Foundation v1 categories — tonal forest/sage/warm palette
   Tech:             { from: "#1B3B30", to: "#2D5F4E", icon: Cpu },
   Hardware:         { from: "#1B3B30", to: "#478763", icon: HardDrive },
-  Software:         { from: "#1E3A8A", to: "#3B82F6", icon: Code },
-  "Art & Design":   { from: "#831843", to: "#EC4899", icon: Palette },
-  Music:            { from: "#4C1D95", to: "#7C3AED", icon: Music },
+  Software:         { from: "#122921", to: "#2D5F4E", icon: Code },
+  "Art & Design":   { from: "#3B2F2F", to: "#8B7355", icon: Palette },
+  Music:            { from: "#2D2B3D", to: "#6B5B8D", icon: Music },
   Film:             { from: "#1C1917", to: "#57534E", icon: Film },
-  Education:        { from: "#164E63", to: "#06B6D4", icon: GraduationCap },
+  Education:        { from: "#1B3B30", to: "#75A58A", icon: GraduationCap },
   Community:        { from: "#1B3B30", to: "#A3C3B1", icon: Heart },
-  Research:         { from: "#1E3A5F", to: "#60A5FA", icon: Microscope },
+  Research:         { from: "#1A2421", to: "#478763", icon: Microscope },
   Climate:          { from: "#122921", to: "#75A58A", icon: Leaf },
   // Legacy categories (backwards compat)
-  Apps:             { from: "#1E3A8A", to: "#3B82F6", icon: Smartphone },
-  Games:            { from: "#5B21B6", to: "#A855F7", icon: Gamepad2 },
+  Apps:             { from: "#122921", to: "#2D5F4E", icon: Smartphone },
+  Games:            { from: "#2D2B3D", to: "#6B5B8D", icon: Gamepad2 },
   SaaS:             { from: "#122921", to: "#7A9985", icon: BarChart3 },
   Tools:            { from: "#244D3F", to: "#7A9985", icon: Wrench },
-  Infrastructure:   { from: "#1E293B", to: "#475569", icon: Globe },
+  Infrastructure:   { from: "#1A2421", to: "#478763", icon: Globe },
 };
-export const DEFAULT_COVER = { from: "#374151", to: "#6B7280", icon: Rocket };
+export const DEFAULT_COVER = { from: "#1A2421", to: "#478763", icon: Rocket };
 
 export function CampaignCard({ campaign }: { campaign: Campaign }) {
   const [imgError, setImgError] = useState(false);
@@ -133,7 +133,7 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
           {/* Progress */}
           <div className="mb-3">
             <div className="flex justify-between text-xs mb-1">
-              <span className="font-semibold tabular-nums">{formatSol(campaign.raised_lamports)}</span>
+              <span className="font-mono font-semibold tabular-nums">{formatSol(campaign.raised_lamports)}</span>
               <div className="flex items-center gap-2">
                 {daysLeft !== null && <span className="text-muted-foreground/60 tabular-nums">{daysLeft}d left</span>}
                 <span className="text-muted-foreground/60">of {formatSol(campaign.goal_lamports)}</span>
