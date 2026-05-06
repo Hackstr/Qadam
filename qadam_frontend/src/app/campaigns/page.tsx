@@ -55,7 +55,7 @@ export default function CampaignsPage() {
   const campaigns = data?.data || [];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10 animate-page-enter">
       {/* Header */}
       <div className="mb-8">
         <h1 className="font-display text-3xl tracking-tight mb-1">Discover</h1>

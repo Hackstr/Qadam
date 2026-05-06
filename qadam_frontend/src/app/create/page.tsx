@@ -310,7 +310,7 @@ export default function CreateCampaignPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10 animate-page-enter">
       <div className="flex gap-10">
         {/* Sidebar — step navigation */}
         <div className="hidden md:block w-52 flex-shrink-0">

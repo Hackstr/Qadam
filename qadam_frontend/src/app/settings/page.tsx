@@ -113,7 +113,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="max-w-2xl mx-auto px-4 py-10 animate-page-enter">
       <h1 className="font-display text-2xl tracking-tight mb-1">Account Settings</h1>
       <p className="text-sm text-muted-foreground mb-8">Manage your profile and notification preferences.</p>
 

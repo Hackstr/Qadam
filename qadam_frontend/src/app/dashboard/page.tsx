@@ -79,7 +79,7 @@ function DashboardContent() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10 animate-page-enter">
       {/* Created banner */}
       {justCreated && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center justify-between gap-3">

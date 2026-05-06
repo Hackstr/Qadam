@@ -69,23 +69,25 @@ export default function PortfolioPage() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10 animate-page-enter">
       <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-1">Your Portfolio</h1>
       <p className="text-muted-foreground mb-8">Track your backed projects, vote on milestones, claim tokens.</p>
 
-      {/* Stats — 4 colored cards */}
-      <StatsGrid
-        className="mb-8"
-        items={[
-          { icon: Wallet, label: "Total backed", value: formatSol(totalBacked), sublabel: `${positions.length} campaigns` },
-          { icon: TrendingUp, iconColor: "text-green-500", label: "Active", value: formatSol(activePositions.reduce((s, p) => s + p.amount_lamports, 0)), valueColor: "text-green-600", sublabel: `${activePositions.length} campaigns` },
-          { icon: Coins, iconColor: "text-purple-500", label: "Claimable tokens", value: claimableTokens.toLocaleString(), valueColor: "text-purple-600", sublabel: "across campaigns" },
-          { icon: RotateCcw, iconColor: "text-red-400", label: "Pending refunds", value: pendingRefunds.length > 0 ? formatSol(pendingRefunds.reduce((s, p) => s + p.amount_lamports, 0)) : "0", valueColor: "text-red-500", sublabel: `${pendingRefunds.length} campaigns` },
-        ]}
-      />
-
-      {/* Action Required */}
-      <ActionRequiredBanner actions={actions} className="mb-8" />
+      {/* Stats — only show when there are positions */}
+      {positions.length > 0 && (
+        <>
+          <StatsGrid
+            className="mb-8"
+            items={[
+              { icon: Wallet, label: "Total backed", value: formatSol(totalBacked), sublabel: `${positions.length} campaigns` },
+              { icon: TrendingUp, iconColor: "text-green-500", label: "Active", value: formatSol(activePositions.reduce((s, p) => s + p.amount_lamports, 0)), valueColor: "text-green-600", sublabel: `${activePositions.length} campaigns` },
+              { icon: Coins, iconColor: "text-purple-500", label: "Claimable tokens", value: claimableTokens.toLocaleString(), valueColor: "text-purple-600", sublabel: "across campaigns" },
+              { icon: RotateCcw, iconColor: "text-red-400", label: "Pending refunds", value: pendingRefunds.length > 0 ? formatSol(pendingRefunds.reduce((s, p) => s + p.amount_lamports, 0)) : "0", valueColor: "text-red-500", sublabel: `${pendingRefunds.length} campaigns` },
+            ]}
+          />
+          <ActionRequiredBanner actions={actions} className="mb-8" />
+        </>
+      )}
 
       {/* Positions */}
       {isLoading ? (

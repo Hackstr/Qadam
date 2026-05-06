@@ -58,7 +58,7 @@ export default function VotePage() {
   );
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="max-w-3xl mx-auto px-4 py-10 animate-page-enter">
       <Link
         href={`/campaigns/${id}`}
         className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-6"

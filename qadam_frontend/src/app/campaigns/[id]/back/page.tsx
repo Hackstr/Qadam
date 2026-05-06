@@ -144,7 +144,7 @@ export default function BackCampaignPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="max-w-2xl mx-auto px-4 py-10 animate-page-enter">
       <Link href={`/campaigns/${id}`} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-6">
         <ArrowLeft className="h-4 w-4" />
         Back to campaign

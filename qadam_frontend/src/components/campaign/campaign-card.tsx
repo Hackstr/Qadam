@@ -25,7 +25,7 @@ const statusDot: Record<string, string> = {
 // Category covers — Foundation v1 + legacy
 export const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
   // Foundation v1 categories
-  Tech:             { from: "#1A2421", to: "#334155", icon: Cpu },
+  Tech:             { from: "#1B3B30", to: "#2D5F4E", icon: Cpu },
   Hardware:         { from: "#1B3B30", to: "#478763", icon: HardDrive },
   Software:         { from: "#1E3A8A", to: "#3B82F6", icon: Code },
   "Art & Design":   { from: "#831843", to: "#EC4899", icon: Palette },
@@ -62,7 +62,7 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
 
   return (
     <Link href={`/campaigns/${campaign.id}`} className="group block">
-      <div className="relative bg-white border border-black/[0.06] rounded-2xl overflow-hidden hover:border-black/[0.12] hover:shadow-[0_4px_24px_rgba(0,0,0,0.08)] transition-all duration-200 h-full flex flex-col">
+      <div className="relative bg-white border border-black/[0.06] rounded-2xl overflow-hidden hover:border-black/[0.12] hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-200 h-full flex flex-col">
         {/* Cover — image or category gradient with Lucide icon */}
         <div className="relative">
           {campaign.cover_image_url && !imgError ? (

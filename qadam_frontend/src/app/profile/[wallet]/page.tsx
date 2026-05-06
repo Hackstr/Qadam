@@ -52,7 +52,7 @@ export default function ProfilePage() {
   const rep = profile.reputation;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
+    <div className="max-w-3xl mx-auto px-4 py-10 animate-page-enter">
       {/* Header */}
       <div className="flex items-start gap-5 mb-8">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">

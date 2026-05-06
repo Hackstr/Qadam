@@ -95,7 +95,7 @@ function CampaignDetailContent() {
   const descriptionFirst = campaign.description?.split("\n")[0] || "";
 
   return (
-    <div>
+    <div className="animate-page-enter">
       {/* ═══ HERO — Split 60/40 ═══ */}
       <div className="max-w-6xl mx-auto px-4 pt-6 pb-8">
         <Link href="/campaigns" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-4">
