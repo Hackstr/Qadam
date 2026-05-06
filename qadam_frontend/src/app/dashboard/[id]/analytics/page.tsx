@@ -62,7 +62,7 @@ export default function CampaignAnalyticsPage() {
           <p className="text-xs text-muted-foreground">Funded</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <Users className="h-4 w-4 text-blue-500 mx-auto mb-1" />
+          <Users className="h-4 w-4 text-amber-500 mx-auto mb-1" />
           <p className="text-2xl font-bold tabular-nums">{c.backers_count}</p>
           <p className="text-xs text-muted-foreground">Backers</p>
         </CardContent></Card>

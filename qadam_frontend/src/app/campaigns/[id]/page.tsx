@@ -79,7 +79,7 @@ function CampaignDetailContent() {
 
   if (isLoading) return <div className="flex justify-center py-32"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
   if (!campaign) return (
-    <div className="container mx-auto px-4 py-20 text-center">
+    <div className="max-w-6xl mx-auto px-4 py-20 text-center">
       <h1 className="text-2xl font-bold mb-4">Campaign not found</h1>
       <Link href="/campaigns"><Button variant="outline">Back to Discover</Button></Link>
     </div>

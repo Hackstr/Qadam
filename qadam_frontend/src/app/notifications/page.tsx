@@ -25,7 +25,7 @@ const COLOR_MAP: Record<string, string> = {
   milestone_rejected: "text-red-500",
   milestone_submitted: "text-amber-500",
   vote_opened: "text-purple-500",
-  refund_available: "text-blue-500",
+  refund_available: "text-amber-600",
   campaign_update: "text-muted-foreground",
 };
 

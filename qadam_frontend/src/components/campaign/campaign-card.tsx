@@ -15,10 +15,10 @@ import { TierBadge } from "@/components/qadam/tier-badge";
 
 const statusDot: Record<string, string> = {
   active: "bg-green-500",
-  completed: "bg-blue-500",
-  refunded: "bg-red-500",
+  completed: "bg-amber-500",
+  refunded: "bg-red-400/60",
   draft: "bg-gray-400",
-  paused: "bg-yellow-500",
+  paused: "bg-amber-400",
   cancelled: "bg-gray-400",
 };
 

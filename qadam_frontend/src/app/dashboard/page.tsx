@@ -143,7 +143,7 @@ function DashboardContent() {
                         <div className="flex items-center gap-2 mb-1">
                           <Badge className={`text-[10px] ${
                             campaign.status === "active" ? "bg-green-50 text-green-700" :
-                            campaign.status === "completed" ? "bg-blue-50 text-blue-700" :
+                            campaign.status === "completed" ? "bg-amber-50 text-amber-700" :
                             "bg-gray-100 text-gray-600"
                           }`}>{campaign.status}</Badge>
                         </div>

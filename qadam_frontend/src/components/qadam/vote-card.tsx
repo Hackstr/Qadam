@@ -76,7 +76,7 @@ export function VoteCard({
             {milestone.evidence_links && milestone.evidence_links.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {milestone.evidence_links.map((link: string, i: number) => (
-                  <a key={i} href={link} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline flex items-center gap-0.5">
+                  <a key={i} href={link} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-600 hover:underline flex items-center gap-0.5">
                     <ExternalLink className="h-3 w-3" /> {new URL(link).hostname}
                   </a>
                 ))}

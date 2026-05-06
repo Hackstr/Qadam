@@ -92,14 +92,14 @@ export default function VotePage() {
 
           {/* Submitted — awaiting vote start */}
           {submittedMilestones.map((milestone) => (
-            <Card key={milestone.id} className="border-blue-100">
+            <Card key={milestone.id} className="border-black/[0.06]">
               <CardContent className="p-5">
                 <div className="flex items-center gap-2 mb-2">
-                  <Loader2 className="h-4 w-4 text-blue-500 animate-spin" />
+                  <Loader2 className="h-4 w-4 text-muted-foreground animate-spin" />
                   <p className="font-medium text-sm">
                     Milestone {milestone.index + 1}: {milestone.title || "Untitled"}
                   </p>
-                  <Badge className="bg-blue-50 text-blue-700 text-xs">Evidence Submitted</Badge>
+                  <Badge variant="secondary" className="text-xs">Evidence Submitted</Badge>
                 </div>
                 {milestone.evidence_text && (
                   <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{milestone.evidence_text}</p>
