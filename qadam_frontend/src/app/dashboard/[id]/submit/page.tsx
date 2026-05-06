@@ -114,6 +114,7 @@ export default function SubmitEvidencePage() {
     } catch (err: any) {
       if (err?.message === "cancelled") return;
       console.error("Submit failed:", err);
+      toast.error("Evidence submission failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -131,7 +132,7 @@ export default function SubmitEvidencePage() {
         <ArrowLeft className="h-4 w-4" /> Back to Dashboard
       </Link>
 
-      <h1 className="text-2xl font-bold mb-1">Submit Evidence</h1>
+      <h1 className="font-display text-2xl tracking-tight mb-1">Submit Evidence</h1>
       <p className="text-muted-foreground text-sm mb-6">
         {campaign.title} — Milestone {currentMilestone.index + 1}: {currentMilestone.title || "Untitled"}
       </p>

@@ -47,7 +47,7 @@ export default function PostUpdatePage() {
 
       <div className="mb-6">
         <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Campaign Update</p>
-        <h1 className="text-3xl font-bold tracking-tight">Post an update</h1>
+        <h1 className="font-display text-3xl tracking-tight">Post an update</h1>
         <p className="text-muted-foreground mt-1">{campaign?.title || "Loading..."}</p>
       </div>
 

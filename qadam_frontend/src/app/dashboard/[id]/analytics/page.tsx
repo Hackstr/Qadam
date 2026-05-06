@@ -45,7 +45,7 @@ export default function CampaignAnalyticsPage() {
 
       <div className="flex items-center gap-2 mb-1">
         <BarChart2 className="h-5 w-5 text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Campaign Analytics</h1>
+        <h1 className="font-display text-2xl tracking-tight">Campaign Analytics</h1>
       </div>
       <p className="text-muted-foreground text-sm mb-8">{c.title}</p>
 
@@ -53,22 +53,22 @@ export default function CampaignAnalyticsPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <Card><CardContent className="p-4 text-center">
           <Wallet className="h-4 w-4 text-amber-500 mx-auto mb-1" />
-          <p className="text-2xl font-bold tabular-nums">{formatSol(c.raised_lamports)}</p>
+          <p className="text-2xl font-mono font-bold tabular-nums">{formatSol(c.raised_lamports)}</p>
           <p className="text-xs text-muted-foreground">Raised</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <TrendingUp className="h-4 w-4 text-green-500 mx-auto mb-1" />
-          <p className="text-2xl font-bold tabular-nums">{progress}%</p>
+          <p className="text-2xl font-mono font-bold tabular-nums">{progress}%</p>
           <p className="text-xs text-muted-foreground">Funded</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <Users className="h-4 w-4 text-amber-500 mx-auto mb-1" />
-          <p className="text-2xl font-bold tabular-nums">{c.backers_count}</p>
+          <p className="text-2xl font-mono font-bold tabular-nums">{c.backers_count}</p>
           <p className="text-xs text-muted-foreground">Backers</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <CheckCircle2 className="h-4 w-4 text-purple-500 mx-auto mb-1" />
-          <p className="text-2xl font-bold tabular-nums">{c.milestones_approved}/{c.milestones_count}</p>
+          <p className="text-2xl font-mono font-bold tabular-nums">{c.milestones_approved}/{c.milestones_count}</p>
           <p className="text-xs text-muted-foreground">Milestones</p>
         </CardContent></Card>
       </div>
@@ -107,21 +107,21 @@ export default function CampaignAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <span className="text-sm">Founders (1.0 pts)</span>
+                  <span className="text-sm">Founders (1.0x)</span>
                 </div>
                 <span className="font-semibold tabular-nums">{genesisBakers}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-sm">Early Backers (0.67 pts)</span>
+                  <span className="text-sm">Early Backers (0.7x)</span>
                 </div>
                 <span className="font-semibold tabular-nums">{earlyBackers}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-gray-400" />
-                  <span className="text-sm">Standard (0.5x)</span>
+                  <span className="text-sm">Supporters (0.5x)</span>
                 </div>
                 <span className="font-semibold tabular-nums">{backers.length - genesisBakers - earlyBackers}</span>
               </div>

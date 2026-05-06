@@ -420,7 +420,16 @@ export async function postMilestoneComment(milestoneId: string, content: string)
   });
 }
 
-export async function updateCampaign(id: string, data: { description?: string; cover_image_url?: string; pitch_video_url?: string }) {
+export async function updateCampaign(id: string, data: {
+  description?: string;
+  problem?: string;
+  solution?: string;
+  why_now?: string;
+  background?: string;
+  risks?: string;
+  cover_image_url?: string;
+  pitch_video_url?: string;
+}) {
   return fetchApi<{ data: { id: string } }>(`/campaigns/${id}/edit`, {
     method: "PUT",
     body: JSON.stringify(data),

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCampaign, getCampaignUpdates, postCampaignUpdate } from "@/lib/api";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import Link from "next/link";
 
 export default function CampaignManagePage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
 
   const { data, isLoading } = useQuery({
     queryKey: ["campaign", id],
@@ -37,7 +38,7 @@ export default function CampaignManagePage() {
   if (!campaign) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">Campaign not found</h1>
+        <h1 className="text-2xl font-mono font-bold">Campaign not found</h1>
       </div>
     );
   }
@@ -64,11 +65,11 @@ export default function CampaignManagePage() {
             <Badge variant="secondary">{campaign.status}</Badge>
             {campaign.category && <Badge variant="outline">{campaign.category}</Badge>}
           </div>
-          <h1 className="text-2xl font-bold">{campaign.title}</h1>
+          <h1 className="font-display text-2xl tracking-tight">{campaign.title}</h1>
         </div>
         {nextMilestone && campaign.status === "active" && (
           <Link href={`/dashboard/${id}/submit`}>
-            <Button className="gap-2">
+            <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full">
               <Send className="h-4 w-4" />
               Submit Evidence
             </Button>
@@ -80,25 +81,25 @@ export default function CampaignManagePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold">{formatSol(campaign.raised_lamports)}</p>
+            <p className="text-2xl font-mono font-bold">{formatSol(campaign.raised_lamports)}</p>
             <p className="text-xs text-muted-foreground">Raised</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold">{campaign.backers_count}</p>
+            <p className="text-2xl font-mono font-bold">{campaign.backers_count}</p>
             <p className="text-xs text-muted-foreground">Backers</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold">{campaign.milestones_approved}/{campaign.milestones_count}</p>
+            <p className="text-2xl font-mono font-bold">{campaign.milestones_approved}/{campaign.milestones_count}</p>
             <p className="text-xs text-muted-foreground">Milestones</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold">{progress}%</p>
+            <p className="text-2xl font-mono font-bold">{progress}%</p>
             <p className="text-xs text-muted-foreground">Funded</p>
           </CardContent>
         </Card>
@@ -124,9 +125,7 @@ export default function CampaignManagePage() {
               milestones={campaign.milestones}
               showAppeal
               onAppeal={() => {
-                // For rejected milestones, creator can re-submit with updated evidence
-                // This navigates to the evidence submission page
-                window.location.href = `/dashboard/${id}/submit`;
+                router.push(`/dashboard/${id}/submit`);
               }}
             />
           ) : (
