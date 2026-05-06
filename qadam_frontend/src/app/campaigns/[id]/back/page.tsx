@@ -16,8 +16,7 @@ import {
   lamportsToSol,
   MIN_BACKING_SOL,
   TIER_LABELS,
-  TIER_1_MAX_BACKERS,
-  TIER_2_MAX_BACKERS,
+  getCurrentTier,
 } from "@/lib/constants";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { ArrowLeft, Wallet, Loader2 } from "lucide-react";
@@ -49,13 +48,13 @@ export default function BackCampaignPage() {
 
   const amountNum = parseFloat(amount) || 0;
   const amountLamports = Math.floor(amountNum * LAMPORTS_PER_SOL);
-  const tier = campaign.backers_count < TIER_1_MAX_BACKERS ? 1 : campaign.backers_count < TIER_2_MAX_BACKERS ? 2 : 3;
-  const tierInfo = TIER_LABELS[tier as 1 | 2 | 3];
+  const tier = getCurrentTier(campaign.backers_count, campaign.tier_config);
+  const tierInfo = TIER_LABELS[tier as 1 | 2 | 3] || TIER_LABELS[3];
 
-  // Estimated tokens — tokens_per_lamport is actually "tokens per SOL" in seed data
+  // Get multiplier from campaign's tier_config, fall back to legacy defaults
+  const tierMultiplier = campaign.tier_config?.[tier - 1]?.multiplier ?? (tier === 1 ? 1 : tier === 2 ? 0.67 : 0.5);
   const tokensPerSol = campaign.tokens_per_lamport || 100;
   const baseTokens = amountNum * tokensPerSol;
-  const tierMultiplier = tier === 1 ? 1 : tier === 2 ? 0.67 : 0.5;
   const estimatedTokens = Math.floor(baseTokens * tierMultiplier);
 
   const handleBack = async () => {
@@ -87,13 +86,17 @@ export default function BackCampaignPage() {
           tier,
           tokens_allocated: estimatedTokens,
         });
-      } catch (e) { console.warn("Sync failed:", e); }
+      } catch (e) {
+        console.warn("Sync failed:", e);
+        toast.warning("On-chain transaction succeeded, but data sync failed. Your position will sync automatically.", { duration: 10000 });
+      }
 
       toast.success("You're now a backer! Check your portfolio for details.", { duration: 8000 });
       router.push(`/campaigns/${id}`);
     } catch (err: any) {
       if (err?.message === "cancelled") return;
       console.error("Backing failed:", err);
+      toast.error("Transaction failed. Please try again.");
     } finally {
       setLoading(false);
     }

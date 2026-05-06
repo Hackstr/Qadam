@@ -167,6 +167,10 @@ function DashboardContent() {
                     />
                     <p className="text-xs text-muted-foreground mt-1.5">
                       {campaign.milestones_approved} of {campaign.milestones_count} milestones complete · {progress}% funded · {campaign.backers_count} backers
+                      {campaign.funding_deadline && campaign.status === "active" && (() => {
+                        const days = Math.max(0, Math.ceil((new Date(campaign.funding_deadline).getTime() - Date.now()) / 86400000));
+                        return days <= 14 ? <> · <span className="text-amber-600 font-medium">{days}d left</span></> : null;
+                      })()}
                     </p>
                   </div>
 

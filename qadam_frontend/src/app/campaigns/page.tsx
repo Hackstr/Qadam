@@ -71,7 +71,7 @@ export default function CampaignsPage() {
             <button
               key={s.label}
               onClick={() => setStatus(s.value)}
-              className="relative px-4 py-1.5 text-[13px] font-medium z-10 transition-colors"
+              className="relative px-4 py-1.5 text-sm font-medium z-10 transition-colors"
             >
               {status === s.value && (
                 <motion.div
@@ -95,7 +95,7 @@ export default function CampaignsPage() {
             <button
               key={cat}
               onClick={() => setCategory(category === cat ? undefined : cat)}
-              className={`px-3 py-1 rounded-full text-[12px] transition-all border ${
+              className={`px-3 py-1 rounded-full text-xs transition-all border ${
                 category === cat
                   ? "bg-amber-500/10 text-amber-700 border-amber-500/20 font-medium"
                   : "bg-transparent text-muted-foreground border-black/[0.06] hover:border-black/[0.12] hover:text-foreground"
@@ -179,7 +179,7 @@ function SortDropdown({ value, onChange }: { value: string | undefined; onChange
               onClick={() => { onChange(s.value); setOpen(false); }}
               className={`w-full text-left px-3 py-2 text-xs transition-colors ${
                 value === s.value
-                  ? "text-foreground font-medium bg-amber-500/5"
+                  ? "text-foreground font-medium bg-amber-500/10"
                   : "text-muted-foreground hover:text-foreground hover:bg-black/[0.02]"
               }`}
             >

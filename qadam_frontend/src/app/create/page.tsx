@@ -127,7 +127,12 @@ export default function CreateCampaignPage() {
         if (d.faqItems) setFaqItems(d.faqItems);
         if (d.milestones?.length) setMilestones(d.milestones);
         if (d.fundingDeadline) setFundingDeadline(d.fundingDeadline);
+        if (d.tierConfig?.length) setTierConfig(d.tierConfig);
+        if (d.votingParams) setVotingParams(d.votingParams);
         if (d.step) { setStep(d.step); setMaxStepVisited(d.maxStepVisited || d.step); }
+        if (d.title) {
+          toast.info("Draft restored", { description: "Your previous progress has been loaded.", duration: 4000 });
+        }
       }
     } catch { /* ignore corrupt draft */ }
   }, []);
@@ -135,11 +140,12 @@ export default function CreateCampaignPage() {
   // Auto-save draft every 5 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      if (title || description || milestones[0]?.title) {
+      if (title || description || problem || milestones[0]?.title) {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
           title, pitch, category, goal, description, pitchVideoUrl, projectLocation, tags,
           problem, solution, whyNow, background, risks, teamMembers,
           faqItems, milestones, fundingDeadline, step, maxStepVisited,
+          tierConfig, votingParams,
         }));
       }
     }, 5000);
@@ -504,7 +510,7 @@ export default function CreateCampaignPage() {
               <CardContent className="p-5 space-y-4">
                 {/* Creator profile preview */}
                 <div className="flex items-center gap-3 p-4 bg-secondary rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white font-bold">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold">
                     {(publicKey?.toBase58() || "?")[0].toUpperCase()}
                   </div>
                   <div className="flex-1">
@@ -875,13 +881,21 @@ export default function CreateCampaignPage() {
           )}
 
           {step < 5 ? (
-            <Button
-              onClick={() => goToStep(step + 1)}
-              disabled={!canProceed(step)}
-              className="gap-2 bg-amber-500 hover:bg-amber-600 text-white"
-            >
-              Continue <ArrowRight className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-3">
+              {!canProceed(step) && (
+                <span className="text-xs text-muted-foreground">
+                  {step === 1 && (!title ? "Add a title" : !goal || goalNum < 0.5 ? "Set a goal (min 0.5 SOL)" : "")}
+                  {step === 4 && (!amountsMatch ? "Milestone amounts must equal goal" : "Fill in all milestone fields")}
+                </span>
+              )}
+              <Button
+                onClick={() => goToStep(step + 1)}
+                disabled={!canProceed(step)}
+                className="gap-2 bg-amber-500 hover:bg-amber-600 text-white"
+              >
+                Continue <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
           ) : (
             <Button
               onClick={handleLaunch}

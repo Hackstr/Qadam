@@ -42,7 +42,7 @@ export function VotingParamsConfigurator({ value, onChange }: VotingParamsConfig
           onChange={(e) => onChange({ ...params, vote_period_days: parseInt(e.target.value) })}
           className="w-full h-1.5 accent-amber-500"
         />
-        <p className="text-[11px] text-muted-foreground mt-1">How long voting stays open after evidence is submitted.</p>
+        <p className="text-xs text-muted-foreground mt-1">How long voting stays open after evidence is submitted.</p>
       </div>
 
       {/* Quorum */}
@@ -60,7 +60,7 @@ export function VotingParamsConfigurator({ value, onChange }: VotingParamsConfig
           onChange={(e) => onChange({ ...params, quorum_pct: parseInt(e.target.value) / 100 })}
           className="w-full h-1.5 accent-amber-500"
         />
-        <p className="text-[11px] text-muted-foreground mt-1">Minimum participation for a vote to be valid. Lower = easier to pass.</p>
+        <p className="text-xs text-muted-foreground mt-1">Minimum participation for a vote to be valid. Lower = easier to pass.</p>
       </div>
 
       {/* Approval threshold */}
@@ -78,7 +78,7 @@ export function VotingParamsConfigurator({ value, onChange }: VotingParamsConfig
           onChange={(e) => onChange({ ...params, approval_threshold_pct: parseInt(e.target.value) / 100 })}
           className="w-full h-1.5 accent-amber-500"
         />
-        <p className="text-[11px] text-muted-foreground mt-1">% of participating weight that must vote YES. 50% = simple majority.</p>
+        <p className="text-xs text-muted-foreground mt-1">% of participating weight that must vote YES. 50% = simple majority.</p>
       </div>
 
       {/* Reset to defaults */}

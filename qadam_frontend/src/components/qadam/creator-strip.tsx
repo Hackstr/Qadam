@@ -28,12 +28,12 @@ export function CreatorStrip({
   if (variant === "full") {
     return (
       <div className={cn("flex items-center gap-3 bg-secondary rounded-xl p-3.5", className)}>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-bold flex-shrink-0">
           {initial}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold truncate">{name}</p>
-          <p className="text-[11px] text-muted-foreground">Creator{location ? ` · ${location}` : ""}</p>
+          <p className="text-xs text-muted-foreground">Creator{location ? ` · ${location}` : ""}</p>
         </div>
         <Link href={`/profile/${walletAddress}`}>
           <Button variant="outline" size="sm" className="rounded-full text-xs h-7">View profile</Button>
@@ -46,7 +46,7 @@ export function CreatorStrip({
     <div className={cn("border-y border-black/[0.06]", className)}>
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link href={`/profile/${walletAddress}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-sm font-bold">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-sm font-bold">
             {initial}
           </div>
           <div>

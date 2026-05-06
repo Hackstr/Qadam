@@ -71,7 +71,7 @@ export function TierRewardsCard({ backersCount, tierConfig, className }: TierRew
         </div>
 
         <div className="mt-3 p-3 bg-muted/30 rounded-lg">
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             <strong>What are ownership points?</strong> Points give you a voting share in the project and a claim on tokens released as milestones are approved. 1 point = 1 vote.
           </p>
         </div>

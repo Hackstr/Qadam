@@ -165,7 +165,7 @@ export default function SettingsPage() {
               />
               {user?.email && (
                 <p className={`text-xs mt-1 ${user.email_verified ? "text-green-600" : "text-amber-600"}`}>
-                  {user.email_verified ? "Verified" : "Unverified — check your inbox after saving"}
+                  {user.email_verified ? "Verified" : "Not verified yet — save your email and check your inbox"}
                 </p>
               )}
               {!user?.email && <p className="text-xs text-muted-foreground mt-1">Used for notifications only.</p>}

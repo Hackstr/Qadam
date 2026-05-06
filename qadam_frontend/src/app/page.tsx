@@ -100,12 +100,12 @@ export default function Home() {
 
                 <div className="absolute top-8 -left-4 z-10 bg-white/90 backdrop-blur-xl border border-white/60 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg -rotate-[6deg]">
                   <CheckCircle className="h-3.5 w-3.5 text-amber-500" />
-                  <span className="text-[11px] font-semibold text-amber-700">Community Approved</span>
+                  <span className="text-xs font-semibold text-amber-700">Community Approved</span>
                 </div>
 
                 <div className="absolute bottom-12 -right-2 z-10 bg-foreground/90 text-white border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg rotate-[4deg]">
                   <Lock className="h-3.5 w-3.5 text-amber-400" />
-                  <span className="text-[11px] font-semibold">Escrow protected</span>
+                  <span className="text-xs font-semibold">Escrow protected</span>
                 </div>
 
                 <img

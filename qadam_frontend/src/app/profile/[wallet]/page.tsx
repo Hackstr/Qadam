@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatSol, SOLANA_NETWORK } from "@/lib/constants";
 import {
   ExternalLink, Star, CheckCircle2, XCircle, Loader2,
-  GitBranch as GithubIcon, Calendar, Trophy, Wallet,
+  GitBranch as GithubIcon, Calendar, Trophy, Wallet, MapPin,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -55,7 +55,7 @@ export default function ProfilePage() {
     <div className="max-w-3xl mx-auto px-4 py-10">
       {/* Header */}
       <div className="flex items-start gap-5 mb-8">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
           {(profile.display_name || wallet)[0].toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
@@ -67,7 +67,10 @@ export default function ProfilePage() {
           )}
           <div className="flex items-center gap-3 mt-2 flex-wrap">
             {profile.location && (
-              <span className="text-xs text-muted-foreground">📍 {profile.location}</span>
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                <MapPin className="h-3 w-3" />
+                {profile.location}
+              </span>
             )}
             <a
               href={explorerUrl}

@@ -36,7 +36,7 @@ export default function AdminUserDetailPage() {
 
       {/* Header */}
       <div className="flex items-start gap-4 mb-6">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-lg font-bold flex-shrink-0">
           {(u.display_name || u.wallet_address)[0].toUpperCase()}
         </div>
         <div>

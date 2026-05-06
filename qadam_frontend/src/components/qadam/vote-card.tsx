@@ -7,17 +7,19 @@ import { MilestoneComments } from "@/components/campaign/milestone-comments";
 import { useCountdown } from "@/hooks/use-countdown";
 import { formatSol } from "@/lib/constants";
 import { toast } from "sonner";
+import type { Campaign, Milestone } from "@/types";
+import type { PublicKey } from "@solana/web3.js";
 import {
   CheckCircle2, XCircle, Loader2, Timer, Eye, ExternalLink,
 } from "lucide-react";
 
 export interface VoteCardProps {
-  campaign: any;
-  milestone: any;
+  campaign: Pick<Campaign, "solana_pubkey">;
+  milestone: Milestone;
   connected: boolean;
-  publicKey: any;
+  publicKey: PublicKey | null;
   txStatus: string;
-  voteOnExtension: (pubkey: string, index: number, approve: boolean) => Promise<any>;
+  voteOnExtension: (pubkey: string, index: number, approve: boolean) => Promise<string>;
 }
 
 export function VoteCard({

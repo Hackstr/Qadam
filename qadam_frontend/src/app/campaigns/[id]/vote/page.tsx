@@ -20,7 +20,7 @@ export default function VotePage() {
     queryKey: ["campaign", id],
     queryFn: () => getCampaign(id),
     enabled: !!id,
-    refetchInterval: 10000, // live polling every 10s
+    refetchInterval: 30000, // live polling every 30s
   });
 
   if (isLoading) {

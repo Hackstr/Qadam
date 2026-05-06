@@ -61,7 +61,7 @@ export default function PortfolioPage() {
         items={[
           { icon: Wallet, label: "Total backed", value: formatSol(totalBacked), sublabel: `${positions.length} campaigns` },
           { icon: TrendingUp, iconColor: "text-green-500", label: "Active", value: formatSol(activePositions.reduce((s, p) => s + p.amount_lamports, 0)), valueColor: "text-green-600", sublabel: `${activePositions.length} campaigns` },
-          { icon: Coins, iconColor: "text-purple-500", label: "Claimable", value: claimableTokens.toLocaleString(), valueColor: "text-purple-600", sublabel: "tokens across campaigns" },
+          { icon: Coins, iconColor: "text-purple-500", label: "Claimable tokens", value: claimableTokens.toLocaleString(), valueColor: "text-purple-600", sublabel: "across campaigns" },
           { icon: RotateCcw, iconColor: "text-red-400", label: "Pending refunds", value: pendingRefunds.length > 0 ? formatSol(pendingRefunds.reduce((s, p) => s + p.amount_lamports, 0)) : "0", valueColor: "text-red-500", sublabel: `${pendingRefunds.length} campaigns` },
         ]}
       />

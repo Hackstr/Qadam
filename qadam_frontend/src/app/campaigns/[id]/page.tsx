@@ -225,9 +225,9 @@ function CampaignDetailContent() {
                   <div>
                     <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">Team</h3>
                     <div className="space-y-2">
-                      {campaign.team_members.map((member: any, i: number) => (
+                      {campaign.team_members.map((member, i) => (
                         <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-black/[0.06]">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                             {(member.name || "?")[0].toUpperCase()}
                           </div>
                           <div>
@@ -280,7 +280,7 @@ function CampaignDetailContent() {
                       size="md"
                     />
                     <div className="flex mt-2">
-                      {campaign.milestones.map((m: any, i: number) => {
+                      {campaign.milestones.map((m, i) => {
                         const isDone = m.status === "approved";
                         const isVoting = ["voting_active", "submitted", "extension_requested"].includes(m.status);
                         return (
@@ -336,7 +336,7 @@ function CampaignDetailContent() {
                     {backers.map((b: any, idx: number) => (
                       <div key={idx} className="flex items-center justify-between py-2.5 border-b border-black/[0.04] last:border-0">
                         <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-[9px] font-bold">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-[9px] font-bold">
                             {(b.display_name || b.wallet_address)[0].toUpperCase()}
                           </div>
                           <div>
@@ -395,7 +395,7 @@ function CampaignDetailContent() {
             {/* Active vote widget */}
             {(() => {
               const votingMs = (campaign.milestones || []).find(
-                (m: any) => m.status === "voting_active" || m.status === "extension_requested" || m.status === "submitted"
+                (m) => m.status === "voting_active" || m.status === "extension_requested" || m.status === "submitted"
               );
               if (!votingMs) return null;
               return <ActiveVoteWidget campaignId={campaign.id} milestone={votingMs} />;
@@ -429,16 +429,16 @@ function CampaignDetailContent() {
 function SimilarCampaigns({ currentId }: { currentId: string }) {
   const { data } = useQuery({
     queryKey: ["campaigns-for-similar"],
-    queryFn: () => getCampaigns({ limit: 4 }),
+    queryFn: () => getCampaigns({ limit: 5 }),
   });
-  const similar = (data?.data || []).filter((c: any) => c.id !== currentId).slice(0, 3);
+  const similar = (data?.data || []).filter((c) => c.id !== currentId).slice(0, 3);
   if (similar.length === 0) return null;
 
   return (
     <div className="mt-12 pt-8 border-t">
       <h3 className="text-lg font-semibold mb-4">Other campaigns</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {similar.map((c: any) => (
+        {similar.map((c) => (
           <CampaignCard key={c.id} campaign={c} />
         ))}
       </div>
