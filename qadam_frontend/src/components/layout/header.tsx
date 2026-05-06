@@ -17,7 +17,6 @@ const WalletMultiButton = dynamic(
 
 const NAV_LINKS = [
   { href: "/campaigns", label: "Discover", public: true },
-  { href: "/create", label: "Create", public: false },
   { href: "/dashboard", label: "My Campaigns", public: false },
   { href: "/portfolio", label: "My Backed", public: false },
   { href: "/analytics", label: "Analytics", public: false },
