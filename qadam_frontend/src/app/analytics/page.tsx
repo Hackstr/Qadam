@@ -27,6 +27,8 @@ const RANGES = [
   { label: "All", value: 365 },
 ];
 
+const NEGATIVE_STATES = new Set(["failed", "rejected", "grace_period"]);
+
 export default function AnalyticsPage() {
   const [range, setRange] = useState(90);
 
@@ -63,7 +65,23 @@ export default function AnalyticsPage() {
 
   const s = summary?.data;
   const cats = categories?.data || [];
-  const events = activity?.data || [];
+  // Filter activity: limit consecutive negative events to max 2
+  const events = (() => {
+    const raw = activity?.data || [];
+    const filtered: typeof raw = [];
+    let negStreak = 0;
+    for (const e of raw) {
+      const isNeg = NEGATIVE_STATES.has(e.to_state || "");
+      if (isNeg) {
+        negStreak++;
+        if (negStreak > 2) continue; // skip 3rd+ consecutive negative
+      } else {
+        negStreak = 0;
+      }
+      filtered.push(e);
+    }
+    return filtered;
+  })();
   const top = topCampaigns?.data || [];
   const chartData = (timeseries?.data || []).map((p) => ({
     week: new Date(p.week).toLocaleDateString("en", { month: "short", day: "numeric" }),
@@ -72,9 +90,15 @@ export default function AnalyticsPage() {
   }));
   const maxCatCount = Math.max(...cats.map((c) => c.count), 1);
 
-  const updatedAt = s?.last_updated_at
-    ? new Date(s.last_updated_at).toLocaleString("en", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
-    : null;
+  // Relative "Updated Xm ago" timestamp
+  const updatedLabel = (() => {
+    if (!s?.last_updated_at) return "Live";
+    const diff = Date.now() - new Date(s.last_updated_at).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "Updated just now";
+    if (mins < 60) return `Updated ${mins}m ago`;
+    return `Updated ${Math.floor(mins / 60)}h ago`;
+  })();
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
@@ -85,7 +109,7 @@ export default function AnalyticsPage() {
           <h1 className="font-display text-3xl tracking-tight">Analytics</h1>
           <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-widest">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            {updatedAt ? `Updated ${updatedAt}` : "Live"}
+            {updatedLabel}
           </span>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -156,28 +180,28 @@ export default function AnalyticsPage() {
       </div>
 
       {/* SOL Flow Chart */}
-      {chartData.length > 1 && (
-        <div className="bg-white border border-black/[0.06] rounded-2xl p-6 mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest">
-              SOL Raised Over Time
-            </h2>
-            <div className="flex items-center gap-0 bg-black/[0.03] rounded-full p-0.5">
-              {RANGES.map((r) => (
-                <button
-                  key={r.value}
-                  onClick={() => setRange(r.value)}
-                  className={`px-3 py-1 text-[10px] font-medium rounded-full transition-colors ${
-                    range === r.value
-                      ? "bg-white shadow-sm text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
+      <div className="bg-white border border-black/[0.06] rounded-2xl p-6 mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest">
+            SOL Raised Over Time
+          </h2>
+          <div className="flex items-center gap-0 bg-black/[0.03] rounded-full p-0.5">
+            {RANGES.map((r) => (
+              <button
+                key={r.value}
+                onClick={() => setRange(r.value)}
+                className={`px-3 py-1 text-[10px] font-medium rounded-full transition-colors ${
+                  range === r.value
+                    ? "bg-white shadow-sm text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
           </div>
+        </div>
+        {chartData.length > 1 ? (
           <div className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
@@ -222,8 +246,12 @@ export default function AnalyticsPage() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="h-32 flex items-center justify-center">
+            <p className="text-sm text-muted-foreground/50">Chart appears after the first week of activity</p>
+          </div>
+        )}
+      </div>
 
       {/* Categories + Top Campaigns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
@@ -351,14 +379,14 @@ export default function AnalyticsPage() {
 // ─── Activity Row ───
 
 const EVENT_CONFIG: Record<string, { icon: typeof Rocket; label: string; color: string }> = {
-  campaign_launched: { icon: Rocket, label: "launched", color: "bg-amber-500" },
+  campaign_launched:   { icon: Rocket, label: "launched", color: "bg-amber-500" },
   submitted:           { icon: ArrowUpRight, label: "evidence submitted for", color: "bg-foreground/20" },
   voting_active:       { icon: Vote, label: "vote opened on", color: "bg-purple-500" },
   approved:            { icon: CheckCircle2, label: "milestone approved on", color: "bg-green-600" },
-  rejected:            { icon: CircleDot, label: "milestone rejected on", color: "bg-red-500" },
+  rejected:            { icon: CircleDot, label: "milestone rejected on", color: "bg-red-400/50" },
   extension_requested: { icon: Vote, label: "extension requested for", color: "bg-amber-600" },
-  failed:              { icon: CircleDot, label: "milestone failed on", color: "bg-red-400" },
-  grace_period:        { icon: CircleDot, label: "entered grace period on", color: "bg-foreground/15" },
+  failed:              { icon: CircleDot, label: "milestone failed on", color: "bg-red-400/50" },
+  grace_period:        { icon: CircleDot, label: "entered grace period on", color: "bg-foreground/10" },
 };
 
 function getEventConfig(event: any) {

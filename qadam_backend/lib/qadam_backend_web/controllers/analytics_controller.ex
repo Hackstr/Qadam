@@ -8,11 +8,9 @@ defmodule QadamBackendWeb.AnalyticsController do
   alias QadamBackend.Milestones.Milestone
   alias QadamBackend.Milestones.StateTransition
 
-  # Foundation 10 + legacy (until data migration)
-  @all_categories [
+  @foundation_categories [
     "Tech", "Hardware", "Software", "Art & Design", "Music",
-    "Film", "Education", "Community", "Research", "Climate",
-    "Apps", "Games", "SaaS", "Tools", "Infrastructure"
+    "Film", "Education", "Community", "Research", "Climate"
   ]
 
   def summary(conn, _params) do
@@ -62,7 +60,7 @@ defmodule QadamBackendWeb.AnalyticsController do
   def categories(conn, _params) do
     results =
       from(c in Campaign,
-        where: c.category in ^@all_categories,
+        where: c.category in ^@foundation_categories,
         group_by: c.category,
         select: %{
           category: c.category,
