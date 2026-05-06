@@ -42,7 +42,6 @@ const STEPS = [
 const CATEGORIES = [
   "Tech", "Hardware", "Software", "Art & Design", "Music",
   "Film", "Education", "Community", "Research", "Climate",
-  "Apps", "Games", "SaaS", "Tools", "Infrastructure",
 ];
 
 export default function CreateCampaignPage() {
