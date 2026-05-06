@@ -23,18 +23,22 @@ export default function Home() {
       {/* ═══ TICKER ═══ */}
       <div className="relative z-40 mt-16 overflow-hidden">
         <div className="bg-amber-500 text-white py-2.5 -rotate-[1.5deg] scale-x-[1.15]">
-          <div className="animate-marquee whitespace-nowrap flex">
-            {[...Array(8)].map((_, i) => (
-              <span key={i} className="flex gap-6 text-[12px] font-medium tracking-widest uppercase mr-6">
-                <span>Colosseum Frontier</span>
-                <span className="text-white/50 text-lg leading-none">·</span>
-                <span>Community Governed Crowdfunding</span>
-                <span className="text-white/50 text-lg leading-none">·</span>
-                <span>Milestone Escrow on Solana</span>
-                <span className="text-white/50 text-lg leading-none">·</span>
-                <span>Backers Become Co-Owners</span>
-                <span className="text-white/50 text-lg leading-none">·</span>
-              </span>
+          <div className="flex whitespace-nowrap animate-ticker">
+            {[0, 1].map((group) => (
+              <div key={group} className="flex shrink-0">
+                {[...Array(6)].map((_, i) => (
+                  <span key={i} className="flex items-center gap-5 text-[12px] tracking-widest uppercase mx-5">
+                    <span className="font-extrabold text-[13px]">Colosseum Frontier</span>
+                    <span className="text-white/40 text-base">·</span>
+                    <span className="font-medium">Community Governed Crowdfunding</span>
+                    <span className="text-white/40 text-base">·</span>
+                    <span className="font-medium">Milestone Escrow on Solana</span>
+                    <span className="text-white/40 text-base">·</span>
+                    <span className="font-medium">Backers Become Co-Owners</span>
+                    <span className="text-white/40 text-base">·</span>
+                  </span>
+                ))}
+              </div>
             ))}
           </div>
         </div>
