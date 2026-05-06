@@ -12,8 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  formatSol,
-  lamportsToSol,
   MIN_BACKING_SOL,
   TIER_LABELS,
   getCurrentTier,
@@ -21,7 +19,7 @@ import {
   SOLANA_NETWORK,
 } from "@/lib/constants";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
-import { ArrowLeft, Wallet, Loader2, ExternalLink, Shield, CheckCircle2, Vote, RotateCcw, Coins } from "lucide-react";
+import { ArrowLeft, Wallet, Loader2, ExternalLink, Shield, Vote, RotateCcw, Coins } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
