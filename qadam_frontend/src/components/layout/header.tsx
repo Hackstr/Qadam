@@ -19,7 +19,7 @@ const NAV_LINKS = [
   { href: "/campaigns", label: "Discover", public: true },
   { href: "/dashboard", label: "My Campaigns", public: false },
   { href: "/portfolio", label: "My Backed", public: false },
-  { href: "/analytics", label: "Analytics", public: false },
+  { href: "/analytics", label: "Analytics", public: true },
 ];
 
 export function Header() {

@@ -270,11 +270,59 @@ interface AnalyticsSummary {
   completed_campaigns: number;
   total_raised_lamports: number;
   total_backers: number;
-  success_rate: number;
+  total_milestones: number;
+  approved_milestones: number;
+  voting_active: number;
+  new_backers_30d: number;
+  sol_in_escrow: number;
+}
+
+interface CategoryBreakdown {
+  category: string;
+  count: number;
+  raised_lamports: number;
+}
+
+interface ActivityEvent {
+  id: string;
+  type: string;
+  from_state: string | null;
+  to_state: string | null;
+  milestone_index: number | null;
+  milestone_title: string | null;
+  campaign_id: string;
+  campaign_title: string;
+  category: string | null;
+  metadata: Record<string, any>;
+  timestamp: string;
+}
+
+interface TopCampaign {
+  id: string;
+  title: string;
+  category: string | null;
+  status: string;
+  raised_lamports: number;
+  goal_lamports: number;
+  backers_count: number;
+  milestones_count: number;
+  milestones_approved: number;
 }
 
 export async function getAnalyticsSummary() {
   return fetchApi<{ data: AnalyticsSummary }>("/analytics/summary");
+}
+
+export async function getAnalyticsCategories() {
+  return fetchApi<{ data: CategoryBreakdown[] }>("/analytics/categories");
+}
+
+export async function getAnalyticsActivity(limit = 20) {
+  return fetchApi<{ data: ActivityEvent[] }>(`/analytics/activity?limit=${limit}`);
+}
+
+export async function getAnalyticsTopCampaigns() {
+  return fetchApi<{ data: TopCampaign[] }>("/analytics/top-campaigns");
 }
 
 // ═══════════════════════════════════════════

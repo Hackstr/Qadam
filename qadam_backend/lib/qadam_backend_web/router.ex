@@ -48,8 +48,11 @@ defmodule QadamBackendWeb.Router do
     # Public creator profile
     get "/profiles/:wallet", ProfileController, :show
 
-    # Analytics summary
+    # Analytics (public)
     get "/analytics/summary", AnalyticsController, :summary
+    get "/analytics/categories", AnalyticsController, :categories
+    get "/analytics/activity", AnalyticsController, :activity
+    get "/analytics/top-campaigns", AnalyticsController, :top_campaigns
 
     # Webhooks — sync on-chain events with PostgreSQL
     post "/webhooks/milestone-submitted", WebhookController, :milestone_submitted
