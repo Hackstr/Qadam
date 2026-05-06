@@ -106,7 +106,7 @@ export default function CampaignsPage() {
             onClick={() => setCategory(category === cat ? undefined : cat)}
             className={`px-3 py-1 rounded-full text-[12px] transition-all border ${
               category === cat
-                ? "bg-amber-500 text-white border-amber-500 font-medium"
+                ? "bg-amber-500/10 text-amber-700 border-amber-500/20 font-medium"
                 : "bg-transparent text-muted-foreground border-black/[0.06] hover:border-black/[0.12] hover:text-foreground"
             }`}
           >
