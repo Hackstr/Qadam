@@ -18,8 +18,8 @@ export interface ActionRequiredBannerProps {
 
 const actionConfig = {
   vote: { icon: Vote, iconColor: "text-purple-500", btnColor: "bg-purple-600 hover:bg-purple-700", label: "Cast vote" },
-  claim: { icon: Gift, iconColor: "text-green-500", btnColor: "bg-green-600 hover:bg-green-700", label: "Claim" },
-  refund: { icon: RotateCcw, iconColor: "text-red-400", btnColor: "bg-red-500 hover:bg-red-600", label: "Refund" },
+  claim: { icon: Gift, iconColor: "text-amber-600", btnColor: "bg-amber-500 hover:bg-amber-600", label: "Claim" },
+  refund: { icon: RotateCcw, iconColor: "text-red-400", btnColor: "border border-red-200 text-red-600 bg-white hover:bg-red-50", label: "Refund" },
 } as const;
 
 export function ActionRequiredBanner({ actions, maxVisible = 5, className }: ActionRequiredBannerProps) {

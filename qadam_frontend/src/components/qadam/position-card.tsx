@@ -26,7 +26,7 @@ export function PositionCard({ position: pos, onClaimTokens, onClaimRefund, txBu
   const needsVote = pos.has_active_vote === true;
 
   return (
-    <Card className={cn("hover:shadow-sm transition-shadow border-black/[0.06]", className)}>
+    <Card className={cn("hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border-black/[0.06]", className)}>
       <CardContent className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
@@ -37,7 +37,7 @@ export function PositionCard({ position: pos, onClaimTokens, onClaimRefund, txBu
               <Badge variant="secondary" className="text-xs">{pos.campaign_status}</Badge>
               <TierBadge tier={pos.tier as 1 | 2 | 3} variant="text" />
               <span className="text-xs text-muted-foreground">·</span>
-              <span className="text-xs text-muted-foreground">{pos.tokens_claimed.toLocaleString()} / {pos.tokens_allocated.toLocaleString()} share</span>
+              <span className="text-xs text-muted-foreground font-mono tabular-nums">{pos.tokens_claimed.toLocaleString()} / {pos.tokens_allocated.toLocaleString()} OP</span>
             </div>
 
             {msCount > 0 && (
@@ -52,7 +52,7 @@ export function PositionCard({ position: pos, onClaimTokens, onClaimRefund, txBu
           </div>
 
           <div className="text-right flex-shrink-0">
-            <p className="font-bold tabular-nums">{formatSol(pos.amount_lamports)}</p>
+            <p className="font-mono font-bold tabular-nums">{formatSol(pos.amount_lamports)}</p>
           </div>
         </div>
 
@@ -76,7 +76,7 @@ export function PositionCard({ position: pos, onClaimTokens, onClaimRefund, txBu
                   onClaimTokens?.(pubkey, pos.wallet_address, pos.tokens_allocated);
                 }}
               >
-                <Gift className="h-3 w-3" /> Claim Share
+                <Gift className="h-3 w-3" /> Claim Tokens
               </Button>
             )}
             {canRefund && (

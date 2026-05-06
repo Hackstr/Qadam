@@ -99,11 +99,13 @@ export default function NotificationsPage() {
       {isLoading ? (
         <Loader2 className="h-8 w-8 animate-spin mx-auto mt-16" />
       ) : notifications.length === 0 ? (
-        <div className="text-center py-16 border border-black/[0.06] rounded-2xl">
-          <Bell className="h-10 w-10 text-muted-foreground/20 mx-auto mb-4" />
-          <p className="text-muted-foreground">No notifications yet</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">
-            You'll be notified about milestone updates, votes, and refunds.
+        <div className="max-w-sm mx-auto text-center py-20">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-secondary flex items-center justify-center mb-6">
+            <Bell className="h-8 w-8 text-muted-foreground/30" />
+          </div>
+          <h3 className="font-display text-xl tracking-tight mb-2">All caught up</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            You'll be notified about milestone updates, governance votes, and refunds when they happen.
           </p>
         </div>
       ) : (

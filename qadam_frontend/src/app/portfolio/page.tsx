@@ -93,14 +93,16 @@ export default function PortfolioPage() {
       {isLoading ? (
         <Loader2 className="h-8 w-8 animate-spin mx-auto mt-10" />
       ) : positions.length === 0 ? (
-        <div className="text-center py-16">
-          <Wallet className="h-10 w-10 text-muted-foreground/20 mx-auto mb-4" />
-          <p className="text-lg font-medium text-muted-foreground">No backed campaigns yet</p>
-          <p className="text-sm text-muted-foreground mt-1 mb-6">
-            Discover projects, back with SOL, earn a share.
+        <div className="max-w-sm mx-auto text-center py-20">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-50 flex items-center justify-center mb-6">
+            <Wallet className="h-8 w-8 text-amber-500" />
+          </div>
+          <h3 className="font-display text-xl tracking-tight mb-2">Start backing projects</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-8">
+            Discover projects you believe in. Back with SOL, earn ownership points, and vote on every milestone.
           </p>
           <Link href="/campaigns">
-            <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full">
+            <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full px-8" size="lg">
               Explore Campaigns <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
