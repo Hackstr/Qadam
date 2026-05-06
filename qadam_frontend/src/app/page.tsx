@@ -21,21 +21,21 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* ═══ TICKER ═══ */}
-      <div className="relative z-40 mt-16 overflow-hidden">
-        <div className="bg-amber-500 text-white py-2.5 -rotate-[1.5deg] scale-x-[1.15]">
+      <div className="relative z-40 mt-16">
+        <div className="bg-amber-500 text-white py-4 -rotate-[1.5deg] -mx-4 px-4 overflow-hidden">
           <div className="flex whitespace-nowrap animate-ticker">
             {[0, 1].map((group) => (
-              <div key={group} className="flex shrink-0">
-                {[...Array(6)].map((_, i) => (
-                  <span key={i} className="flex items-center gap-5 text-[12px] tracking-widest uppercase mx-5">
+              <div key={group} className="flex shrink-0" aria-hidden={group === 1}>
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className="inline-flex items-center gap-5 text-[12px] tracking-widest uppercase px-5">
                     <span className="font-extrabold text-[13px]">Colosseum Frontier</span>
-                    <span className="text-white/40 text-base">·</span>
+                    <span className="text-white/50">·</span>
                     <span className="font-medium">Community Governed Crowdfunding</span>
-                    <span className="text-white/40 text-base">·</span>
+                    <span className="text-white/50">·</span>
                     <span className="font-medium">Milestone Escrow on Solana</span>
-                    <span className="text-white/40 text-base">·</span>
+                    <span className="text-white/50">·</span>
                     <span className="font-medium">Backers Become Co-Owners</span>
-                    <span className="text-white/40 text-base">·</span>
+                    <span className="text-white/50">·</span>
                   </span>
                 ))}
               </div>
