@@ -61,6 +61,20 @@
   --color-amber-800: #122921;
   --color-amber-900: #091712;
   --color-amber-950: #040B09;
+
+  /* Green → sage remap. Bright Tailwind green (#22C55E) conflicts
+     with our forest primary. Remap to sage scale — calm, done, past. */
+  --color-green-50:  #F0F4F1;
+  --color-green-100: #DCE5DE;
+  --color-green-200: #B9CCBE;
+  --color-green-300: #96B39E;
+  --color-green-400: #8AA693;
+  --color-green-500: #7A9985;
+  --color-green-600: #5E7E6B;
+  --color-green-700: #4A6655;
+  --color-green-800: #364D40;
+  --color-green-900: #22332B;
+  --color-green-950: #111A15;
 }
 
 :root {
