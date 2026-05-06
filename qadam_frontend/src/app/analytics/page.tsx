@@ -247,8 +247,9 @@ export default function AnalyticsPage() {
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="h-32 flex items-center justify-center">
-            <p className="text-sm text-muted-foreground/50">Chart appears after the first week of activity</p>
+          <div className="h-32 flex flex-col items-center justify-center">
+            <TrendingUp className="h-6 w-6 text-muted-foreground/15 mb-2" />
+            <p className="text-sm text-muted-foreground/40">Chart appears after the first week of activity</p>
           </div>
         )}
       </div>

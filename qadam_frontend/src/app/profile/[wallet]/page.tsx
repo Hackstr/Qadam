@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatSol, SOLANA_NETWORK } from "@/lib/constants";
 import {
   ExternalLink, Star, CheckCircle2, XCircle, Loader2,
-  GitBranch as GithubIcon, Calendar, Trophy, Wallet, MapPin,
+  GitBranch as GithubIcon, Calendar, Trophy, Wallet, MapPin, Rocket,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -126,28 +126,30 @@ export default function ProfilePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <Card>
           <CardContent className="p-4 text-center">
+            <Star className="h-4 w-4 text-amber-500 mx-auto mb-1" />
             <p className="text-2xl font-mono font-bold tabular-nums">{rep?.score ?? "---"}</p>
-            <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-              <Star className="h-3 w-3 text-amber-500" /> Reputation
-            </p>
+            <p className="text-xs text-muted-foreground">Reputation</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-mono font-bold tabular-nums">{profile.campaigns_count}</p>
+            <Rocket className="h-4 w-4 text-amber-500 mx-auto mb-1" />
+            <p className={`text-2xl font-mono font-bold tabular-nums ${profile.campaigns_count === 0 ? "text-muted-foreground/40" : ""}`}>{profile.campaigns_count}</p>
             <p className="text-xs text-muted-foreground">Campaigns</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-mono font-bold tabular-nums">{profile.backed_count}</p>
+            <Wallet className="h-4 w-4 text-amber-500 mx-auto mb-1" />
+            <p className={`text-2xl font-mono font-bold tabular-nums ${profile.backed_count === 0 ? "text-muted-foreground/40" : ""}`}>{profile.backed_count}</p>
             <p className="text-xs text-muted-foreground">Backed</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-mono font-bold tabular-nums">{rep?.campaigns_completed ?? 0}</p>
-            <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+            <Trophy className="h-4 w-4 text-green-500 mx-auto mb-1" />
+            <p className={`text-2xl font-mono font-bold tabular-nums ${(rep?.campaigns_completed ?? 0) === 0 ? "text-muted-foreground/40" : ""}`}>{rep?.campaigns_completed ?? 0}</p>
+            <p className="text-xs text-muted-foreground">
               <Trophy className="h-3 w-3 text-green-500" /> Completed
             </p>
           </CardContent>

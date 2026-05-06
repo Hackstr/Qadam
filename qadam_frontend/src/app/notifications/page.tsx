@@ -77,12 +77,11 @@ export default function NotificationsPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-muted-foreground" />
-          <h1 className="text-xl font-bold">Notifications</h1>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="font-display text-3xl tracking-tight">Notifications</h1>
           {unread.length > 0 && (
-            <Badge className="bg-amber-500 text-white">{unread.length}</Badge>
+            <p className="text-sm text-muted-foreground mt-1">{unread.length} unread</p>
           )}
         </div>
         {unread.length > 0 && (
