@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search, SearchX, ArrowRight } from "lucide-react";
 import { SkeletonCards } from "@/components/ui/skeleton-card";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 
 const CATEGORIES = [
   "Tech", "Hardware", "Software", "Art & Design", "Music",
@@ -115,15 +116,7 @@ export default function CampaignsPage() {
             </button>
           ))}
         </div>
-        <select
-          value={sort || ""}
-          onChange={(e) => setSort(e.target.value || undefined)}
-          className="text-xs text-muted-foreground bg-transparent border border-black/[0.06] rounded-lg px-2.5 py-1.5 cursor-pointer hover:border-black/[0.12] flex-shrink-0"
-        >
-          {SORTS.map((s) => (
-            <option key={s.label} value={s.value || ""}>{s.label}</option>
-          ))}
-        </select>
+        <SortDropdown value={sort} onChange={setSort} />
       </div>
 
       {/* Grid */}
@@ -156,9 +149,53 @@ export default function CampaignsPage() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {campaigns.map((campaign) => (
             <CampaignCard key={campaign.id} campaign={campaign} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SortDropdown({ value, onChange }: { value: string | undefined; onChange: (v: string | undefined) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const currentLabel = SORTS.find((s) => s.value === value)?.label || "Newest";
+
+  return (
+    <div ref={ref} className="relative flex-shrink-0">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 text-xs text-muted-foreground border border-black/[0.06] rounded-lg px-3 py-1.5 hover:border-black/[0.12] hover:text-foreground transition-colors"
+      >
+        {currentLabel}
+        <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 bg-white border border-black/[0.08] rounded-xl shadow-lg py-1 z-20 min-w-[140px]">
+          {SORTS.map((s) => (
+            <button
+              key={s.label}
+              onClick={() => { onChange(s.value); setOpen(false); }}
+              className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                value === s.value
+                  ? "text-foreground font-medium bg-amber-500/5"
+                  : "text-muted-foreground hover:text-foreground hover:bg-black/[0.02]"
+              }`}
+            >
+              {s.label}
+            </button>
           ))}
         </div>
       )}
