@@ -10,6 +10,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Save, Settings, GitBranch, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
+
+const WalletMultiButton = dynamic(
+  () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
 
 export default function SettingsPage() {
   const { connected } = useWallet();
@@ -78,10 +84,22 @@ export default function SettingsPage() {
 
   if (!connected) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Account Settings</h1>
-        <p className="text-muted-foreground">Connect your wallet to manage settings.</p>
+      <div className="max-w-md mx-auto px-4 py-20 text-center">
+        <Settings className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+        <h1 className="font-display text-2xl tracking-tight mb-2">Account Settings</h1>
+        <p className="text-muted-foreground mb-6">Connect your wallet to manage settings.</p>
+        <WalletMultiButton
+          style={{
+            backgroundColor: "var(--foreground)",
+            height: "48px",
+            borderRadius: "9999px",
+            fontSize: "15px",
+            padding: "0 32px",
+            lineHeight: "48px",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        />
       </div>
     );
   }
@@ -96,7 +114,7 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold tracking-tight mb-1">Account Settings</h1>
+      <h1 className="font-display text-2xl tracking-tight mb-1">Account Settings</h1>
       <p className="text-sm text-muted-foreground mb-8">Manage your profile and notification preferences.</p>
 
       <div className="space-y-6">
@@ -250,7 +268,8 @@ export default function SettingsPage() {
         <Button
           onClick={() => mutation.mutate()}
           disabled={mutation.isPending}
-          className="w-full gap-2"
+          className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full"
+          size="lg"
         >
           {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           Save Settings
