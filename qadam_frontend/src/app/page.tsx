@@ -22,7 +22,7 @@ export default function Home() {
     <div className="flex flex-col">
       {/* ═══ TICKER ═══ */}
       <div className="relative z-40 mt-16">
-        <div className="bg-amber-500 text-white py-4 -rotate-[1.5deg] -mx-4 px-4 overflow-hidden">
+        <div className="bg-amber-500 text-white py-2 -rotate-[1.5deg] -mx-4 px-4 overflow-hidden">
           <div className="flex whitespace-nowrap animate-ticker">
             {[0, 1].map((group) => (
               <div key={group} className="flex shrink-0" aria-hidden={group === 1}>
