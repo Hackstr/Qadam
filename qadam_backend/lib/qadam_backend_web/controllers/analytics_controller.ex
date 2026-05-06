@@ -8,7 +8,13 @@ defmodule QadamBackendWeb.AnalyticsController do
   alias QadamBackend.Milestones.Milestone
   alias QadamBackend.Milestones.StateTransition
 
+  @foundation_categories [
+    "Tech", "Hardware", "Software", "Art & Design", "Music",
+    "Film", "Education", "Community", "Research", "Climate"
+  ]
+
   def summary(conn, _params) do
+    now = DateTime.utc_now()
     total_campaigns = Repo.aggregate(Campaign, :count)
     active_campaigns = Repo.aggregate(from(c in Campaign, where: c.status == "active"), :count)
     completed_campaigns = Repo.aggregate(from(c in Campaign, where: c.status == "completed"), :count)
@@ -21,7 +27,7 @@ defmodule QadamBackendWeb.AnalyticsController do
     voting_active = Repo.aggregate(from(m in Milestone, where: m.status == "voting_active"), :count)
 
     # New backers in last 30 days
-    thirty_days_ago = DateTime.utc_now() |> DateTime.add(-30, :day)
+    thirty_days_ago = DateTime.add(now, -30, :day)
     new_backers_30d = Repo.aggregate(
       from(b in BackerPosition, where: b.inserted_at >= ^thirty_days_ago),
       :count
@@ -45,15 +51,16 @@ defmodule QadamBackendWeb.AnalyticsController do
         voting_active: voting_active,
         new_backers_30d: new_backers_30d,
         sol_in_escrow: sol_in_escrow,
+        last_updated_at: DateTime.to_iso8601(now),
       }
     })
   end
 
-  @doc "GET /api/analytics/categories — campaign count + raised per category"
+  @doc "GET /api/analytics/categories — campaign count + raised per category (Foundation 10 only)"
   def categories(conn, _params) do
     results =
       from(c in Campaign,
-        where: not is_nil(c.category),
+        where: c.category in ^@foundation_categories,
         group_by: c.category,
         select: %{
           category: c.category,
@@ -67,11 +74,40 @@ defmodule QadamBackendWeb.AnalyticsController do
     json(conn, %{data: results})
   end
 
+  @doc "GET /api/analytics/timeseries — weekly SOL raised over time"
+  def timeseries(conn, params) do
+    range = Map.get(params, "range", "90")
+    days = min(String.to_integer(range), 365)
+    start_date = DateTime.utc_now() |> DateTime.add(-days, :day)
+
+    # Group backings by week
+    results =
+      from(b in BackerPosition,
+        where: b.inserted_at >= ^start_date,
+        group_by: fragment("date_trunc('week', ?)", b.inserted_at),
+        select: %{
+          week: fragment("date_trunc('week', ?)", b.inserted_at),
+          sol_lamports: coalesce(sum(b.amount_lamports), 0),
+          backers: count(b.id)
+        },
+        order_by: [asc: fragment("date_trunc('week', ?)", b.inserted_at)]
+      )
+      |> Repo.all()
+      |> Enum.map(fn r ->
+        %{
+          week: DateTime.to_iso8601(r.week),
+          sol_lamports: r.sol_lamports,
+          backers: r.backers
+        }
+      end)
+
+    json(conn, %{data: results})
+  end
+
   @doc "GET /api/analytics/activity — recent platform activity from state transitions + campaign launches"
   def activity(conn, params) do
     limit = min(String.to_integer(Map.get(params, "limit", "20")), 50)
 
-    # Get recent milestone state transitions with campaign info
     transitions =
       from(t in StateTransition,
         join: m in Milestone, on: m.id == t.milestone_id,
@@ -94,7 +130,6 @@ defmodule QadamBackendWeb.AnalyticsController do
       )
       |> Repo.all()
 
-    # Get recent campaign launches
     launches =
       from(c in Campaign,
         where: not is_nil(c.launched_at),
@@ -121,7 +156,6 @@ defmodule QadamBackendWeb.AnalyticsController do
         })
       end)
 
-    # Merge and sort by timestamp, take limit
     events =
       (transitions ++ launches)
       |> Enum.sort_by(& &1.timestamp, {:desc, DateTime})
@@ -131,12 +165,14 @@ defmodule QadamBackendWeb.AnalyticsController do
   end
 
   @doc "GET /api/analytics/top-campaigns — top campaigns by raised amount"
-  def top_campaigns(conn, _params) do
+  def top_campaigns(conn, params) do
+    limit = min(String.to_integer(Map.get(params, "limit", "8")), 20)
+
     results =
       from(c in Campaign,
         where: c.status in ["active", "completed", "funded", "in_progress"],
         order_by: [desc: c.raised_lamports],
-        limit: 5,
+        limit: ^limit,
         select: %{
           id: c.id,
           title: c.title,

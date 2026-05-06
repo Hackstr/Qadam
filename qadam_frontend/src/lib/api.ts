@@ -275,6 +275,13 @@ interface AnalyticsSummary {
   voting_active: number;
   new_backers_30d: number;
   sol_in_escrow: number;
+  last_updated_at: string;
+}
+
+interface TimeseriesPoint {
+  week: string;
+  sol_lamports: number;
+  backers: number;
 }
 
 interface CategoryBreakdown {
@@ -323,6 +330,10 @@ export async function getAnalyticsActivity(limit = 20) {
 
 export async function getAnalyticsTopCampaigns() {
   return fetchApi<{ data: TopCampaign[] }>("/analytics/top-campaigns");
+}
+
+export async function getAnalyticsTimeseries(range = 90) {
+  return fetchApi<{ data: TimeseriesPoint[] }>(`/analytics/timeseries?range=${range}`);
 }
 
 // ═══════════════════════════════════════════

@@ -53,6 +53,7 @@ defmodule QadamBackendWeb.Router do
     get "/analytics/categories", AnalyticsController, :categories
     get "/analytics/activity", AnalyticsController, :activity
     get "/analytics/top-campaigns", AnalyticsController, :top_campaigns
+    get "/analytics/timeseries", AnalyticsController, :timeseries
 
     # Webhooks — sync on-chain events with PostgreSQL
     post "/webhooks/milestone-submitted", WebhookController, :milestone_submitted
