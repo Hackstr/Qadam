@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MilestoneComments } from "@/components/campaign/milestone-comments";
 import { useCountdown } from "@/hooks/use-countdown";
-import { formatSol } from "@/lib/constants";
+import { formatSol, SOLANA_NETWORK } from "@/lib/constants";
 import { toast } from "sonner";
 import type { Campaign, Milestone } from "@/types";
 import type { PublicKey } from "@solana/web3.js";
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 export interface VoteCardProps {
-  campaign: Pick<Campaign, "solana_pubkey">;
+  campaign: Pick<Campaign, "solana_pubkey" | "quorum_pct" | "approval_threshold_pct">;
   milestone: Milestone;
   connected: boolean;
   publicKey: PublicKey | null;
@@ -27,6 +27,8 @@ export function VoteCard({
 }: VoteCardProps) {
   const countdown = useCountdown(milestone.extension_deadline || milestone.deadline);
   const isVotingBusy = txStatus !== "idle" && txStatus !== "done" && txStatus !== "error";
+  const quorumPct = Math.round((campaign.quorum_pct ?? 0.2) * 100);
+  const isExtension = milestone.status === "extension_requested";
 
   const handleVote = async (approve: boolean) => {
     try {
@@ -37,11 +39,16 @@ export function VoteCard({
         milestone_index: milestone.index,
         wallet: publicKey!.toBase58(),
         approve,
-        voting_power: 0,
+        voting_power: 0, // placeholder — Block 1 will track real weight
       }).catch(() => {});
-      toast.success(`Vote cast — ${approve ? "Approve" : "Reject"}`);
+      toast.success(`Vote cast — ${approve ? "Approve" : "Reject"}`, {
+        description: "Your vote has been recorded on-chain.",
+      });
     } catch (err: any) {
-      if (err?.message !== "cancelled") console.error(err);
+      if (err?.message !== "cancelled") {
+        console.error(err);
+        toast.error("Vote failed. Please try again.");
+      }
     }
   };
 
@@ -54,7 +61,7 @@ export function VoteCard({
               Milestone {milestone.index + 1}: {milestone.title || "Untitled"}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {formatSol(milestone.amount_lamports)} — {milestone.status === "voting_active" ? "Community is voting" : "Extension requested"}
+              {formatSol(milestone.amount_lamports)} — {isExtension ? "Creator requested an extension" : "Community is voting"}
             </p>
           </div>
           <Badge className="bg-purple-100 text-purple-700 gap-1">
@@ -71,13 +78,13 @@ export function VoteCard({
               <Eye className="h-3 w-3" /> Creator&apos;s evidence
             </p>
             {milestone.evidence_text && (
-              <p className="text-sm leading-relaxed">{milestone.evidence_text}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">{milestone.evidence_text}</p>
             )}
             {milestone.evidence_links && milestone.evidence_links.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {milestone.evidence_links.map((link: string, i: number) => (
                   <a key={i} href={link} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-600 hover:underline flex items-center gap-0.5">
-                    <ExternalLink className="h-3 w-3" /> {new URL(link).hostname}
+                    <ExternalLink className="h-3 w-3" /> {(() => { try { return new URL(link).hostname; } catch { return link; } })()}
                   </a>
                 ))}
               </div>
@@ -92,16 +99,17 @@ export function VoteCard({
           </div>
         )}
 
+        {/* Vote progress bar */}
         <div>
           <div className="flex justify-between text-sm mb-2">
             <span className="text-green-600 font-medium flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Approve
+              <CheckCircle2 className="h-3.5 w-3.5" /> {isExtension ? "Grant" : "Approve"}
             </span>
-            <span className="text-red-500 font-medium flex items-center gap-1">
-              Reject <XCircle className="h-3.5 w-3.5" />
+            <span className="text-red-400 font-medium flex items-center gap-1">
+              {isExtension ? "Deny" : "Reject"} <XCircle className="h-3.5 w-3.5" />
             </span>
           </div>
-          <div className="h-3 bg-red-100 rounded-full overflow-hidden">
+          <div className="h-3 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-green-500 rounded-full transition-all duration-500"
               style={{ width: `${milestone.votes_approve_percent ?? 0}%` }}
@@ -109,33 +117,35 @@ export function VoteCard({
           </div>
           <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
             <span>{milestone.votes_count ?? 0} vote(s) cast</span>
-            <span>Quorum: 20% · {countdown}</span>
+            <span>Quorum: {quorumPct}% · {countdown}</span>
           </div>
         </div>
 
-        {!connected ? (
-          <p className="text-center text-sm text-muted-foreground py-2">
-            Connect your wallet to vote
-          </p>
-        ) : (
-          <div className="flex gap-3">
-            <Button
-              className="flex-1 gap-2 bg-green-600 hover:bg-green-700 text-white"
-              disabled={isVotingBusy}
-              onClick={() => handleVote(true)}
-            >
-              {isVotingBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
-              Approve
-            </Button>
-            <Button
-              className="flex-1 gap-2"
-              variant="destructive"
-              disabled={isVotingBusy}
-              onClick={() => handleVote(false)}
-            >
-              {isVotingBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-              Reject
-            </Button>
+        {/* Vote buttons */}
+        {connected && (
+          <div className="space-y-2">
+            <div className="flex gap-3">
+              <Button
+                className="flex-1 gap-2 bg-amber-500 hover:bg-amber-600 text-white"
+                disabled={isVotingBusy}
+                onClick={() => handleVote(true)}
+              >
+                {isVotingBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                {isExtension ? "Grant Extension" : "Approve"}
+              </Button>
+              <Button
+                className="flex-1 gap-2 border-red-200 text-red-600 hover:bg-red-50"
+                variant="outline"
+                disabled={isVotingBusy}
+                onClick={() => handleVote(false)}
+              >
+                {isVotingBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+                {isExtension ? "Deny" : "Reject"}
+              </Button>
+            </div>
+            <p className="text-xs text-center text-muted-foreground">
+              Your wallet will ask you to confirm. Votes are final.
+            </p>
           </div>
         )}
 
