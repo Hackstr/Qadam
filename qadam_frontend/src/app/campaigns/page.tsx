@@ -98,46 +98,32 @@ export default function CampaignsPage() {
         </div>
       </div>
 
-      {/* Categories */}
-      <div className="flex flex-wrap items-center gap-1.5 mb-6">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setCategory(category === cat ? undefined : cat)}
-            className={`px-3 py-1 rounded-full text-[12px] transition-all border ${
-              category === cat
-                ? "bg-amber-500/10 text-amber-700 border-amber-500/20 font-medium"
-                : "bg-transparent text-muted-foreground border-black/[0.06] hover:border-black/[0.12] hover:text-foreground"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Sort */}
-      <div className="flex items-center justify-end mb-5">
-        <div className="relative flex items-center gap-0 text-xs">
-          <span className="text-muted-foreground mr-2">Sort:</span>
-          {SORTS.map((s) => (
+      {/* Categories + Sort — one row */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {CATEGORIES.map((cat) => (
             <button
-              key={s.label}
-              onClick={() => setSort(s.value)}
-              className="relative px-2.5 py-1 text-xs z-10"
+              key={cat}
+              onClick={() => setCategory(category === cat ? undefined : cat)}
+              className={`px-3 py-1 rounded-full text-[12px] transition-all border ${
+                category === cat
+                  ? "bg-amber-500/10 text-amber-700 border-amber-500/20 font-medium"
+                  : "bg-transparent text-muted-foreground border-black/[0.06] hover:border-black/[0.12] hover:text-foreground"
+              }`}
             >
-              {sort === s.value && (
-                <motion.div
-                  layoutId="sort-pill"
-                  className="absolute inset-0 bg-black/[0.05] rounded-md"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
-                />
-              )}
-              <span className={`relative z-10 ${sort === s.value ? "text-foreground font-medium" : "text-muted-foreground"}`}>
-                {s.label}
-              </span>
+              {cat}
             </button>
           ))}
         </div>
+        <select
+          value={sort || ""}
+          onChange={(e) => setSort(e.target.value || undefined)}
+          className="text-xs text-muted-foreground bg-transparent border border-black/[0.06] rounded-lg px-2.5 py-1.5 cursor-pointer hover:border-black/[0.12] flex-shrink-0"
+        >
+          {SORTS.map((s) => (
+            <option key={s.label} value={s.value || ""}>{s.label}</option>
+          ))}
+        </select>
       </div>
 
       {/* Grid */}
