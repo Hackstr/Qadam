@@ -10,6 +10,12 @@ import {
   Coins, MessageSquare, AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const WalletMultiButton = dynamic(
+  () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
 
 const ICON_MAP: Record<string, typeof Bell> = {
   milestone_approved: CheckCircle2,
@@ -49,10 +55,22 @@ export default function NotificationsPage() {
 
   if (!connected) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <Bell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Notifications</h1>
-        <p className="text-muted-foreground">Connect your wallet to see notifications.</p>
+      <div className="max-w-md mx-auto px-4 py-20 text-center">
+        <Bell className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+        <h1 className="font-display text-2xl tracking-tight mb-2">Notifications</h1>
+        <p className="text-muted-foreground mb-6">Connect your wallet to see notifications.</p>
+        <WalletMultiButton
+          style={{
+            backgroundColor: "var(--foreground)",
+            height: "48px",
+            borderRadius: "9999px",
+            fontSize: "15px",
+            padding: "0 32px",
+            lineHeight: "48px",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        />
       </div>
     );
   }

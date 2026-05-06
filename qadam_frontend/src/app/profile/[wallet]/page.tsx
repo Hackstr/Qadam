@@ -126,7 +126,7 @@ export default function ProfilePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold tabular-nums">{rep?.score ?? "---"}</p>
+            <p className="text-2xl font-mono font-bold tabular-nums">{rep?.score ?? "---"}</p>
             <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
               <Star className="h-3 w-3 text-amber-500" /> Reputation
             </p>
@@ -134,19 +134,19 @@ export default function ProfilePage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold tabular-nums">{profile.campaigns_count}</p>
+            <p className="text-2xl font-mono font-bold tabular-nums">{profile.campaigns_count}</p>
             <p className="text-xs text-muted-foreground">Campaigns</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold tabular-nums">{profile.backed_count}</p>
+            <p className="text-2xl font-mono font-bold tabular-nums">{profile.backed_count}</p>
             <p className="text-xs text-muted-foreground">Backed</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold tabular-nums">{rep?.campaigns_completed ?? 0}</p>
+            <p className="text-2xl font-mono font-bold tabular-nums">{rep?.campaigns_completed ?? 0}</p>
             <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
               <Trophy className="h-3 w-3 text-green-500" /> Completed
             </p>

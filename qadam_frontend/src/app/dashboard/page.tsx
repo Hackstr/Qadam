@@ -171,7 +171,7 @@ function DashboardContent() {
                         </Link>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-2xl font-bold tabular-nums">{formatSol(campaign.raised_lamports)}</p>
+                        <p className="text-2xl font-mono font-bold tabular-nums">{formatSol(campaign.raised_lamports)}</p>
                         <p className="text-xs text-muted-foreground">of {formatSol(campaign.goal_lamports)} goal</p>
                       </div>
                     </div>
