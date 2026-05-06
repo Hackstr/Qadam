@@ -17,8 +17,14 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AiHelperButton } from "@/components/ai-helper/ai-helper-button";
-// Profile setup modal removed — creators can set up profile in /settings
 import { TierConfigurator, type TierConfigItem } from "@/components/wizard/tier-configurator";
+import { SOLANA_NETWORK } from "@/lib/constants";
+import dynamic from "next/dynamic";
+
+const WalletMultiButton = dynamic(
+  () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
 import { VotingParamsConfigurator, type VotingParams } from "@/components/wizard/voting-params-configurator";
 
 interface MilestoneInput {
@@ -63,14 +69,11 @@ export default function CreateCampaignPage() {
   // Step 1 — Idea
   const [title, setTitle] = useState("");
   const [pitch, setPitch] = useState("");
-  const [category, setCategory] = useState("Apps");
+  const [category, setCategory] = useState("Tech");
   const [goal, setGoal] = useState("");
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState("");
   const [pitchVideoUrl, setPitchVideoUrl] = useState("");
-  const [projectLocation, setProjectLocation] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
 
   // Step 2 — Story (Foundation v1: split fields)
   const [problem, setProblem] = useState("");
@@ -116,8 +119,6 @@ export default function CreateCampaignPage() {
         if (d.goal) setGoal(d.goal);
         if (d.description) setDescription(d.description);
         if (d.pitchVideoUrl) setPitchVideoUrl(d.pitchVideoUrl);
-        if (d.projectLocation) setProjectLocation(d.projectLocation);
-        if (d.tags) setTags(d.tags);
         if (d.problem) setProblem(d.problem);
         if (d.solution) setSolution(d.solution);
         if (d.whyNow) setWhyNow(d.whyNow);
@@ -142,7 +143,7 @@ export default function CreateCampaignPage() {
     const timer = setInterval(() => {
       if (title || description || problem || milestones[0]?.title) {
         localStorage.setItem(DRAFT_KEY, JSON.stringify({
-          title, pitch, category, goal, description, pitchVideoUrl, projectLocation, tags,
+          title, pitch, category, goal, description, pitchVideoUrl,
           problem, solution, whyNow, background, risks, teamMembers,
           faqItems, milestones, fundingDeadline, step, maxStepVisited,
           tierConfig, votingParams,
@@ -234,6 +235,7 @@ export default function CreateCampaignPage() {
           solana_pubkey: result.campaignPda,
           creator_wallet: publicKey.toBase58(),
           title,
+          pitch: pitch || undefined,
           description: fullDescription,
           category,
           cover_image_url: coverUrl,
@@ -248,8 +250,6 @@ export default function CreateCampaignPage() {
           background: background || undefined,
           risks: risks || undefined,
           team_members: teamMembers.length > 0 ? teamMembers : undefined,
-          location: projectLocation || undefined,
-          tags: tags.length > 0 ? tags : undefined,
           funding_deadline: fundingDeadline ? new Date(fundingDeadline).toISOString() : undefined,
           tier_config: tierConfig,
           vote_period_days: votingParams.vote_period_days,
@@ -289,10 +289,22 @@ export default function CreateCampaignPage() {
 
   if (!connected) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <Rocket className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Create a Campaign</h1>
-        <p className="text-muted-foreground">Connect your wallet to get started.</p>
+      <div className="max-w-md mx-auto px-4 py-20 text-center">
+        <Rocket className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+        <h1 className="font-display text-2xl tracking-tight mb-2">Create a Campaign</h1>
+        <p className="text-muted-foreground mb-6">Connect your wallet to get started.</p>
+        <WalletMultiButton
+          style={{
+            backgroundColor: "var(--foreground)",
+            height: "48px",
+            borderRadius: "9999px",
+            fontSize: "15px",
+            padding: "0 32px",
+            lineHeight: "48px",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        />
       </div>
     );
   }
@@ -332,7 +344,7 @@ export default function CreateCampaignPage() {
                     <p className={`text-sm font-medium ${isActive ? "text-amber-700" : isVisited ? "text-foreground" : "text-muted-foreground"}`}>
                       {s.num}. {s.title}
                     </p>
-                    <p className="text-[10px] text-muted-foreground leading-tight">{labels[s.num - 1]}</p>
+                    <p className="text-xs text-muted-foreground leading-tight">{labels[s.num - 1]}</p>
                   </div>
                 </button>
               );
@@ -364,7 +376,7 @@ export default function CreateCampaignPage() {
           <>
             <div className="mb-6">
               <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 1 of 5</p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Tell us about your project</h2>
+              <h2 className="font-display text-3xl md:text-4xl tracking-tight">Tell us about your project</h2>
               <p className="text-muted-foreground mt-2">This is what backers will see first. Make it count.</p>
             </div>
 
@@ -398,6 +410,40 @@ export default function CreateCampaignPage() {
                     if (lines[0] && !title) setTitle(lines[0].replace(/^[\d.)\-*]+\s*/, "").replace(/"/g, ""));
                   }}
                 />
+
+                {/* Cover image */}
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Cover image</label>
+                  {coverPreview ? (
+                    <div className="relative rounded-xl overflow-hidden h-36 mb-2">
+                      <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => { setCoverFile(null); setCoverPreview(""); }}
+                        className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center text-xs hover:bg-black/70"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center h-28 border-2 border-dashed border-black/[0.08] rounded-xl cursor-pointer hover:border-black/[0.15] transition-colors">
+                      <Image className="h-6 w-6 text-muted-foreground/40 mb-1" />
+                      <span className="text-xs text-muted-foreground">Click to upload (PNG, JPG, up to 5 MB)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setCoverFile(file);
+                            setCoverPreview(URL.createObjectURL(file));
+                          }
+                        }}
+                      />
+                    </label>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">Optional. Shows on Discover and campaign page.</p>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -435,7 +481,7 @@ export default function CreateCampaignPage() {
           <>
             <div className="mb-6">
               <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 2 of 5</p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Tell the story</h2>
+              <h2 className="font-display text-3xl md:text-4xl tracking-tight">Tell the story</h2>
               <p className="text-muted-foreground mt-2">Backers invest in stories, not forms. Structure helps them understand.</p>
             </div>
 
@@ -502,7 +548,7 @@ export default function CreateCampaignPage() {
           <>
             <div className="mb-6">
               <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 3 of 5</p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Who's building this?</h2>
+              <h2 className="font-display text-3xl md:text-4xl tracking-tight">Who's building this?</h2>
               <p className="text-muted-foreground mt-2">Your profile is auto-loaded. Add team members if you have a team.</p>
             </div>
 
@@ -569,7 +615,7 @@ export default function CreateCampaignPage() {
           <>
             <div className="mb-6">
               <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 4 of 5</p>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Break down your path</h2>
+              <h2 className="font-display text-3xl md:text-4xl tracking-tight">Break down your path</h2>
               <p className="text-muted-foreground mt-1">
                 Your goal: <strong>{goalNum} SOL</strong>. Split into 1-5 milestones. Each unlocks part of funding when approved.
               </p>
@@ -717,7 +763,13 @@ export default function CreateCampaignPage() {
                   value={fundingDeadline}
                   onChange={(e) => setFundingDeadline((e.target as HTMLInputElement).value)}
                 />
-                <p className="text-xs text-muted-foreground mt-1">When backing window closes. Must be before first milestone deadline.</p>
+                {(() => {
+                  const firstDeadline = milestones[0]?.deadline;
+                  const invalid = fundingDeadline && firstDeadline && new Date(fundingDeadline) >= new Date(firstDeadline);
+                  return invalid
+                    ? <p className="text-xs text-red-500 mt-1">Must be before first milestone deadline ({new Date(firstDeadline).toLocaleDateString()})</p>
+                    : <p className="text-xs text-muted-foreground mt-1">When backing window closes.</p>;
+                })()}
               </div>
 
               {/* Security deposit */}
@@ -737,7 +789,7 @@ export default function CreateCampaignPage() {
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Step 5 of 5</p>
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Preview your campaign</h2>
+                <h2 className="font-display text-3xl md:text-4xl tracking-tight">Preview your campaign</h2>
                 <p className="text-muted-foreground mt-2">This is exactly what backers will see. Launch when ready.</p>
               </div>
               <Badge variant="outline" className="gap-1"><Eye className="h-3 w-3" /> Preview</Badge>
@@ -789,8 +841,8 @@ export default function CreateCampaignPage() {
                 )}
 
                 {risks && (
-                  <div className="p-3 bg-amber-50/50 border border-amber-100/50 rounded-lg">
-                    <p className="text-xs font-medium text-amber-700 mb-1">Risks & Challenges</p>
+                  <div className="p-3 bg-yellow-50/60 border border-yellow-200/50 rounded-lg">
+                    <p className="text-xs font-medium text-yellow-800 mb-1">Risks & Challenges</p>
                     <p className="text-xs text-muted-foreground">{risks}</p>
                   </div>
                 )}
@@ -857,15 +909,20 @@ export default function CreateCampaignPage() {
               </CardContent>
             </Card>
 
-            {/* Launch */}
+            {/* Launch info */}
             <div className="p-4 border border-black/[0.06] rounded-xl space-y-3">
               <p className="text-sm font-medium">When you launch:</p>
-              <ul className="text-xs text-muted-foreground space-y-1">
+              <ul className="text-sm text-muted-foreground space-y-1.5">
                 <li>Campaign goes live on Solana</li>
                 <li>Security deposit ({securityDeposit.toFixed(3)} SOL) is taken from your wallet</li>
-                <li>Milestones cannot be changed after launch</li>
+                <li>Milestones, tiers, and voting rules cannot be changed after launch</li>
                 <li>2.5% platform fee per milestone release</li>
               </ul>
+              {SOLANA_NETWORK === "devnet" && (
+                <p className="text-xs text-amber-600 font-medium pt-2 border-t border-black/[0.04]">
+                  Devnet — campaign will deploy to devnet, not mainnet
+                </p>
+              )}
             </div>
           </>
         )}
@@ -897,15 +954,20 @@ export default function CreateCampaignPage() {
               </Button>
             </div>
           ) : (
-            <Button
-              onClick={handleLaunch}
-              disabled={loading || !canProceed(4)}
-              className="gap-2 bg-foreground hover:bg-foreground/90 text-white"
-              size="lg"
-            >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4" />}
-              Launch on Solana
-            </Button>
+            <div className="space-y-2">
+              <Button
+                onClick={handleLaunch}
+                disabled={loading || !canProceed(4)}
+                className="w-full gap-2 bg-foreground hover:bg-foreground/90 text-white"
+                size="lg"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Rocket className="h-4 w-4" />}
+                Launch on Solana
+              </Button>
+              <p className="text-xs text-center text-muted-foreground">
+                Your wallet will ask you to confirm. This cannot be undone.
+              </p>
+            </div>
           )}
         </div>
         </div>

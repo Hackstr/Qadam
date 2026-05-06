@@ -151,6 +151,7 @@ export async function syncCampaignCreation(data: {
   solana_pubkey: string;
   creator_wallet: string;
   title: string;
+  pitch?: string;
   description?: string;
   category?: string;
   cover_image_url?: string;
@@ -165,8 +166,6 @@ export async function syncCampaignCreation(data: {
   background?: string;
   risks?: string;
   team_members?: { name: string; role: string; social_link?: string }[];
-  location?: string;
-  tags?: string[];
   funding_deadline?: string;
   tier_config?: { name: string; multiplier: number; max_spots: number | null }[];
   vote_period_days?: number;
