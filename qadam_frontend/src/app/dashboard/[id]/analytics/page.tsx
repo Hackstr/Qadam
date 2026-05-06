@@ -38,7 +38,7 @@ export default function CampaignAnalyticsPage() {
   const earlyBackers = backers.filter((b: any) => b.tier === 2).length;
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-4xl">
+    <div className="max-w-4xl mx-auto px-4 py-10 animate-page-enter">
       <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-6">
         <ArrowLeft className="h-4 w-4" /> Back to Dashboard
       </Link>

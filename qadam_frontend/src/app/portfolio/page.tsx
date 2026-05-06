@@ -42,7 +42,7 @@ export default function PortfolioPage() {
     return (
       <div className="max-w-md mx-auto px-4 py-20 text-center">
         <Wallet className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
-        <h1 className="font-display text-2xl tracking-tight mb-2">Your Portfolio</h1>
+        <h1 className="font-display text-3xl tracking-tight mb-2">Your Portfolio</h1>
         <p className="text-muted-foreground mb-6">Connect your wallet to view your backed projects.</p>
         <WalletMultiButton
           style={{

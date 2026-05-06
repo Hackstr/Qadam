@@ -9,7 +9,7 @@ import { ArrowRight, Wallet, Shield, Coins, RotateCcw } from "lucide-react";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12">
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-12 animate-page-enter">
       {/* Hero */}
       <div>
         <h1 className="font-display text-4xl md:text-5xl tracking-tight mb-3">About Qadam</h1>

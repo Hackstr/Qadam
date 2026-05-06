@@ -42,7 +42,7 @@ export default function FaqPage() {
   const [openIdx, setOpenIdx] = useState<string | null>(null);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12">
+    <div className="max-w-6xl mx-auto px-4 py-12 animate-page-enter">
       <h1 className="font-display text-4xl md:text-5xl tracking-tight mb-3">FAQ</h1>
       <p className="text-lg text-muted-foreground mb-12">Common questions about Qadam, answered honestly.</p>
 

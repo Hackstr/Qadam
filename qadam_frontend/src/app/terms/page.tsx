@@ -3,8 +3,8 @@ export const metadata: Metadata = { title: "Terms of Service — Qadam" };
 
 export default function TermsPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold tracking-tight mb-2">Terms of Service</h1>
+    <div className="max-w-3xl mx-auto px-4 py-10 animate-page-enter">
+      <h1 className="font-display text-3xl tracking-tight mb-2">Terms of Service</h1>
       <p className="text-sm text-muted-foreground mb-8">Last updated: April 2026</p>
 
       <div className="prose prose-sm max-w-none space-y-6 text-sm leading-relaxed text-muted-foreground">

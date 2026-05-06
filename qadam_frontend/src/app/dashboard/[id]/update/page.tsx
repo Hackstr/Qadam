@@ -40,7 +40,7 @@ export default function PostUpdatePage() {
   });
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-3xl">
+    <div className="max-w-3xl mx-auto px-4 py-10 animate-page-enter">
       <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-6">
         <ArrowLeft className="h-4 w-4" /> Back to Dashboard
       </Link>

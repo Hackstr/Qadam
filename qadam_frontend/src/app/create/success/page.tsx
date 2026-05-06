@@ -29,7 +29,7 @@ function SuccessContent() {
   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}/campaigns/${campaignId}` : "";
 
   return (
-    <div className="container mx-auto px-4 py-16 max-w-2xl text-center">
+    <div className="max-w-2xl mx-auto px-4 py-16 text-center animate-page-enter">
       {/* Celebration */}
       <div className="mb-8">
         <div className="w-24 h-24 mx-auto rounded-full bg-amber-50 flex items-center justify-center mb-6">

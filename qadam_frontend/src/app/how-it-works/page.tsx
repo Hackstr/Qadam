@@ -13,7 +13,7 @@ import {
 
 export default function HowItWorksPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 space-y-16">
+    <div className="max-w-6xl mx-auto px-4 py-12 space-y-16 animate-page-enter">
       {/* Hero */}
       <div>
         <h1 className="font-display text-4xl md:text-5xl tracking-tight mb-3">How Qadam works</h1>

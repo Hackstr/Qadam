@@ -49,7 +49,7 @@ export default function CampaignManagePage() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-4xl">
+    <div className="max-w-4xl mx-auto px-4 py-10 animate-page-enter">
       <Link
         href="/dashboard"
         className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-6"
