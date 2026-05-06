@@ -57,22 +57,11 @@ export default function CampaignsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       {/* Header */}
-      <div className="flex items-start justify-between gap-6 mb-8">
-        <div>
-          <h1 className="font-display text-3xl tracking-tight mb-1">Discover</h1>
-          <p className="text-sm text-muted-foreground">
-            Back projects you believe in. SOL stays in escrow until the community approves each milestone.
-          </p>
-        </div>
-        <div className="relative w-full md:w-64 flex-shrink-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search campaigns..."
-            className="pl-9"
-          />
-        </div>
+      <div className="mb-8">
+        <h1 className="font-display text-3xl tracking-tight mb-1">Discover</h1>
+        <p className="text-sm text-muted-foreground">
+          Back projects you believe in. SOL stays in escrow until the community approves each milestone.
+        </p>
       </div>
 
       {/* Status toggle — sliding pill */}
