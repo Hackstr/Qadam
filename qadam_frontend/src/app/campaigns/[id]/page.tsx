@@ -42,6 +42,7 @@ function CampaignDetailContent() {
   const isNew = searchParams.get("new") === "true";
   const { publicKey } = useWallet();
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState("about");
 
   const { data: campaignData, isLoading } = useQuery({
     queryKey: ["campaign", id],
@@ -96,7 +97,7 @@ function CampaignDetailContent() {
   return (
     <div>
       {/* ═══ HERO — Split 60/40 ═══ */}
-      <div className="container mx-auto px-4 pt-6 pb-8">
+      <div className="max-w-6xl mx-auto px-4 pt-6 pb-8">
         <Link href="/campaigns" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground mb-4">
           <ArrowLeft className="h-3.5 w-3.5" /> Discover
         </Link>
@@ -135,6 +136,16 @@ function CampaignDetailContent() {
                   </Button>
                 </Link>
               )}
+              {campaign.status === "completed" && (
+                <Badge className="bg-green-50 text-green-700 text-sm px-4 py-2">
+                  <CheckCircle2 className="h-4 w-4 mr-1.5" /> Campaign completed — {formatSol(campaign.raised_lamports)} raised
+                </Badge>
+              )}
+              {campaign.status === "refunded" && (
+                <Badge variant="secondary" className="text-sm px-4 py-2">
+                  Funds returned to backers
+                </Badge>
+              )}
               <Button
                 variant="outline"
                 className="gap-2 rounded-full"
@@ -156,7 +167,7 @@ function CampaignDetailContent() {
                   <Button variant="outline" size="sm" className="rounded-full text-xs">Edit Campaign</Button>
                 </Link>
                 <Link href={`/dashboard/${campaign.id}/submit`}>
-                  <Button size="sm" className="rounded-full text-xs bg-green-600 hover:bg-green-700 text-white">Submit Evidence</Button>
+                  <Button variant="outline" size="sm" className="rounded-full text-xs border-amber-200 text-amber-700 hover:bg-amber-50">Submit Evidence</Button>
                 </Link>
               </div>
             )}
@@ -172,11 +183,11 @@ function CampaignDetailContent() {
       />
 
       {/* ═══ MAIN CONTENT + SIDEBAR ═══ */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left — Content */}
           <div className="lg:col-span-2">
-            <Tabs defaultValue="about">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="border-b border-black/[0.06] bg-transparent p-0 h-auto gap-6">
                 <TabsTrigger value="about" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-0 pb-3 text-sm">About</TabsTrigger>
                 <TabsTrigger value="milestones" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-0 pb-3 text-sm">Milestones</TabsTrigger>
@@ -192,38 +203,38 @@ function CampaignDetailContent() {
                 {/* Story split sections */}
                 {campaign.problem && (
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">The Problem</h3>
-                    <p className="text-base leading-relaxed">{campaign.problem}</p>
+                    <h3 className="font-display text-xl tracking-tight mb-2">The problem</h3>
+                    <p className="text-base leading-relaxed text-muted-foreground">{campaign.problem}</p>
                   </div>
                 )}
                 {campaign.solution && (
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">The Solution</h3>
-                    <p className="text-base leading-relaxed">{campaign.solution}</p>
+                    <h3 className="font-display text-xl tracking-tight mb-2">The solution</h3>
+                    <p className="text-base leading-relaxed text-muted-foreground">{campaign.solution}</p>
                   </div>
                 )}
                 {campaign.why_now && (
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">Why Now</h3>
-                    <p className="text-base leading-relaxed">{campaign.why_now}</p>
+                    <h3 className="font-display text-xl tracking-tight mb-2">Why now</h3>
+                    <p className="text-base leading-relaxed text-muted-foreground">{campaign.why_now}</p>
                   </div>
                 )}
                 {campaign.background && (
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">Background</h3>
-                    <p className="text-base leading-relaxed">{campaign.background}</p>
+                    <h3 className="font-display text-xl tracking-tight mb-2">Background</h3>
+                    <p className="text-base leading-relaxed text-muted-foreground">{campaign.background}</p>
                   </div>
                 )}
 
                 {/* Fallback to old description if no story split */}
                 {!campaign.problem && !campaign.solution && campaign.description && (
-                  <p className="text-lg leading-relaxed">{campaign.description}</p>
+                  <p className="text-base leading-relaxed text-muted-foreground">{campaign.description}</p>
                 )}
 
                 {/* Team */}
                 {campaign.team_members && campaign.team_members.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-3">Team</h3>
+                    <h3 className="font-display text-xl tracking-tight mb-3">Team</h3>
                     <div className="space-y-2">
                       {campaign.team_members.map((member, i) => (
                         <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-black/[0.06]">
@@ -257,10 +268,10 @@ function CampaignDetailContent() {
 
                 {/* Risks */}
                 {campaign.risks && (
-                  <div className="p-5 bg-amber-50/50 border-l-4 border-amber-400 rounded-r-xl">
+                  <div className="p-5 bg-yellow-50/60 border-l-4 border-yellow-400 rounded-r-xl">
                     <div className="flex items-center gap-2 mb-2">
-                      <AlertCircle className="h-4 w-4 text-amber-600" />
-                      <h3 className="font-semibold text-sm text-amber-800">Risks & Challenges</h3>
+                      <AlertCircle className="h-4 w-4 text-yellow-600" />
+                      <h3 className="font-semibold text-sm text-yellow-800">Risks & Challenges</h3>
                     </div>
                     <p className="text-sm text-muted-foreground leading-relaxed">{campaign.risks}</p>
                   </div>
@@ -270,8 +281,8 @@ function CampaignDetailContent() {
                 {campaign.milestones && campaign.milestones.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold">Milestone journey</h3>
-                      <button onClick={() => {}} className="text-xs text-amber-600 hover:underline">View all milestones →</button>
+                      <h3 className="font-display text-xl tracking-tight">Milestone journey</h3>
+                      <button onClick={() => setActiveTab("milestones")} className="text-xs text-amber-600 hover:underline">View all milestones →</button>
                     </div>
                     <MilestoneDots
                       total={campaign.milestones.length}
@@ -279,17 +290,17 @@ function CampaignDetailContent() {
                       variant="connected"
                       size="md"
                     />
-                    <div className="flex mt-2">
+                    <div className="flex mt-3">
                       {campaign.milestones.map((m, i) => {
                         const isDone = m.status === "approved";
                         const isVoting = ["voting_active", "submitted", "extension_requested"].includes(m.status);
                         return (
                           <div key={m.id} className="flex-1 text-center">
-                            <p className="text-[10px] font-medium truncate">{m.title || `M${i + 1}`}</p>
-                            <p className={`text-[9px] ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
+                            <p className="text-xs font-medium truncate">{m.title || `M${i + 1}`}</p>
+                            <p className={`text-[10px] ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
                               {isDone ? "Approved" : isVoting ? "Voting" : "Pending"}
                             </p>
-                            <p className="text-[9px] text-muted-foreground">{formatSol(m.amount_lamports)}</p>
+                            <p className="text-[10px] text-muted-foreground">{formatSol(m.amount_lamports)}</p>
                           </div>
                         );
                       })}
@@ -336,7 +347,7 @@ function CampaignDetailContent() {
                     {backers.map((b: any, idx: number) => (
                       <div key={idx} className="flex items-center justify-between py-2.5 border-b border-black/[0.04] last:border-0">
                         <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-[9px] font-bold">
+                          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-[10px] font-bold">
                             {(b.display_name || b.wallet_address)[0].toUpperCase()}
                           </div>
                           <div>

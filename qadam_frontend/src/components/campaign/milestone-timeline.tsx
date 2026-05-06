@@ -5,17 +5,17 @@ import type { Milestone } from "@/types";
 import { Check, Clock, AlertCircle, Loader2, Eye, X, Scale } from "lucide-react";
 
 const statusConfig: Record<string, { icon: typeof Check; color: string; label: string }> = {
-  pending: { icon: Clock, color: "text-gray-400", label: "Pending" },
-  grace_period: { icon: AlertCircle, color: "text-yellow-500", label: "Grace Period" },
-  submitted: { icon: Loader2, color: "text-blue-500", label: "Submitted" },
-  ai_processing: { icon: Loader2, color: "text-blue-500", label: "Processing..." },
-  under_human_review: { icon: Eye, color: "text-purple-500", label: "Human Review" },
-  approved: { icon: Check, color: "text-green-500", label: "Approved" },
-  rejected: { icon: X, color: "text-red-500", label: "Rejected" },
-  extension_requested: { icon: Clock, color: "text-yellow-500", label: "Extension Requested" },
-  voting_active: { icon: AlertCircle, color: "text-yellow-500", label: "Voting Active" },
-  extended: { icon: Clock, color: "text-blue-500", label: "Extended" },
-  failed: { icon: X, color: "text-red-500", label: "Failed" },
+  pending:              { icon: Clock, color: "text-muted-foreground", label: "Pending" },
+  grace_period:         { icon: AlertCircle, color: "text-amber-600", label: "Grace Period" },
+  submitted:            { icon: Loader2, color: "text-foreground/50", label: "Submitted" },
+  ai_processing:        { icon: Loader2, color: "text-foreground/50", label: "Processing..." },
+  under_human_review:   { icon: Eye, color: "text-purple-500", label: "Human Review" },
+  approved:             { icon: Check, color: "text-green-600", label: "Approved" },
+  rejected:             { icon: X, color: "text-red-400", label: "Rejected" },
+  extension_requested:  { icon: Scale, color: "text-purple-500", label: "Extension Requested" },
+  voting_active:        { icon: Scale, color: "text-purple-500", label: "Voting Active" },
+  extended:             { icon: Clock, color: "text-amber-600", label: "Extended" },
+  failed:               { icon: X, color: "text-red-400", label: "Failed" },
 };
 
 interface MilestoneTimelineProps {
@@ -37,8 +37,8 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
             <div key={m.id} className="flex items-center flex-1">
               <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
                 isDone ? "bg-green-500" :
-                isCurrent ? "bg-amber-500" :
-                isFailed ? "bg-red-400" :
+                isCurrent ? "bg-purple-500" :
+                isFailed ? "bg-red-400/60" :
                 "bg-gray-200"
               }`}>
                 {isDone && <Check className="h-3 w-3 text-white" />}
@@ -110,10 +110,10 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
               {milestone.ai_explanation && (
                 <div className={`mt-2 p-3 rounded-lg text-sm border ${
                   milestone.status === "approved"
-                    ? "bg-green-50/50 border-green-100"
+                    ? "bg-green-50/50 border-green-200/50"
                     : milestone.status === "rejected"
-                    ? "bg-red-50/50 border-red-100"
-                    : "bg-purple-50/50 border-purple-100"
+                    ? "bg-red-50/30 border-red-200/30"
+                    : "bg-purple-50/50 border-purple-200/50"
                 }`}>
                   <p className="font-medium text-xs mb-1 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
