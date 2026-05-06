@@ -13,7 +13,6 @@ import Link from "next/link";
 import type { AdminAttentionItem, AdminActivityItem } from "@/types";
 
 const ATTENTION_CONFIG: Record<string, { label: string; color: string; icon: typeof AlertTriangle; link: string }> = {
-  needs_review: { label: "Needs Review", color: "text-purple-600 bg-purple-50", icon: ClipboardCheck, link: "/admin/reviews" },
   overdue: { label: "Overdue", color: "text-red-600 bg-red-50", icon: Clock, link: "/admin/milestones" },
   stuck_in_ai: { label: "Stuck Processing", color: "text-amber-600 bg-amber-50", icon: Zap, link: "/admin/milestones" },
 };

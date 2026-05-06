@@ -4,8 +4,8 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
-  LayoutDashboard, ClipboardCheck, FolderOpen, Milestone,
-  Users, Vote, Brain, ScrollText, Settings, ShieldAlert,
+  LayoutDashboard, FolderOpen, Milestone,
+  Users, Vote, ScrollText, Settings, ShieldAlert,
   Menu, X,
 } from "lucide-react";
 import { useState } from "react";
@@ -14,12 +14,10 @@ const ADMIN_WALLET = process.env.NEXT_PUBLIC_ADMIN_WALLET;
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/admin/reviews", label: "Review Queue", icon: ClipboardCheck },
   { href: "/admin/campaigns", label: "Campaigns", icon: FolderOpen },
   { href: "/admin/milestones", label: "Milestones", icon: Milestone },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/governance", label: "Governance", icon: Vote },
-  { href: "/admin/ai", label: "AI Analytics", icon: Brain },
   { href: "/admin/audit", label: "Audit Log", icon: ScrollText },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

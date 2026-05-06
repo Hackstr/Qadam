@@ -9,14 +9,16 @@ qadam/node_modules
 qadam/.yarn
 **/*.rs.bk
 
-# Elixir (future)
+# Elixir
 qadam_backend/_build
 qadam_backend/deps
 qadam_backend/.elixir_ls
+qadam_backend/priv/solana/node_modules/
 
-# Frontend (future)
+# Frontend
 qadam_frontend/node_modules
 qadam_frontend/.next
+.next
 
 # Environment
 .env
@@ -27,11 +29,16 @@ qadam_frontend/.next
 .idea
 .vscode
 *.swp
-.next
-qadam_backend/priv/solana/node_modules/
-
-# Design artifacts
-design-system-full.png
-design-system-v3.png
-ds-final-check.png
 .playwright-mcp/
+
+# Working artifacts that don't belong in git
+# Screenshots (audit, design refresh, ad-hoc) — keep them out of repo
+*.png
+!qadam_frontend/public/**/*.png
+!qadam_frontend/src/**/*.png
+
+# Internal scratch folder for Claude Code mega-prompts
+.claude-prompts/
+
+# Locally-cached test data
+E2E_TEST_DATA.md

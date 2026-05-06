@@ -281,17 +281,6 @@ export async function getAnalyticsSummary() {
 // ADMIN
 // ═══════════════════════════════════════════
 
-export async function getReviewQueue() {
-  return fetchApi<{ data: Milestone[] }>("/admin/review-queue");
-}
-
-export async function decideMilestone(id: string, approved: boolean) {
-  return fetchApi<{ data: { id: string; status: string } }>(`/admin/milestones/${id}/decide`, {
-    method: "POST",
-    body: JSON.stringify({ approved }),
-  });
-}
-
 export async function getAdminDashboard() {
   return fetchApi<{ data: AdminDashboard }>("/admin/dashboard");
 }
@@ -345,10 +334,6 @@ export async function getAdminAuditLog(filters?: { campaign_id?: string; limit?:
   if (filters?.limit) params.set("limit", String(filters.limit));
   const qs = params.toString();
   return fetchApi<{ data: any[] }>(`/admin/audit${qs ? `?${qs}` : ""}`);
-}
-
-export async function getAdminAiStats() {
-  return fetchApi<{ data: any }>("/admin/ai/stats");
 }
 
 export async function getAdminUsers(filters?: { search?: string }) {
