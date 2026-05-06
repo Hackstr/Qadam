@@ -17,6 +17,12 @@ import {
   BarChart2, Share2, ExternalLink, PenLine,
 } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const WalletMultiButton = dynamic(
+  () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
 
 export default function DashboardPage() {
   return (
@@ -52,9 +58,22 @@ function DashboardContent() {
 
   if (!connected) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold mb-4">Creator Dashboard</h1>
-        <p className="text-muted-foreground">Connect your wallet to view your campaigns.</p>
+      <div className="max-w-md mx-auto px-4 py-20 text-center">
+        <Rocket className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+        <h1 className="font-display text-2xl tracking-tight mb-2">Creator Dashboard</h1>
+        <p className="text-muted-foreground mb-6">Connect your wallet to view your campaigns.</p>
+        <WalletMultiButton
+          style={{
+            backgroundColor: "var(--foreground)",
+            height: "48px",
+            borderRadius: "9999px",
+            fontSize: "15px",
+            padding: "0 32px",
+            lineHeight: "48px",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        />
       </div>
     );
   }

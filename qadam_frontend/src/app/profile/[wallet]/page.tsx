@@ -59,7 +59,7 @@ export default function ProfilePage() {
           {(profile.display_name || wallet)[0].toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="font-display text-2xl tracking-tight">
             {profile.display_name || `${wallet.slice(0, 8)}...${wallet.slice(-4)}`}
           </h1>
           {profile.bio && (
@@ -98,16 +98,24 @@ export default function ProfilePage() {
           {profile.socials && Object.values(profile.socials).some(Boolean) && (
             <div className="flex items-center gap-3 mt-2">
               {profile.socials.twitter && (
-                <a href={`https://x.com/${profile.socials.twitter.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground">𝕏 {profile.socials.twitter}</a>
+                <a href={`https://x.com/${profile.socials.twitter.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+                  <ExternalLink className="h-3 w-3" /> {profile.socials.twitter}
+                </a>
               )}
               {profile.socials.telegram && (
-                <a href={`https://t.me/${profile.socials.telegram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground">TG {profile.socials.telegram}</a>
+                <a href={`https://t.me/${profile.socials.telegram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+                  <ExternalLink className="h-3 w-3" /> {profile.socials.telegram}
+                </a>
               )}
               {profile.socials.github && (
-                <a href={`https://github.com/${profile.socials.github}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground">GH {profile.socials.github}</a>
+                <a href={`https://github.com/${profile.socials.github}`} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+                  <GithubIcon className="h-3 w-3" /> {profile.socials.github}
+                </a>
               )}
               {profile.socials.website && (
-                <a href={profile.socials.website} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground">🌐 Website</a>
+                <a href={profile.socials.website} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+                  <ExternalLink className="h-3 w-3" /> Website
+                </a>
               )}
             </div>
           )}
@@ -149,7 +157,7 @@ export default function ProfilePage() {
       {/* Reputation detail */}
       {rep && (
         <div className="border border-black/[0.06] rounded-xl p-4 mb-8">
-          <h3 className="font-semibold text-sm mb-3">Reputation Breakdown</h3>
+          <h3 className="font-medium text-sm mb-3">Reputation Breakdown</h3>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -172,12 +180,12 @@ export default function ProfilePage() {
       )}
 
       {/* Campaigns */}
-      <h3 className="font-semibold mb-4">Campaigns</h3>
+      <h3 className="font-display text-xl tracking-tight mb-4">Campaigns</h3>
       {profile.campaigns.length === 0 ? (
         <p className="text-sm text-muted-foreground">No campaigns yet</p>
       ) : (
         <div className="space-y-3">
-          {profile.campaigns.map((c: any) => (
+          {profile.campaigns.map((c: { id: string; title: string; status: string; category?: string; raised_lamports: number; milestones_count: number; milestones_approved: number }) => (
             <Link key={c.id} href={`/campaigns/${c.id}`}>
               <div className="border border-black/[0.06] rounded-xl p-4 hover:border-black/[0.12] transition-colors flex items-center justify-between">
                 <div>
