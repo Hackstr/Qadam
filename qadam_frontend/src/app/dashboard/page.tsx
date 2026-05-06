@@ -94,12 +94,6 @@ function DashboardContent() {
             }
           </p>
         </div>
-        <Link href="/create">
-          <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full px-6">
-            <Plus className="h-4 w-4" />
-            New Campaign
-          </Button>
-        </Link>
       </div>
 
       {isLoading ? (
@@ -125,9 +119,6 @@ function DashboardContent() {
               Create Your First Campaign
             </Button>
           </Link>
-          <p className="text-xs text-muted-foreground mt-8">
-            Connected: <span className="font-mono">{publicKey?.toBase58().slice(0, 4)}...{publicKey?.toBase58().slice(-4)}</span>
-          </p>
         </div>
       ) : (
         <div className="space-y-6">
