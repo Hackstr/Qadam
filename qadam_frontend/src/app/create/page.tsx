@@ -50,6 +50,15 @@ const CATEGORIES = [
   "Film", "Education", "Community", "Research", "Climate",
 ];
 
+const ACCENT_COLORS = [
+  { id: "forest", label: "Forest", color: "#2D5F4E" },
+  { id: "sage", label: "Sage", color: "#75A58A" },
+  { id: "warm", label: "Warm", color: "#8B7355" },
+  { id: "plum", label: "Plum", color: "#6B5B8D" },
+  { id: "slate", label: "Slate", color: "#475569" },
+  { id: "deep", label: "Deep", color: "#1B3B30" },
+];
+
 export default function CreateCampaignPage() {
   const { connected, publicKey } = useWallet();
   const { createCampaign: createCampaignTx } = useQadamProgram();
@@ -76,6 +85,7 @@ export default function CreateCampaignPage() {
   const [pitchVideoUrl, setPitchVideoUrl] = useState("");
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const [accentColor, setAccentColor] = useState("forest");
 
   // Step 2 — Story (Foundation v1: split fields)
   const [problem, setProblem] = useState("");
@@ -131,6 +141,7 @@ export default function CreateCampaignPage() {
         if (d.milestones?.length) setMilestones(d.milestones);
         if (d.fundingDeadline) setFundingDeadline(d.fundingDeadline);
         if (d.tierConfig?.length) setTierConfig(d.tierConfig);
+        if (d.accentColor) setAccentColor(d.accentColor);
         if (d.votingParams) setVotingParams(d.votingParams);
         if (d.step) { setStep(d.step); setMaxStepVisited(d.maxStepVisited || d.step); }
         if (d.title) {
@@ -148,7 +159,7 @@ export default function CreateCampaignPage() {
           title, pitch, category, goal, description, pitchVideoUrl,
           problem, solution, whyNow, background, risks, teamMembers,
           faqItems, milestones, fundingDeadline, step, maxStepVisited,
-          tierConfig, votingParams,
+          tierConfig, votingParams, accentColor,
         }));
       }
     }, 5000);
@@ -253,6 +264,7 @@ export default function CreateCampaignPage() {
           risks: risks || undefined,
           team_members: teamMembers.length > 0 ? teamMembers : undefined,
           faq: faqItems.length > 0 ? faqItems : undefined,
+          accent_color: accentColor !== "forest" ? accentColor : undefined,
           funding_deadline: fundingDeadline ? new Date(fundingDeadline).toISOString() : undefined,
           tier_config: tierConfig,
           vote_period_days: votingParams.vote_period_days,
@@ -448,6 +460,60 @@ export default function CreateCampaignPage() {
                   <p className="text-xs text-muted-foreground mt-1">Optional. Shows on Discover and campaign page.</p>
                 </div>
 
+                {/* Gallery — additional screenshots */}
+                <div>
+                  <label className="text-sm font-medium mb-1 block">
+                    Gallery <span className="text-xs text-muted-foreground">(optional, up to 5)</span>
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {galleryPreviews.map((src, i) => (
+                      <div key={i} className="relative rounded-lg overflow-hidden h-24">
+                        <img src={src} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+                        <button
+                          onClick={() => {
+                            setGalleryFiles(galleryFiles.filter((_, j) => j !== i));
+                            setGalleryPreviews(galleryPreviews.filter((_, j) => j !== i));
+                          }}
+                          className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/50 text-white flex items-center justify-center text-[10px] hover:bg-black/70"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                    {galleryPreviews.length < 5 && (
+                      <label className="flex flex-col items-center justify-center h-24 border-2 border-dashed border-black/[0.06] rounded-lg cursor-pointer hover:border-black/[0.12] transition-colors">
+                        <Plus className="h-4 w-4 text-muted-foreground/30" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file && galleryFiles.length < 5) {
+                              setGalleryFiles([...galleryFiles, file]);
+                              setGalleryPreviews([...galleryPreviews, URL.createObjectURL(file)]);
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">Screenshots, mockups, or photos of your project.</p>
+                </div>
+
+                {/* Pitch video URL */}
+                <div>
+                  <label className="text-sm font-medium mb-1 block">
+                    Pitch video <span className="text-xs text-muted-foreground">(optional)</span>
+                  </label>
+                  <Input
+                    value={pitchVideoUrl}
+                    onChange={(e) => setPitchVideoUrl(e.target.value)}
+                    placeholder="https://youtube.com/... or https://loom.com/..."
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">YouTube or Loom link. Embedded on your campaign page.</p>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium mb-1 block">Category</label>
@@ -473,6 +539,25 @@ export default function CreateCampaignPage() {
                     />
                     <p className="text-xs text-muted-foreground mt-1">How much do you really need? Include buffer.</p>
                   </div>
+                </div>
+
+                {/* Accent color */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    Campaign accent <span className="text-xs text-muted-foreground">(optional)</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {ACCENT_COLORS.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => setAccentColor(c.id)}
+                        className={`w-8 h-8 rounded-full transition-all ${accentColor === c.id ? "ring-2 ring-offset-2 ring-foreground/20 scale-110" : "hover:scale-105"}`}
+                        style={{ backgroundColor: c.color }}
+                        title={c.label}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1.5">Applies to your campaign's CTA button and progress bar.</p>
                 </div>
               </CardContent>
             </Card>
@@ -1012,6 +1097,7 @@ export default function CreateCampaignPage() {
                     { done: amountsMatch, label: "Milestone amounts match goal", step: 4 },
                     { done: teamMembers.length > 0, label: "Team added", step: 3, optional: true },
                     { done: faqItems.length > 0, label: `${faqItems.length} FAQ question${faqItems.length !== 1 ? "s" : ""}`, step: 2, optional: true },
+                    { done: galleryPreviews.length > 0, label: `${galleryPreviews.length} gallery image${galleryPreviews.length !== 1 ? "s" : ""}`, step: 1, optional: true },
                     { done: !!pitchVideoUrl, label: "Pitch video added", step: 1, optional: true },
                     { done: !!fundingDeadline, label: "Funding deadline set", step: 4 },
                   ].map((item, i) => (

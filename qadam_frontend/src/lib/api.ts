@@ -167,6 +167,7 @@ export async function syncCampaignCreation(data: {
   risks?: string;
   team_members?: { name: string; role: string; social_link?: string }[];
   faq?: { q: string; a: string }[];
+  accent_color?: string;
   funding_deadline?: string;
   tier_config?: { name: string; multiplier: number; max_spots: number | null }[];
   vote_period_days?: number;
