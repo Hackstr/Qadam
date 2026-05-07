@@ -18,16 +18,14 @@ async function main() {
     program.programId
   );
 
-  const aiAgent = Keypair.generate();
   const treasury = Keypair.generate();
 
   try {
     await program.methods
-      .initializeConfig(admin.publicKey, aiAgent.publicKey, treasury.publicKey)
+      .initializeConfig(admin.publicKey, treasury.publicKey)
       .accounts({ payer: admin.publicKey })
       .rpc();
     console.log("Config initialized!");
-    console.log("AI Agent:", aiAgent.publicKey.toBase58());
     console.log("Treasury:", treasury.publicKey.toBase58());
   } catch (e: any) {
     if (e.message?.includes("already in use")) {
