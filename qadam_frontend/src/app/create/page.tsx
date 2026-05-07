@@ -74,6 +74,8 @@ export default function CreateCampaignPage() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState("");
   const [pitchVideoUrl, setPitchVideoUrl] = useState("");
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
 
   // Step 2 — Story (Foundation v1: split fields)
   const [problem, setProblem] = useState("");
@@ -250,6 +252,7 @@ export default function CreateCampaignPage() {
           background: background || undefined,
           risks: risks || undefined,
           team_members: teamMembers.length > 0 ? teamMembers : undefined,
+          faq: faqItems.length > 0 ? faqItems : undefined,
           funding_deadline: fundingDeadline ? new Date(fundingDeadline).toISOString() : undefined,
           tier_config: tierConfig,
           vote_period_days: votingParams.vote_period_days,
@@ -540,6 +543,64 @@ export default function CreateCampaignPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* FAQ */}
+            <Card>
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">FAQ <span className="text-xs text-muted-foreground">(optional)</span></label>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1 text-xs"
+                    onClick={() => setFaqItems([...faqItems, { q: "", a: "" }])}
+                  >
+                    <Plus className="h-3 w-3" /> Add question
+                  </Button>
+                </div>
+                {faqItems.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Common questions backers might ask. Helps build trust.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {faqItems.map((item, i) => (
+                      <div key={i} className="border border-black/[0.06] rounded-lg p-3 space-y-2">
+                        <div className="flex items-start gap-2">
+                          <Input
+                            value={item.q}
+                            onChange={(e) => {
+                              const updated = [...faqItems];
+                              updated[i] = { ...updated[i], q: e.target.value };
+                              setFaqItems(updated);
+                            }}
+                            placeholder="Question"
+                            className="text-sm"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="flex-shrink-0 text-muted-foreground hover:text-red-500"
+                            onClick={() => setFaqItems(faqItems.filter((_, j) => j !== i))}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                        <Textarea
+                          value={item.a}
+                          onChange={(e) => {
+                            const updated = [...faqItems];
+                            updated[i] = { ...updated[i], a: (e.target as HTMLTextAreaElement).value };
+                            setFaqItems(updated);
+                          }}
+                          placeholder="Answer"
+                          rows={2}
+                          className="text-sm"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </>
         )}
 
@@ -809,12 +870,21 @@ export default function CreateCampaignPage() {
               )}
 
               <CardContent className="p-5 space-y-4">
-                <div>
-                  <Badge variant="secondary" className="mb-2">{category}</Badge>
-                  <h3 className="text-xl font-bold">{title || "Untitled Campaign"}</h3>
-                  {pitch && <p className="text-muted-foreground mt-1">{pitch}</p>}
+                <div className="flex items-start justify-between">
+                  <div>
+                    <Badge variant="secondary" className="mb-2">{category}</Badge>
+                    <h3 className="text-xl font-bold">{title || "Untitled Campaign"}</h3>
+                    {pitch && <p className="text-muted-foreground mt-1">{pitch}</p>}
+                  </div>
+                  <button onClick={() => goToStep(1)} className="text-xs text-amber-600 hover:underline flex-shrink-0">Edit →</button>
                 </div>
 
+                {(problem || solution || whyNow || background) && (
+                  <div className="flex items-center justify-between pt-2">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Story</p>
+                    <button onClick={() => goToStep(2)} className="text-xs text-amber-600 hover:underline">Edit →</button>
+                  </div>
+                )}
                 {problem && (
                   <div>
                     <p className="text-sm font-medium mb-1">The Problem</p>
@@ -848,7 +918,10 @@ export default function CreateCampaignPage() {
                 )}
 
                 <div>
-                  <p className="text-sm font-medium mb-2">Milestones ({milestones.length})</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium">Milestones ({milestones.length})</p>
+                    <button onClick={() => goToStep(4)} className="text-xs text-amber-600 hover:underline">Edit →</button>
+                  </div>
                   <div className="space-y-2">
                     {milestones.map((m, i) => (
                       <div key={i} className="border rounded-lg p-3">
@@ -897,6 +970,24 @@ export default function CreateCampaignPage() {
                   </div>
                 </div>
 
+                {/* FAQ preview */}
+                {faqItems.length > 0 && (
+                  <div className="pt-3 border-t">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-medium">FAQ ({faqItems.length})</p>
+                      <button onClick={() => goToStep(2)} className="text-xs text-amber-600 hover:underline">Edit →</button>
+                    </div>
+                    <div className="space-y-2">
+                      {faqItems.map((item, i) => (
+                        <div key={i} className="text-xs">
+                          <p className="font-medium">{item.q}</p>
+                          <p className="text-muted-foreground">{item.a}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Voting params preview */}
                 <div className="pt-3 border-t">
                   <p className="text-sm font-medium mb-2">Voting rules</p>
@@ -905,6 +996,42 @@ export default function CreateCampaignPage() {
                     <span>Quorum: <strong>{Math.round(votingParams.quorum_pct * 100)}%</strong></span>
                     <span>Threshold: <strong>{Math.round(votingParams.approval_threshold_pct * 100)}%</strong></span>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pre-launch checklist */}
+            <Card>
+              <CardContent className="p-5">
+                <p className="text-sm font-medium mb-3">Launch readiness</p>
+                <div className="space-y-2">
+                  {[
+                    { done: !!coverPreview, label: "Cover image uploaded", step: 1 },
+                    { done: !!problem && !!solution, label: "Story complete (problem + solution)", step: 2 },
+                    { done: milestones.length >= 2, label: `${milestones.length} milestone${milestones.length !== 1 ? "s" : ""} defined`, step: 4 },
+                    { done: amountsMatch, label: "Milestone amounts match goal", step: 4 },
+                    { done: teamMembers.length > 0, label: "Team added", step: 3, optional: true },
+                    { done: faqItems.length > 0, label: `${faqItems.length} FAQ question${faqItems.length !== 1 ? "s" : ""}`, step: 2, optional: true },
+                    { done: !!pitchVideoUrl, label: "Pitch video added", step: 1, optional: true },
+                    { done: !!fundingDeadline, label: "Funding deadline set", step: 4 },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center ${item.done ? "bg-green-500" : item.optional ? "bg-muted" : "bg-amber-400"}`}>
+                          {item.done && <Check className="h-2.5 w-2.5 text-white" />}
+                        </div>
+                        <span className={`text-sm ${item.done ? "text-foreground" : item.optional ? "text-muted-foreground" : "text-foreground"}`}>
+                          {item.label}
+                          {item.optional && !item.done && <span className="text-xs text-muted-foreground ml-1">(optional)</span>}
+                        </span>
+                      </div>
+                      {!item.done && (
+                        <button onClick={() => goToStep(item.step)} className="text-xs text-amber-600 hover:underline">
+                          {item.optional ? "Add" : "Fix"} →
+                        </button>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
