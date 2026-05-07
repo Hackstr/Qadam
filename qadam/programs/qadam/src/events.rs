@@ -40,12 +40,6 @@ pub struct MilestoneReleased {
 }
 
 #[event]
-pub struct MilestoneUnderReview {
-    pub campaign: Pubkey,
-    pub milestone_index: u8,
-}
-
-#[event]
 pub struct MilestoneRejected {
     pub campaign: Pubkey,
     pub milestone_index: u8,
@@ -56,23 +50,40 @@ pub struct ExtensionRequested {
     pub campaign: Pubkey,
     pub milestone_index: u8,
     pub new_deadline: i64,
+}
+
+#[event]
+pub struct VoteOpened {
+    pub vote_type: u8,
+    pub campaign: Pubkey,
+    pub context: Pubkey,
+    pub voting_state: Pubkey,
     pub voting_deadline: i64,
 }
 
 #[event]
 pub struct VoteCast {
-    pub campaign: Pubkey,
-    pub milestone_index: u8,
+    pub vote_type: u8,
+    pub voting_state: Pubkey,
     pub voter: Pubkey,
     pub approve: bool,
     pub voting_power: u64,
 }
 
 #[event]
-pub struct ExtensionExecuted {
+pub struct VoteResolved {
+    pub vote_type: u8,
+    pub voting_state: Pubkey,
+    pub decision: u8,
+    pub approve_power: u64,
+    pub reject_power: u64,
+    pub votes_count: u32,
+}
+
+#[event]
+pub struct ExtensionDenied {
     pub campaign: Pubkey,
     pub milestone_index: u8,
-    pub extended: bool,
 }
 
 #[event]

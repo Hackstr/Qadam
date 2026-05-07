@@ -1,13 +1,12 @@
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
-use crate::state::{Campaign, MilestoneAccount, MilestoneStatus, AiDecision, CampaignStatus};
+use crate::state::{Campaign, MilestoneAccount, MilestoneStatus, CampaignStatus};
 use crate::constants::QADAM_FEE_BPS;
 use crate::errors::QadamError;
 use crate::helpers::math::{mul_div, bps_of, safe_add, safe_sub};
 use crate::events::{MilestoneReleased, CampaignCompleted};
 
-/// Shared release logic used by both release_milestone and admin_override_decision.
-/// Calculates fee, deposit return, transfers SOL, updates state.
+/// Shared release logic: calculates fee, deposit return, transfers SOL, updates state.
 ///
 /// Returns (creator_amount, qadam_fee, deposit_return) for event emission.
 pub fn execute_release<'info>(
@@ -18,7 +17,6 @@ pub fn execute_release<'info>(
     qadam_treasury: &AccountInfo<'info>,
     system_program: &AccountInfo<'info>,
     vault_bump: u8,
-    ai_decision_hash: [u8; 32],
 ) -> Result<(u64, u64, u64)> {
     let milestone_amount = milestone.amount_lamports;
 
@@ -78,8 +76,6 @@ pub fn execute_release<'info>(
     )?;
 
     milestone.status = MilestoneStatus::Approved;
-    milestone.ai_decision = AiDecision::Approved;
-    milestone.ai_decision_hash = ai_decision_hash;
     milestone.decided_at = Clock::get()?.unix_timestamp;
 
     campaign.milestones_approved = campaign.milestones_approved

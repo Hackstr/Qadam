@@ -6,9 +6,6 @@ pub enum QadamError {
     #[msg("Only the admin wallet can perform this action")]
     Unauthorized,
 
-    #[msg("Only the AI agent or admin wallet can perform this action")]
-    UnauthorizedSigner,
-
     #[msg("Program is paused by admin")]
     ProgramPaused,
 
@@ -97,6 +94,16 @@ pub enum QadamError {
 
     #[msg("Milestone grace deadline has passed — too late to submit")]
     PastGraceDeadline,
+
+    // Voting
+    #[msg("This vote has already been resolved")]
+    VoteAlreadyResolved,
+
+    #[msg("Vote type parameter does not match the voting state account's type")]
+    VoteTypeMismatch,
+
+    #[msg("Milestone is not currently in voting status")]
+    MilestoneNotInVoting,
 
     // Math
     #[msg("Arithmetic overflow")]

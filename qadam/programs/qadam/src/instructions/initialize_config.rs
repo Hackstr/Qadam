@@ -4,12 +4,10 @@ use crate::state::QadamConfig;
 pub fn handler(
     ctx: Context<InitializeConfig>,
     admin_wallet: Pubkey,
-    ai_agent_wallet: Pubkey,
     qadam_treasury: Pubkey,
 ) -> Result<()> {
     let config = &mut ctx.accounts.config;
     config.admin_wallet = admin_wallet;
-    config.ai_agent_wallet = ai_agent_wallet;
     config.qadam_treasury = qadam_treasury;
     config.paused = false;
     config.bump = ctx.bumps.config;

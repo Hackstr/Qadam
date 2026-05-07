@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use crate::state::{Campaign, CampaignStatus, MilestoneAccount, MilestoneStatus, AiDecision, QadamConfig};
+use crate::state::{Campaign, CampaignStatus, MilestoneAccount, MilestoneStatus, QadamConfig};
 use crate::constants::GRACE_PERIOD_SECONDS;
 use crate::errors::QadamError;
 use crate::helpers::math::safe_add;
@@ -38,10 +38,10 @@ pub fn handler(
     milestone.extension_deadline = 0;
     milestone.status = MilestoneStatus::Pending;
     milestone.evidence_content_hash = [0u8; 32];
-    milestone.ai_decision = AiDecision::None;
-    milestone.ai_decision_hash = [0u8; 32];
     milestone.submitted_at = 0;
     milestone.decided_at = 0;
+    milestone.voting_state = None;
+    milestone.revision_count = 0;
     milestone.bump = ctx.bumps.milestone;
 
     // Store amount in campaign's array (for claim_tokens to use without remaining_accounts)

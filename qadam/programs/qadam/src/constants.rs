@@ -16,14 +16,8 @@ pub const GRACE_PERIOD_SECONDS: i64 = 7 * 24 * 60 * 60;
 /// Maximum extension: 30 days from current time
 pub const MAX_EXTENSION_SECONDS: i64 = 30 * 24 * 60 * 60;
 
-/// Vote cap: max 20% voting power per single backer position
-pub const VOTE_CAP_BPS: u64 = 2_000;
-
 /// Minimum backing amount: 0.1 SOL
 pub const MIN_BACKING_LAMPORTS: u64 = 100_000_000;
-
-/// Appeal cost: 0.01 SOL (anti-spam, returned if decision overturned)
-pub const APPEAL_COST_LAMPORTS: u64 = 10_000_000;
 
 /// Maximum title length in bytes
 pub const MAX_TITLE_LEN: usize = 100;

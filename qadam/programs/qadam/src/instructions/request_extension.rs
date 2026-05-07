@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
-use crate::state::{Campaign, CampaignStatus, MilestoneAccount, MilestoneStatus, ExtensionVotingState, QadamConfig};
+use crate::state::{Campaign, CampaignStatus, MilestoneAccount, MilestoneStatus, VotingState, VoteType, VoteResolution, QadamConfig};
 use crate::constants::MAX_EXTENSION_SECONDS;
 use crate::errors::QadamError;
-use crate::events::ExtensionRequested;
+use crate::events::{ExtensionRequested, VoteOpened};
 
 pub fn handler(
     ctx: Context<RequestExtension>,
@@ -35,31 +35,48 @@ pub fn handler(
         QadamError::ExtensionTooLong
     );
 
+    // Capture keys before mutable borrows
+    let campaign_key = campaign.key();
     let milestone_key = ctx.accounts.milestone.key();
+    let voting_state_key = ctx.accounts.voting_state.key();
+    let voting_deadline = now + 5 * 86400;
 
     // Update milestone status
     let milestone = &mut ctx.accounts.milestone;
-    milestone.status = MilestoneStatus::VotingActive;
+    milestone.status = MilestoneStatus::ExtensionRequested;
+    milestone.extension_deadline = new_deadline;
     // Store reason hash in evidence field (reuse)
     milestone.evidence_content_hash = reason_hash;
+    milestone.voting_state = Some(voting_state_key);
+    let milestone_index = milestone.index;
 
-    // Initialize voting state
+    // Initialize unified voting state
     let voting = &mut ctx.accounts.voting_state;
-    voting.milestone = milestone_key;
-    voting.total_approve_power = 0;
-    voting.total_reject_power = 0;
-    // Use per-campaign vote_period_days
-    let vote_period_secs = (campaign.vote_period_days as i64) * 24 * 60 * 60;
-    voting.voting_deadline = now + vote_period_secs;
-    voting.proposed_deadline = new_deadline;
-    voting.executed = false;
+    voting.vote_type = VoteType::ExtensionGrant;
+    voting.campaign = campaign_key;
+    voting.context = milestone_key;
+    // 5 days for extension votes — shorter than milestone votes
+    voting.voting_deadline = voting_deadline;
+    voting.approve_power = 0;
+    voting.reject_power = 0;
+    voting.votes_count = 0;
+    voting.resolved = false;
+    voting.resolution = VoteResolution::Unresolved;
+    voting.resolved_at = 0;
     voting.bump = ctx.bumps.voting_state;
 
+    emit!(VoteOpened {
+        vote_type: 1, // ExtensionGrant
+        campaign: campaign_key,
+        context: milestone_key,
+        voting_state: voting_state_key,
+        voting_deadline,
+    });
+
     emit!(ExtensionRequested {
-        campaign: campaign.key(),
-        milestone_index: milestone.index,
+        campaign: campaign_key,
+        milestone_index,
         new_deadline,
-        voting_deadline: voting.voting_deadline,
     });
 
     Ok(())
@@ -95,11 +112,11 @@ pub struct RequestExtension<'info> {
     #[account(
         init,
         payer = creator,
-        space = 8 + ExtensionVotingState::INIT_SPACE,
-        seeds = [b"voting", milestone.key().as_ref()],
+        space = 8 + VotingState::INIT_SPACE,
+        seeds = [b"vote_state", &[VoteType::ExtensionGrant as u8][..], milestone.key().as_ref()],
         bump,
     )]
-    pub voting_state: Account<'info, ExtensionVotingState>,
+    pub voting_state: Account<'info, VotingState>,
 
     pub system_program: Program<'info, System>,
 }

@@ -1,39 +1,64 @@
 use anchor_lang::prelude::*;
 
-/// Aggregate voting state for a milestone extension request
+/// Discriminator for vote types. Stored as u8 on-chain.
+/// 0 = MilestoneApproval (milestone vote after evidence submit)
+/// 1 = ExtensionGrant (creator-requested deadline extension)
+/// 2 = Refund (community-initiated refund — Block 3, not used in Pass A)
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+pub enum VoteType {
+    MilestoneApproval,
+    ExtensionGrant,
+    Refund,
+}
+
+/// Resolution outcome of a vote.
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
+pub enum VoteResolution {
+    Unresolved,
+    Approved,
+    Rejected,
+}
+
+/// Aggregate state for an active or resolved vote, regardless of type.
+/// One per active vote. PDA seeds: [b"vote_state", &[vote_type as u8], context.as_ref()]
 #[account]
 #[derive(InitSpace)]
-pub struct ExtensionVotingState {
-    /// The milestone this vote is for
-    pub milestone: Pubkey,
-    /// Sum of voting power for "extend"
-    pub total_approve_power: u64,
-    /// Sum of voting power for "refund"
-    pub total_reject_power: u64,
-    /// Voting deadline (unix timestamp)
+pub struct VotingState {
+    pub vote_type: VoteType,
+    /// Campaign this vote belongs to (for fast off-chain filtering)
+    pub campaign: Pubkey,
+    /// Context account for this vote — the milestone PDA for type 1 and 2,
+    /// the milestone PDA again for type 3 (refund triggered by a milestone)
+    pub context: Pubkey,
+    /// Voting deadline as unix seconds
     pub voting_deadline: i64,
-    /// Proposed new deadline if extension wins
-    pub proposed_deadline: i64,
-    /// Whether the result has been executed
-    pub executed: bool,
+    /// Sum of voting power on the approve side
+    pub approve_power: u64,
+    /// Sum of voting power on the reject side
+    pub reject_power: u64,
+    /// Number of distinct voters (informational; for analytics)
+    pub votes_count: u32,
+    /// True after resolve_vote has run successfully
+    pub resolved: bool,
+    /// Outcome — only meaningful when resolved == true
+    pub resolution: VoteResolution,
+    /// When resolution happened (0 until resolved)
+    pub resolved_at: i64,
     /// PDA bump seed
     pub bump: u8,
 }
 
-/// Individual vote record (one per backer per milestone)
+/// Individual vote record. One per (voting_state, voter).
+/// PDA seeds: [b"vote", voting_state.as_ref(), voter.as_ref()]
 #[account]
 #[derive(InitSpace)]
-pub struct ExtensionVote {
-    /// The milestone this vote is for
-    pub milestone: Pubkey,
-    /// Voter's wallet address
+pub struct Vote {
+    pub voting_state: Pubkey,
     pub voter: Pubkey,
-    /// Voting power used (capped at 20% of total)
+    /// Voting power as captured at the time the vote was cast
+    /// (snapshotted from BackerPosition.tokens_allocated)
     pub voting_power: u64,
-    /// true = extend, false = refund
-    pub vote_approve: bool,
-    /// Unix timestamp of vote
+    pub approve: bool,
     pub voted_at: i64,
-    /// PDA bump seed
     pub bump: u8,
 }

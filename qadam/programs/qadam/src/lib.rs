@@ -22,10 +22,9 @@ pub mod qadam {
     pub fn initialize_config(
         ctx: Context<InitializeConfig>,
         admin_wallet: Pubkey,
-        ai_agent_wallet: Pubkey,
         qadam_treasury: Pubkey,
     ) -> Result<()> {
-        instructions::initialize_config::handler(ctx, admin_wallet, ai_agent_wallet, qadam_treasury)
+        instructions::initialize_config::handler(ctx, admin_wallet, qadam_treasury)
     }
 
     pub fn set_paused(ctx: Context<SetPaused>, paused: bool) -> Result<()> {
@@ -82,41 +81,8 @@ pub mod qadam {
         instructions::submit_milestone::handler(ctx, milestone_index, evidence_content_hash)
     }
 
-    pub fn release_milestone(
-        ctx: Context<ReleaseMilestone>,
-        milestone_index: u8,
-        ai_decision_hash: [u8; 32],
-    ) -> Result<()> {
-        instructions::release_milestone::handler(ctx, milestone_index, ai_decision_hash)
-    }
-
-    pub fn mark_under_human_review(
-        ctx: Context<MarkUnderHumanReview>,
-        milestone_index: u8,
-        ai_decision_hash: [u8; 32],
-    ) -> Result<()> {
-        instructions::mark_under_human_review::handler(ctx, milestone_index, ai_decision_hash)
-    }
-
-    pub fn admin_override_decision(
-        ctx: Context<AdminOverrideDecision>,
-        milestone_index: u8,
-        approved: bool,
-        decision_hash: [u8; 32],
-    ) -> Result<()> {
-        instructions::admin_override_decision::handler(ctx, milestone_index, approved, decision_hash)
-    }
-
     // ═══════════════════════════════════════════
-    // TOKEN CLAIMING
-    // ═══════════════════════════════════════════
-
-    pub fn claim_tokens(ctx: Context<ClaimTokens>) -> Result<()> {
-        instructions::claim_tokens::handler(ctx)
-    }
-
-    // ═══════════════════════════════════════════
-    // GOVERNANCE
+    // VOTING
     // ═══════════════════════════════════════════
 
     pub fn request_extension(
@@ -128,19 +94,27 @@ pub mod qadam {
         instructions::request_extension::handler(ctx, milestone_index, reason_hash, new_deadline)
     }
 
-    pub fn vote_on_extension(
-        ctx: Context<VoteOnExtension>,
-        milestone_index: u8,
+    pub fn cast_vote(
+        ctx: Context<CastVote>,
+        vote_type: u8,
         approve: bool,
     ) -> Result<()> {
-        instructions::vote_on_extension::handler(ctx, milestone_index, approve)
+        instructions::cast_vote::handler(ctx, vote_type, approve)
     }
 
-    pub fn execute_extension_result(
-        ctx: Context<ExecuteExtensionResult>,
-        milestone_index: u8,
+    pub fn resolve_vote(
+        ctx: Context<ResolveVote>,
+        vote_type: u8,
     ) -> Result<()> {
-        instructions::execute_extension_result::handler(ctx, milestone_index)
+        instructions::resolve_vote::handler(ctx, vote_type)
+    }
+
+    // ═══════════════════════════════════════════
+    // TOKEN CLAIMING
+    // ═══════════════════════════════════════════
+
+    pub fn claim_tokens(ctx: Context<ClaimTokens>) -> Result<()> {
+        instructions::claim_tokens::handler(ctx)
     }
 
     // ═══════════════════════════════════════════

@@ -19,14 +19,16 @@ pub struct MilestoneAccount {
     pub status: MilestoneStatus,
     /// SHA-256 hash of evidence content (computed client-side)
     pub evidence_content_hash: [u8; 32],
-    /// AI verification decision
-    pub ai_decision: AiDecision,
-    /// SHA-256 hash of full Claude response (for audit trail)
-    pub ai_decision_hash: [u8; 32],
     /// When evidence was submitted (unix timestamp)
     pub submitted_at: i64,
-    /// When AI/admin made decision (unix timestamp)
+    /// When decision was made (unix timestamp)
     pub decided_at: i64,
+    /// Active voting state for this milestone, if any.
+    /// Some(pda) when a vote is open or resolved; None when no vote has ever been opened.
+    pub voting_state: Option<Pubkey>,
+    /// Number of times the creator has resubmitted evidence after a rejection.
+    /// Informational only — backers can see the value but no on-chain logic enforces a cap.
+    pub revision_count: u8,
     /// PDA bump seed
     pub bump: u8,
 }
@@ -37,15 +39,9 @@ pub enum MilestoneStatus {
     Pending,
     /// Deadline passed, creator has 7 days grace
     GracePeriod,
-    /// Creator submitted evidence, awaiting AI
-    Submitted,
-    /// AI is processing (set by backend, not on-chain)
-    AIProcessing,
-    /// AI returned PARTIAL, waiting for human reviewer
-    UnderHumanReview,
-    /// AI or human approved — SOL released
+    /// Community approved — SOL released
     Approved,
-    /// AI or human rejected
+    /// Community rejected
     Rejected,
     /// Creator requested deadline extension, voting open
     ExtensionRequested,
@@ -55,16 +51,4 @@ pub enum MilestoneStatus {
     Extended,
     /// Milestone failed (grace + extension exhausted)
     Failed,
-}
-
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, InitSpace)]
-pub enum AiDecision {
-    /// No decision yet
-    None,
-    /// AI approved the milestone
-    Approved,
-    /// AI rejected the milestone
-    Rejected,
-    /// AI partially approved (needs human review)
-    Partial,
 }
