@@ -233,7 +233,7 @@ export default function CreateCampaignPage() {
       });
 
       try {
-        const { syncCampaignCreation, uploadCoverImage } = await import("@/lib/api");
+        const { syncCampaignCreation, uploadCoverImage, uploadGalleryImage } = await import("@/lib/api");
         const SOL = LAMPORTS_PER_SOL;
 
         let coverUrl: string | undefined;
@@ -241,7 +241,18 @@ export default function CreateCampaignPage() {
           try {
             const uploaded = await uploadCoverImage(coverFile);
             coverUrl = uploaded.url;
-          } catch { /* cover upload is optional, campaign still created */ }
+          } catch { /* cover upload is optional */ }
+        }
+
+        // Gallery upload — sequential to keep order
+        const galleryUrls: string[] = [];
+        if (galleryFiles.length > 0) {
+          for (const file of galleryFiles) {
+            try {
+              const uploaded = await uploadGalleryImage(file);
+              galleryUrls.push(uploaded.url);
+            } catch { /* continue with what uploaded */ }
+          }
         }
 
         const syncResult = await syncCampaignCreation({
@@ -265,6 +276,7 @@ export default function CreateCampaignPage() {
           team_members: teamMembers.length > 0 ? teamMembers : undefined,
           faq: faqItems.length > 0 ? faqItems : undefined,
           accent_color: accentColor !== "forest" ? accentColor : undefined,
+          gallery_urls: galleryUrls.length > 0 ? galleryUrls : undefined,
           funding_deadline: fundingDeadline ? new Date(fundingDeadline).toISOString() : undefined,
           tier_config: tierConfig,
           vote_period_days: votingParams.vote_period_days,

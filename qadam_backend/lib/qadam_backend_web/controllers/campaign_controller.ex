@@ -45,7 +45,8 @@ defmodule QadamBackendWeb.CampaignController do
       # Foundation v1: allow story split + team + discovery fields when editing
       allowed_fields = ~w(description cover_image_url pitch_video_url
                           problem solution why_now background risks
-                          team_members location tags)
+                          team_members location tags
+                          faq gallery_urls accent_color)
       # Voting params and tier_config only editable in draft status
       allowed_fields = if campaign.status == "draft" do
         allowed_fields ++ ~w(tier_config vote_period_days quorum_pct approval_threshold_pct funding_deadline)
@@ -106,6 +107,9 @@ defmodule QadamBackendWeb.CampaignController do
       slug: c.slug,
       launched_at: c.launched_at,
       funded_at: c.funded_at,
+      faq: c.faq || [],
+      gallery_urls: c.gallery_urls || [],
+      accent_color: c.accent_color,
       inserted_at: c.inserted_at
     }
   end

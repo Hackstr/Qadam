@@ -94,6 +94,17 @@ function CampaignDetailContent() {
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const descriptionFirst = campaign.description?.split("\n")[0] || "";
 
+  // Accent color from campaign customization
+  const ACCENT_MAP: Record<string, { bg: string; hover: string }> = {
+    forest: { bg: "bg-amber-500", hover: "hover:bg-amber-600" },
+    sage:   { bg: "bg-[#75A58A]", hover: "hover:bg-[#5d8a72]" },
+    warm:   { bg: "bg-[#8B7355]", hover: "hover:bg-[#705c44]" },
+    plum:   { bg: "bg-[#6B5B8D]", hover: "hover:bg-[#564873]" },
+    slate:  { bg: "bg-[#475569]", hover: "hover:bg-[#374152]" },
+    deep:   { bg: "bg-[#1B3B30]", hover: "hover:bg-[#0e2a21]" },
+  };
+  const accent = ACCENT_MAP[campaign.accent_color || "forest"] || ACCENT_MAP.forest;
+
   return (
     <div className="animate-page-enter">
       {/* ═══ HERO — Split 60/40 ═══ */}
@@ -131,7 +142,7 @@ function CampaignDetailContent() {
             <div className="flex items-center gap-3 mt-6">
               {campaign.status === "active" && (
                 <Link href={`/campaigns/${campaign.id}/back`}>
-                  <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full px-8" size="lg">
+                  <Button className={`gap-2 ${accent.bg} ${accent.hover} text-white rounded-full px-8`} size="lg">
                     <Wallet className="h-4 w-4" /> Back This Project <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -174,6 +185,27 @@ function CampaignDetailContent() {
           </div>
         </div>
       </div>
+
+      {/* ═══ GALLERY ═══ */}
+      {campaign.gallery_urls && campaign.gallery_urls.length > 0 && (
+        <div className="max-w-6xl mx-auto px-4 mt-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {campaign.gallery_urls.map((url: string, i: number) => (
+              <div
+                key={i}
+                className="relative rounded-xl overflow-hidden aspect-[4/3] bg-muted/30 hover:scale-[1.01] transition-transform"
+              >
+                <img
+                  src={url}
+                  alt={`Gallery ${i + 1}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ═══ CREATOR STRIP ═══ */}
       <CreatorStrip
@@ -388,7 +420,7 @@ function CampaignDetailContent() {
 
           {/* ═══ SIDEBAR ═══ */}
           <div className="space-y-4">
-            <FundingCard campaign={campaign} />
+            <FundingCard campaign={campaign} accentClass={accent.bg} />
             <TierRewardsCard backersCount={campaign.backers_count} tierConfig={campaign.tier_config} />
 
             {/* Voting rules */}

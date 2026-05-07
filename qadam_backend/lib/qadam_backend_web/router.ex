@@ -90,8 +90,9 @@ defmodule QadamBackendWeb.Router do
     # Creator: post update
     post "/campaigns/:campaign_id/updates", UpdateController, :create
 
-    # Upload cover image
+    # Upload images
     post "/upload/cover", UploadController, :cover
+    post "/upload/gallery", UploadController, :gallery_image
 
     # AI Helper
     post "/ai/help", AiHelperController, :help

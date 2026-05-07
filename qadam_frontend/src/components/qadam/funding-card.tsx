@@ -13,10 +13,11 @@ import { cn } from "@/lib/utils";
 
 export interface FundingCardProps {
   campaign: Campaign;
+  accentClass?: string;
   className?: string;
 }
 
-export function FundingCard({ campaign, className }: FundingCardProps) {
+export function FundingCard({ campaign, accentClass, className }: FundingCardProps) {
   const progress = formatPercent(campaign.raised_lamports, campaign.goal_lamports);
   const tier = getCurrentTier(campaign.backers_count, campaign.tier_config);
   const foundersSpotsLeft = Math.max(0, TIER_1_MAX_BACKERS - campaign.backers_count);
@@ -32,7 +33,7 @@ export function FundingCard({ campaign, className }: FundingCardProps) {
         <p className="text-sm text-muted-foreground mb-3">raised of {formatSol(campaign.goal_lamports)} goal</p>
 
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-4">
-          <div className="h-full bg-amber-500 rounded-full transition-all" style={{ width: `${Math.min(progress, 100)}%` }} />
+          <div className={`h-full ${accentClass || "bg-amber-500"} rounded-full transition-all`} style={{ width: `${Math.min(progress, 100)}%` }} />
         </div>
 
         <EscrowIndicator
@@ -60,7 +61,7 @@ export function FundingCard({ campaign, className }: FundingCardProps) {
 
         {campaign.status === "active" && (
           <Link href={`/campaigns/${campaign.id}/back`}>
-            <Button className="w-full gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full" size="lg">
+            <Button className={`w-full gap-2 ${accentClass || "bg-amber-500"} hover:opacity-90 text-white rounded-full`} size="lg">
               <Wallet className="h-4 w-4" /> Back This Project <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>

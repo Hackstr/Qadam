@@ -6,6 +6,7 @@ defmodule QadamBackend.Campaigns.Campaign do
   @foreign_key_type :binary_id
 
   @valid_statuses ~w(draft active funded in_progress completed failed refunded paused cancelled)
+  @valid_accent_colors ~w(forest sage warm plum slate deep)
   @valid_categories ["Tech", "Hardware", "Software", "Art & Design", "Music", "Film", "Education", "Community", "Research", "Climate",
                      "Apps", "Games", "SaaS", "Tools", "Infrastructure"]
 
@@ -57,6 +58,11 @@ defmodule QadamBackend.Campaigns.Campaign do
     field :location, :string
     field :tags, {:array, :string}, default: []
 
+    # Sprint C — Wizard customization
+    field :faq, {:array, :map}, default: []
+    field :gallery_urls, {:array, :string}, default: []
+    field :accent_color, :string
+
     # Foundation v1 — Timestamps
     field :launched_at, :utc_datetime
     field :funded_at, :utc_datetime
@@ -74,7 +80,8 @@ defmodule QadamBackend.Campaigns.Campaign do
                       problem solution why_now background risks
                       team_members funding_deadline slug
                       tier_config vote_period_days quorum_pct approval_threshold_pct
-                      location tags launched_at funded_at)a
+                      location tags launched_at funded_at
+                      faq gallery_urls accent_color)a
 
   def changeset(campaign, attrs) do
     campaign
@@ -86,6 +93,7 @@ defmodule QadamBackend.Campaigns.Campaign do
     |> validate_quorum_pct()
     |> validate_approval_threshold_pct()
     |> validate_tier_config()
+    |> validate_accent_color()
     |> unique_constraint(:solana_pubkey)
     |> unique_constraint(:slug)
   end
@@ -139,6 +147,14 @@ defmodule QadamBackend.Campaigns.Campaign do
           true -> changeset
         end
       _ -> add_error(changeset, :tier_config, "must be a list")
+    end
+  end
+
+  defp validate_accent_color(changeset) do
+    case get_change(changeset, :accent_color) do
+      nil -> changeset
+      color when color in @valid_accent_colors -> changeset
+      _ -> add_error(changeset, :accent_color, "must be one of: #{Enum.join(@valid_accent_colors, ", ")}")
     end
   end
 

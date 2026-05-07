@@ -147,6 +147,21 @@ export async function uploadCoverImage(file: File): Promise<{ url: string }> {
   return res.json();
 }
 
+export async function uploadGalleryImage(file: File): Promise<{ url: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_URL}/upload/gallery`, {
+    method: "POST",
+    headers: getAuthHeader(),
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Upload failed" }));
+    throw new Error(err.error || "Upload failed");
+  }
+  return res.json();
+}
+
 export async function syncCampaignCreation(data: {
   solana_pubkey: string;
   creator_wallet: string;
@@ -168,6 +183,7 @@ export async function syncCampaignCreation(data: {
   team_members?: { name: string; role: string; social_link?: string }[];
   faq?: { q: string; a: string }[];
   accent_color?: string;
+  gallery_urls?: string[];
   funding_deadline?: string;
   tier_config?: { name: string; multiplier: number; max_spots: number | null }[];
   vote_period_days?: number;
@@ -431,6 +447,9 @@ export async function updateCampaign(id: string, data: {
   risks?: string;
   cover_image_url?: string;
   pitch_video_url?: string;
+  faq?: { q: string; a: string }[];
+  gallery_urls?: string[];
+  accent_color?: string;
 }) {
   return fetchApi<{ data: { id: string } }>(`/campaigns/${id}/edit`, {
     method: "PUT",

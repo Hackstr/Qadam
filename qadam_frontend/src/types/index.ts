@@ -45,6 +45,8 @@ export interface Campaign {
   launched_at?: string;
   funded_at?: string;
   faq?: { q: string; a: string }[];
+  gallery_urls?: string[];
+  accent_color?: string;
   inserted_at: string;
 }
 
