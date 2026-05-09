@@ -34,7 +34,25 @@ defmodule QadamBackendWeb.MilestoneController do
       }
 
       case Milestones.update_milestone(milestone, attrs) do
-        {:ok, updated} -> json(conn, %{data: milestone_detail_json(updated)})
+        {:ok, updated} ->
+          # Transition to voting_active — community votes on this evidence
+          case Milestones.transition_state(updated, "voting_active") do
+            {:ok, transitioned} ->
+              # Notify backers that voting is open
+              try do
+                QadamBackend.Notifications.Notify.notify_backers(
+                  campaign, "vote_opened",
+                  "Vote opened on milestone #{milestone.index + 1}",
+                  "Evidence submitted for \"#{milestone.title || "Milestone #{milestone.index + 1}"}\". Cast your vote."
+                )
+              rescue
+                _ -> :ok
+              end
+              json(conn, %{data: milestone_detail_json(transitioned)})
+            {:error, _} ->
+              # Transition failed but evidence saved — still ok
+              json(conn, %{data: milestone_detail_json(updated)})
+          end
         {:error, changeset} -> conn |> put_status(:unprocessable_entity) |> json(%{error: format_errors(changeset)})
       end
     else
@@ -53,8 +71,7 @@ defmodule QadamBackendWeb.MilestoneController do
       title: m.title,
       amount_lamports: m.amount_lamports,
       deadline: m.deadline,
-      status: m.status,
-      ai_decision: m.ai_decision
+      status: m.status
     }
   end
 
@@ -65,7 +82,6 @@ defmodule QadamBackendWeb.MilestoneController do
       acceptance_criteria: m.acceptance_criteria,
       evidence_text: m.evidence_text,
       evidence_links: m.evidence_links,
-      ai_explanation: m.ai_explanation,
       submitted_at: m.submitted_at,
       decided_at: m.decided_at
     })
