@@ -2,6 +2,10 @@ defmodule QadamBackend.Workers.TxBroadcastWorker do
   @moduledoc """
   Oban worker: signs and broadcasts Solana transactions.
   CRITICAL: Always fetches FRESH blockhash before signing (never cached).
+
+  Note: Post Block 1, most on-chain actions are user-signed (cast_vote,
+  resolve_vote). This worker handles backend-initiated transactions only
+  (e.g. execute_extension_result for deadline-triggered extensions).
   """
   use Oban.Worker,
     queue: :solana_tx,
@@ -17,7 +21,6 @@ defmodule QadamBackend.Workers.TxBroadcastWorker do
   def perform(%Oban.Job{args: args}) do
     milestone_id = args["milestone_id"]
     instruction = args["instruction"]
-    ai_decision_hash = args["ai_decision_hash"]
 
     milestone = Milestones.get_milestone!(milestone_id) |> Repo.preload(:campaign)
     campaign = milestone.campaign
@@ -26,25 +29,20 @@ defmodule QadamBackend.Workers.TxBroadcastWorker do
 
     result =
       case instruction do
-        "admin_override_decision" ->
-          TransactionBuilder.sign_and_broadcast_release(
-            campaign.solana_pubkey,
-            milestone.index,
-            ai_decision_hash
-          )
-
         "execute_extension_result" ->
           TransactionBuilder.sign_and_broadcast_execute_extension(
             campaign.solana_pubkey,
             milestone.index
           )
+
+        other ->
+          Logger.warning("[TX] Unknown instruction: #{other}")
+          {:error, :unknown_instruction}
       end
 
     case result do
       {:ok, %{signature: signature}} ->
         Logger.info("[TX] Broadcast success: #{signature}")
-
-        Milestones.update_milestone(milestone, %{ai_solana_tx: signature})
 
         # Enqueue confirmation checker
         %{milestone_id: milestone_id, signature: signature}

@@ -41,7 +41,6 @@ defmodule QadamBackend.Milestones.Milestone do
 
     belongs_to :campaign, QadamBackend.Campaigns.Campaign
 
-    has_many :ai_decisions, QadamBackend.AI.AiDecision
     has_many :state_transitions, QadamBackend.Milestones.StateTransition
 
     timestamps(type: :utc_datetime)

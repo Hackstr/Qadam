@@ -1,31 +1,11 @@
 defmodule QadamBackend.Solana.TransactionBuilder do
   @moduledoc """
-  Builds and signs Solana transactions for the AI agent.
+  Builds and signs Solana transactions.
   Uses a Node.js helper script for Anchor transaction serialization.
   CRITICAL: Always fetches FRESH blockhash before signing.
   """
   alias QadamBackend.Solana.RPC
   require Logger
-
-  @doc """
-  Sign and broadcast a release_milestone transaction.
-  """
-  def sign_and_broadcast_release(campaign_pubkey, milestone_index, ai_decision_hash) do
-    with {:ok, %{blockhash: blockhash}} <- RPC.get_latest_blockhash(),
-         {:ok, signed_tx} <- build_and_sign_tx("release_milestone", %{
-           campaign: campaign_pubkey,
-           milestone_index: milestone_index,
-           ai_decision_hash: ai_decision_hash,
-           blockhash: blockhash,
-         }),
-         {:ok, result} <- RPC.send_transaction(signed_tx) do
-      {:ok, result}
-    else
-      {:error, reason} ->
-        Logger.error("[TX] Release failed: #{inspect(reason)}")
-        {:error, reason}
-    end
-  end
 
   @doc """
   Sign and broadcast execute_extension_result transaction.
