@@ -41,7 +41,7 @@ defmodule QadamBackendWeb.AdminAuditController do
 
     # Preset views
     query = case params["preset"] do
-      "stuck" -> query |> where([m], m.status == "ai_processing" and m.submitted_at < ^five_min_ago)
+      "stuck" -> query |> where([m], m.status == "voting_active" and m.submitted_at < ^five_min_ago)
       "overdue" -> query |> where([m], m.status == "pending" and m.deadline < ^now)
       "past_grace" -> query |> where([m], m.status in ["pending", "grace_period"] and m.grace_deadline < ^now)
       "recent" -> query |> where([m], not is_nil(m.decided_at)) |> order_by(desc: :decided_at)
@@ -149,8 +149,8 @@ defmodule QadamBackendWeb.AdminAuditController do
     entries = Enum.map(transitions, fn t ->
       actor = cond do
         t.metadata["decided_by"] == "admin" -> "Admin"
-        t.to_state in ["ai_processing", "approved", "rejected", "under_human_review"] and t.from_state in ["submitted", "ai_processing"] -> "AI Agent"
         t.to_state in ["grace_period", "failed"] and t.metadata["reason"] -> "Deadline Monitor"
+        t.to_state in ["approved", "rejected"] and t.from_state == "voting_active" -> "Community Vote"
         true -> "System"
       end
 
@@ -173,50 +173,19 @@ defmodule QadamBackendWeb.AdminAuditController do
 
   # ── AI Stats ──
 
-  @doc "AI pipeline statistics"
+  @doc "AI pipeline statistics — legacy endpoint, returns zeros (AI verification removed)"
   def ai_stats(conn, _params) do
-    total = Repo.aggregate(AiDecision, :count)
-    approved = Repo.aggregate(from(d in AiDecision, where: d.decision == "approved"), :count)
-    rejected = Repo.aggregate(from(d in AiDecision, where: d.decision == "rejected"), :count)
-    partial = Repo.aggregate(from(d in AiDecision, where: d.decision == "partial"), :count)
-    avg_latency = Repo.aggregate(AiDecision, :avg, :latency_ms)
-
-    stuck_count = Repo.aggregate(
-      from(m in Milestone,
-        where: m.status == "ai_processing" and m.submitted_at < ago(5, "minute")),
-      :count
-    )
-
-    recent =
-      AiDecision
-      |> preload(milestone: :campaign)
-      |> order_by(desc: :inserted_at)
-      |> limit(20)
-      |> Repo.all()
-      |> Enum.map(fn d ->
-        %{
-          id: d.id,
-          decision: d.decision,
-          explanation: d.explanation && String.slice(d.explanation, 0..120),
-          claude_model: d.claude_model,
-          latency_ms: d.latency_ms,
-          timestamp: d.inserted_at,
-          campaign_title: d.milestone && d.milestone.campaign && d.milestone.campaign.title,
-          milestone_index: d.milestone && d.milestone.index,
-        }
-      end)
-
     json(conn, %{
       data: %{
-        total_decisions: total,
-        approved: approved,
-        rejected: rejected,
-        partial: partial,
-        approval_rate: if(total > 0, do: round(approved / total * 100), else: 0),
-        partial_rate: if(total > 0, do: round(partial / total * 100), else: 0),
-        avg_latency_ms: avg_latency && round(avg_latency),
-        stuck_count: stuck_count,
-        recent_decisions: recent,
+        total_decisions: 0,
+        approved: 0,
+        rejected: 0,
+        partial: 0,
+        approval_rate: 0,
+        partial_rate: 0,
+        avg_latency_ms: 0,
+        stuck_count: 0,
+        recent_decisions: [],
       }
     })
   end

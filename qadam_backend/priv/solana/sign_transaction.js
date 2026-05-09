@@ -103,21 +103,6 @@ async function main() {
         break;
       }
 
-      case "mark_under_human_review": {
-        const hashBytes = parseHash(params.ai_decision_hash);
-
-        tx = await program.methods
-          .markUnderHumanReview(milestoneIndex, hashBytes)
-          .accounts({
-            authority: keypair.publicKey,
-            config: configPda,
-            campaign: campaignPda,
-            milestone: milestonePda,
-          })
-          .transaction();
-        break;
-      }
-
       case "admin_override_decision": {
         const hashBytes = parseHash(params.ai_decision_hash);
         const campaignAccount = await program.account.campaign.fetch(campaignPda);

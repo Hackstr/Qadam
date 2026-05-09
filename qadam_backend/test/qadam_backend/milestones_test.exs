@@ -39,33 +39,33 @@ defmodule QadamBackend.MilestonesTest do
         Milestones.transition_state(milestone, "approved")
     end
 
-    test "submitted → ai_processing is valid" do
+    test "submitted → voting_active is valid" do
       {_campaign, milestone} = create_campaign_with_milestone()
       {:ok, %{milestone: submitted}} = Milestones.transition_state(milestone, "submitted")
-      assert {:ok, %{milestone: processing}} = Milestones.transition_state(submitted, "ai_processing")
-      assert processing.status == "ai_processing"
+      assert {:ok, %{milestone: voting}} = Milestones.transition_state(submitted, "voting_active")
+      assert voting.status == "voting_active"
     end
 
-    test "ai_processing → approved is valid" do
+    test "voting_active → approved is valid" do
       {_campaign, milestone} = create_campaign_with_milestone()
       {:ok, %{milestone: m}} = Milestones.transition_state(milestone, "submitted")
-      {:ok, %{milestone: m}} = Milestones.transition_state(m, "ai_processing")
+      {:ok, %{milestone: m}} = Milestones.transition_state(m, "voting_active")
       assert {:ok, %{milestone: approved}} = Milestones.transition_state(m, "approved")
       assert approved.status == "approved"
     end
 
-    test "ai_processing → under_human_review is valid" do
+    test "voting_active → rejected is valid" do
       {_campaign, milestone} = create_campaign_with_milestone()
       {:ok, %{milestone: m}} = Milestones.transition_state(milestone, "submitted")
-      {:ok, %{milestone: m}} = Milestones.transition_state(m, "ai_processing")
-      assert {:ok, %{milestone: review}} = Milestones.transition_state(m, "under_human_review")
-      assert review.status == "under_human_review"
+      {:ok, %{milestone: m}} = Milestones.transition_state(m, "voting_active")
+      assert {:ok, %{milestone: rejected}} = Milestones.transition_state(m, "rejected")
+      assert rejected.status == "rejected"
     end
 
     test "rejected → submitted is valid (re-submit)" do
       {_campaign, milestone} = create_campaign_with_milestone()
       {:ok, %{milestone: m}} = Milestones.transition_state(milestone, "submitted")
-      {:ok, %{milestone: m}} = Milestones.transition_state(m, "ai_processing")
+      {:ok, %{milestone: m}} = Milestones.transition_state(m, "voting_active")
       {:ok, %{milestone: m}} = Milestones.transition_state(m, "rejected")
       assert {:ok, %{milestone: resubmit}} = Milestones.transition_state(m, "submitted")
       assert resubmit.status == "submitted"

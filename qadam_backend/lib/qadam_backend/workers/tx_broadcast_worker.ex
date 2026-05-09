@@ -26,20 +26,6 @@ defmodule QadamBackend.Workers.TxBroadcastWorker do
 
     result =
       case instruction do
-        "release_milestone" ->
-          TransactionBuilder.sign_and_broadcast_release(
-            campaign.solana_pubkey,
-            milestone.index,
-            ai_decision_hash
-          )
-
-        "mark_under_human_review" ->
-          TransactionBuilder.sign_and_broadcast_human_review(
-            campaign.solana_pubkey,
-            milestone.index,
-            ai_decision_hash
-          )
-
         "admin_override_decision" ->
           TransactionBuilder.sign_and_broadcast_release(
             campaign.solana_pubkey,

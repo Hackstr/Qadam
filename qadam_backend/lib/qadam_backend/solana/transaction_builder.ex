@@ -28,26 +28,6 @@ defmodule QadamBackend.Solana.TransactionBuilder do
   end
 
   @doc """
-  Sign and broadcast mark_under_human_review transaction.
-  """
-  def sign_and_broadcast_human_review(campaign_pubkey, milestone_index, ai_decision_hash) do
-    with {:ok, %{blockhash: blockhash}} <- RPC.get_latest_blockhash(),
-         {:ok, signed_tx} <- build_and_sign_tx("mark_under_human_review", %{
-           campaign: campaign_pubkey,
-           milestone_index: milestone_index,
-           ai_decision_hash: ai_decision_hash,
-           blockhash: blockhash,
-         }),
-         {:ok, result} <- RPC.send_transaction(signed_tx) do
-      {:ok, result}
-    else
-      {:error, reason} ->
-        Logger.error("[TX] Human review failed: #{inspect(reason)}")
-        {:error, reason}
-    end
-  end
-
-  @doc """
   Sign and broadcast execute_extension_result transaction.
   """
   def sign_and_broadcast_execute_extension(campaign_pubkey, milestone_index) do

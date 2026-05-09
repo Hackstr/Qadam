@@ -5,7 +5,7 @@ defmodule QadamBackend.Milestones.Milestone do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
-  @valid_statuses ~w(pending grace_period submitted ai_processing under_human_review
+  @valid_statuses ~w(pending grace_period submitted
                      approved rejected extension_requested voting_active extended failed)
 
   schema "milestones" do

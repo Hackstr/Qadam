@@ -1,15 +1,11 @@
 defmodule QadamBackendWeb.WebhookController do
   @moduledoc """
   Webhook endpoint called by frontend after on-chain milestone submission.
-  Triggers the AI verification pipeline.
-
-  This replaces the broken WebSocket event parsing approach —
-  frontend calls this after successful submit_milestone transaction.
+  Transitions milestone to voting_active so community can vote.
   """
   use QadamBackendWeb, :controller
 
   alias QadamBackend.{Milestones, Campaigns}
-  alias QadamBackend.Workers.AIVerificationWorker
   alias QadamBackend.Notifications.Notify
 
   action_fallback QadamBackendWeb.FallbackController
@@ -25,10 +21,13 @@ defmodule QadamBackendWeb.WebhookController do
         {:error, :not_found}
 
       milestone ->
-        # Enqueue AI verification
-        %{milestone_id: milestone.id}
-        |> AIVerificationWorker.new()
-        |> Oban.insert()
+        # Transition directly to voting_active — community votes resolve milestones
+        case Milestones.transition_state(milestone, "voting_active") do
+          {:ok, _} -> :ok
+          {:error, reason} ->
+            require Logger
+            Logger.warning("[Webhook] Cannot transition milestone #{milestone.id} to voting_active: #{inspect(reason)}")
+        end
 
         # Notify backers that evidence submitted
         campaign = Campaigns.get_campaign!(campaign_id)

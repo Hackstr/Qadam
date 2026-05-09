@@ -4,12 +4,12 @@ defmodule QadamBackendWeb.AdminController do
 
   alias QadamBackend.Milestones
 
-  @doc "List milestones pending human review — enriched with context"
+  @doc "List milestones in active voting — enriched with context"
   def review_queue(conn, _params) do
     milestones =
       QadamBackend.Repo.all(
         from m in QadamBackend.Milestones.Milestone,
-          where: m.status == "under_human_review",
+          where: m.status == "voting_active",
           order_by: [asc: :submitted_at],
           preload: [:campaign]
       )
@@ -74,7 +74,7 @@ defmodule QadamBackendWeb.AdminController do
     })
   end
 
-  @doc "Admin makes human review decision — updates DB + broadcasts Anchor tx"
+  @doc "Admin override decision on a voting_active milestone — updates DB + broadcasts Anchor tx"
   def decide(conn, %{"id" => id, "approved" => approved}) do
     milestone = Milestones.get_milestone!(id) |> QadamBackend.Repo.preload(:campaign)
     new_status = if approved, do: "approved", else: "rejected"

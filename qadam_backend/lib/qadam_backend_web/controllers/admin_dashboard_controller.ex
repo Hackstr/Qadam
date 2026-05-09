@@ -8,11 +8,8 @@ defmodule QadamBackendWeb.AdminDashboardController do
   alias QadamBackend.Milestones.Milestone
   alias QadamBackend.Milestones.StateTransition
   alias QadamBackend.Backers.BackerPosition
-  alias QadamBackend.AI.AiDecision
-
   def index(conn, _params) do
     now = DateTime.utc_now()
-    five_min_ago = DateTime.add(now, -300, :second)
 
     # Basic metrics
     total_campaigns = Repo.aggregate(Campaign, :count)
@@ -20,16 +17,11 @@ defmodule QadamBackendWeb.AdminDashboardController do
     completed_campaigns = Repo.aggregate(from(c in Campaign, where: c.status == "completed"), :count)
     total_raised = Repo.aggregate(Campaign, :sum, :raised_lamports) || 0
     total_backers = Repo.aggregate(BackerPosition, :count)
-    pending_reviews = Repo.aggregate(from(m in Milestone, where: m.status == "under_human_review"), :count)
+    pending_reviews = Repo.aggregate(from(m in Milestone, where: m.status == "voting_active"), :count)
 
     # Success rate
     finished = completed_campaigns + Repo.aggregate(from(c in Campaign, where: c.status == "refunded"), :count)
     success_rate = if finished > 0, do: round(completed_campaigns / finished * 100), else: 0
-
-    # AI accuracy
-    total_decisions = Repo.aggregate(AiDecision, :count)
-    approved_decisions = Repo.aggregate(from(d in AiDecision, where: d.decision == "approved"), :count)
-    ai_accuracy = if total_decisions > 0, do: round(approved_decisions / total_decisions * 100), else: 0
 
     # Needs attention
     overdue_milestones =
@@ -39,22 +31,15 @@ defmodule QadamBackendWeb.AdminDashboardController do
       |> Repo.all()
       |> Enum.map(&attention_item(&1, "overdue"))
 
-    stuck_in_ai =
+    in_voting =
       Milestone
-      |> where([m], m.status == "ai_processing" and m.submitted_at < ^five_min_ago)
-      |> preload(:campaign)
-      |> Repo.all()
-      |> Enum.map(&attention_item(&1, "stuck_in_ai"))
-
-    under_review =
-      Milestone
-      |> where([m], m.status == "under_human_review")
+      |> where([m], m.status == "voting_active")
       |> preload(:campaign)
       |> order_by(asc: :submitted_at)
       |> Repo.all()
-      |> Enum.map(&attention_item(&1, "needs_review"))
+      |> Enum.map(&attention_item(&1, "in_voting"))
 
-    needs_attention = under_review ++ overdue_milestones ++ stuck_in_ai
+    needs_attention = in_voting ++ overdue_milestones
 
     # Recent activity (last 10 transitions)
     recent_activity =
@@ -84,8 +69,6 @@ defmodule QadamBackendWeb.AdminDashboardController do
         total_backers: total_backers,
         pending_reviews: pending_reviews,
         success_rate: success_rate,
-        ai_accuracy: ai_accuracy,
-        total_decisions: total_decisions,
         needs_attention: needs_attention,
         recent_activity: recent_activity,
       }

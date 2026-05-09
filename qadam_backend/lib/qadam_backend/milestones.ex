@@ -10,12 +10,10 @@ defmodule QadamBackend.Milestones do
   @valid_transitions %{
     "pending" => ~w(grace_period submitted),
     "grace_period" => ~w(submitted failed),
-    "submitted" => ~w(ai_processing),
-    "ai_processing" => ~w(approved rejected under_human_review),
-    "under_human_review" => ~w(approved rejected),
+    "submitted" => ~w(voting_active),
     "rejected" => ~w(submitted extension_requested),
     "extension_requested" => ~w(voting_active),
-    "voting_active" => ~w(extended failed),
+    "voting_active" => ~w(approved rejected extended failed),
     "extended" => ~w(submitted grace_period),
     "approved" => [],
     "failed" => ~w(extension_requested)

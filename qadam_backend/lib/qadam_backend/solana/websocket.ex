@@ -108,14 +108,11 @@ defmodule QadamBackend.Solana.WebSocket do
         # In production: match exact discriminator bytes from IDL
         Logger.info("[SolanaWS] Program event #{disc} in tx #{signature}")
 
-        # Try to find milestone from the transaction logs
-        # and enqueue AI verification worker
+        # Milestone submission is handled by WebhookController which transitions
+        # to voting_active. WebSocket events are logged for observability only.
         case find_milestone_from_tx(signature) do
           {:ok, milestone_id} ->
-            %{milestone_id: milestone_id}
-            |> QadamBackend.Workers.AIVerificationWorker.new()
-            |> Oban.insert()
-            Logger.info("[SolanaWS] Enqueued AI verification for milestone #{milestone_id}")
+            Logger.info("[SolanaWS] Milestone event detected for #{milestone_id} in tx #{signature}")
 
           {:error, reason} ->
             Logger.debug("[SolanaWS] Could not find milestone for event: #{inspect(reason)}")
