@@ -23,7 +23,7 @@ const WalletMultiButton = dynamic(
 export default function VotePage() {
   const { id } = useParams<{ id: string }>();
   const { connected, publicKey } = useWallet();
-  const { txStatus, voteOnExtension } = useQadamProgram();
+  const { txStatus, castVote } = useQadamProgram();
   const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   const { data: campaignData, isLoading } = useQuery({
@@ -119,7 +119,7 @@ export default function VotePage() {
               connected={connected}
               publicKey={publicKey}
               txStatus={txStatus}
-              voteOnExtension={voteOnExtension}
+              castVote={castVote}
             />
           ))}
 

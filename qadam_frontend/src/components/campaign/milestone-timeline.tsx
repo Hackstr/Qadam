@@ -8,8 +8,6 @@ const statusConfig: Record<string, { icon: typeof Check; color: string; label: s
   pending:              { icon: Clock, color: "text-muted-foreground", label: "Pending" },
   grace_period:         { icon: AlertCircle, color: "text-amber-600", label: "Grace Period" },
   submitted:            { icon: Loader2, color: "text-foreground/50", label: "Submitted" },
-  ai_processing:        { icon: Loader2, color: "text-foreground/50", label: "Processing..." },
-  under_human_review:   { icon: Eye, color: "text-purple-500", label: "Human Review" },
   approved:             { icon: Check, color: "text-green-600", label: "Approved" },
   rejected:             { icon: X, color: "text-red-400", label: "Rejected" },
   extension_requested:  { icon: Scale, color: "text-purple-500", label: "Extension Requested" },
@@ -31,7 +29,7 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
       <div className="flex items-center gap-0 px-2">
         {milestones.map((m, i) => {
           const isDone = m.status === "approved";
-          const isCurrent = ["submitted", "voting_active", "under_human_review", "extension_requested"].includes(m.status);
+          const isCurrent = ["submitted", "voting_active", "extension_requested"].includes(m.status);
           const isFailed = m.status === "rejected" || m.status === "failed";
           return (
             <div key={m.id} className="flex items-center flex-1">
@@ -107,22 +105,6 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
                 </div>
               )}
 
-              {milestone.ai_explanation && (
-                <div className={`mt-2 p-3 rounded-lg text-sm border ${
-                  milestone.status === "approved"
-                    ? "bg-green-50/50 border-green-200/50"
-                    : milestone.status === "rejected"
-                    ? "bg-red-50/30 border-red-200/30"
-                    : "bg-purple-50/50 border-purple-200/50"
-                }`}>
-                  <p className="font-medium text-xs mb-1 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    Verification: {milestone.status === "approved" ? "Approved" : milestone.status === "rejected" ? "Rejected" : "Under Review"}
-                  </p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{milestone.ai_explanation}</p>
-                </div>
-              )}
-
               {/* Action buttons for creator view */}
               {showAppeal && milestone.status === "rejected" && onAppeal && (
                 <div className="flex gap-2 mt-2">
@@ -139,7 +121,7 @@ export function MilestoneTimeline({ milestones, showAppeal, onAppeal }: Mileston
               )}
 
               {(() => {
-                const active = ["pending", "grace_period", "extended", "submitted", "ai_processing"].includes(milestone.status);
+                const active = ["pending", "grace_period", "extended", "submitted"].includes(milestone.status);
                 const diff = Math.ceil((new Date(milestone.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
                 const countdown = diff < 0
                   ? { text: `Overdue by ${Math.abs(diff)} days`, color: "text-red-500" }

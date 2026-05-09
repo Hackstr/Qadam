@@ -104,11 +104,6 @@ export default function SubmitEvidencePage() {
         evidence_hash: evidenceHash,
       });
 
-      try {
-        const { triggerMilestoneVerification } = await import("@/lib/api");
-        await triggerMilestoneVerification(campaign.id, currentMilestone.index);
-      } catch { /* verification trigger is best-effort */ }
-
       toast.success("Evidence submitted! Community voting will begin.", { duration: 6000 });
       router.push(`/campaigns/${campaign.id}`);
     } catch (err: any) {

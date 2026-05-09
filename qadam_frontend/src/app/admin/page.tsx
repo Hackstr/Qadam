@@ -7,14 +7,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   LayoutDashboard, Loader2, FolderOpen, Wallet, Users,
-  ClipboardCheck, TrendingUp, Brain, AlertTriangle, Clock, Zap,
+  ClipboardCheck, TrendingUp, Vote, AlertTriangle, Clock, Zap,
 } from "lucide-react";
 import Link from "next/link";
 import type { AdminAttentionItem, AdminActivityItem } from "@/types";
 
 const ATTENTION_CONFIG: Record<string, { label: string; color: string; icon: typeof AlertTriangle; link: string }> = {
   overdue: { label: "Overdue", color: "text-red-600 bg-red-50", icon: Clock, link: "/admin/milestones" },
-  stuck_in_ai: { label: "Stuck Processing", color: "text-amber-600 bg-amber-50", icon: Zap, link: "/admin/milestones" },
+  voting_stalled: { label: "Voting Stalled", color: "text-amber-600 bg-amber-50", icon: Zap, link: "/admin/milestones" },
 };
 
 export default function AdminOverviewPage() {
@@ -42,7 +42,7 @@ export default function AdminOverviewPage() {
     { label: "Total Backers", value: d.total_backers, icon: Users, color: "text-indigo-600" },
     { label: "Pending Reviews", value: d.pending_reviews, icon: ClipboardCheck, color: d.pending_reviews > 0 ? "text-amber-600" : "text-muted-foreground", badge: d.pending_reviews > 0 },
     { label: "Success Rate", value: `${d.success_rate}%`, icon: TrendingUp, color: "text-green-600" },
-    { label: "Decisions Made", value: d.total_decisions || 0, icon: Brain, color: "text-purple-600" },
+    { label: "Votes Resolved", value: d.total_votes_resolved || 0, icon: Vote, color: "text-purple-600" },
   ];
 
   return (

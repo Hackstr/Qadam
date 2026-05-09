@@ -13,8 +13,6 @@ const STATUS_COLORS: Record<string, string> = {
   pending: "bg-gray-100 text-gray-600",
   grace_period: "bg-amber-50 text-amber-700",
   submitted: "bg-blue-50 text-blue-700",
-  ai_processing: "bg-purple-50 text-purple-700",
-  under_human_review: "bg-purple-50 text-purple-700",
   approved: "bg-green-50 text-green-700",
   rejected: "bg-red-50 text-red-700",
   extension_requested: "bg-amber-50 text-amber-700",
@@ -25,7 +23,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const PRESETS = [
   { key: "", label: "All", icon: MilestoneIcon },
-  { key: "stuck", label: "Stuck in AI", icon: Zap },
+  { key: "stuck", label: "Voting Stalled", icon: Zap },
   { key: "overdue", label: "Overdue", icon: Clock },
   { key: "past_grace", label: "Past Grace", icon: AlertTriangle },
   { key: "recent", label: "Recently Decided", icon: CheckCircle2 },
@@ -102,7 +100,7 @@ export default function AdminMilestonesPage() {
                   <th className="text-left px-4 py-2.5 font-medium text-muted-foreground">#</th>
                   <th className="text-left px-4 py-2.5 font-medium text-muted-foreground">Title</th>
                   <th className="text-left px-4 py-2.5 font-medium text-muted-foreground">Status</th>
-                  <th className="text-left px-4 py-2.5 font-medium text-muted-foreground hidden md:table-cell">AI</th>
+                  <th className="text-left px-4 py-2.5 font-medium text-muted-foreground hidden md:table-cell">Votes</th>
                   <th className="text-right px-4 py-2.5 font-medium text-muted-foreground hidden sm:table-cell">Amount</th>
                   <th className="text-right px-4 py-2.5 font-medium text-muted-foreground hidden lg:table-cell">Deadline</th>
                 </tr>
@@ -121,8 +119,8 @@ export default function AdminMilestonesPage() {
                       <Badge className={`text-[10px] ${STATUS_COLORS[m.status] || ""}`}>{m.status}</Badge>
                     </td>
                     <td className="px-4 py-2.5 hidden md:table-cell">
-                      {m.ai_decision ? (
-                        <Badge variant="outline" className="text-[10px]">{m.ai_decision}</Badge>
+                      {m.votes_count ? (
+                        <span className="text-xs tabular-nums">{m.votes_count} ({m.votes_approve_percent ?? 0}%)</span>
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}

@@ -3,10 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAdminAuditLog } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
-import { ScrollText, Loader2, Brain, ShieldAlert, Clock, Cpu } from "lucide-react";
+import { ScrollText, Loader2, Vote, ShieldAlert, Clock, Cpu } from "lucide-react";
 
-const ACTOR_CONFIG: Record<string, { color: string; icon: typeof Brain }> = {
-  "AI Agent": { color: "bg-purple-50 text-purple-700", icon: Brain },
+const ACTOR_CONFIG: Record<string, { color: string; icon: typeof Vote }> = {
+  "Vote Resolution": { color: "bg-purple-50 text-purple-700", icon: Vote },
   "Admin": { color: "bg-amber-50 text-amber-700", icon: ShieldAlert },
   "Deadline Monitor": { color: "bg-blue-50 text-blue-700", icon: Clock },
   "System": { color: "bg-gray-100 text-gray-600", icon: Cpu },

@@ -278,11 +278,12 @@ export async function requestExtensionTx(
     .transaction();
 }
 
-export async function voteOnExtensionTx(
+export async function castVoteTx(
   program: Program,
   voter: PublicKey,
   campaignPda: PublicKey,
   milestoneIndex: number,
+  voteType: number,
   approve: boolean
 ) {
   const milestonePda = getMilestonePda(campaignPda, milestoneIndex);
@@ -291,7 +292,7 @@ export async function voteOnExtensionTx(
   const votePda = getVotePda(milestonePda, voter);
 
   return program.methods
-    .voteOnExtension(milestoneIndex, approve)
+    .castVote(milestoneIndex, voteType, approve)
     .accounts({
       voter,
       config: getConfigPda(),
@@ -299,7 +300,31 @@ export async function voteOnExtensionTx(
       milestone: milestonePda,
       backerPosition: backerPositionPda,
       votingState: votingStatePda,
-      extensionVote: votePda,
+      vote: votePda,
+    })
+    .transaction();
+}
+
+export async function resolveVoteTx(
+  program: Program,
+  caller: PublicKey,
+  campaignPda: PublicKey,
+  milestoneIndex: number,
+  voteType: number
+) {
+  const milestonePda = getMilestonePda(campaignPda, milestoneIndex);
+  const votingStatePda = getVotingStatePda(milestonePda);
+  const vaultPda = getVaultPda(campaignPda);
+
+  return program.methods
+    .resolveVote(milestoneIndex, voteType)
+    .accounts({
+      caller,
+      config: getConfigPda(),
+      campaign: campaignPda,
+      milestone: milestonePda,
+      votingState: votingStatePda,
+      campaignVault: vaultPda,
     })
     .transaction();
 }

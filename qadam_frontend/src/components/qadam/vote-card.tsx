@@ -19,27 +19,33 @@ export interface VoteCardProps {
   connected: boolean;
   publicKey: PublicKey | null;
   txStatus: string;
-  voteOnExtension: (pubkey: string, index: number, approve: boolean) => Promise<string>;
+  castVote: (pubkey: string, index: number, voteType: number, approve: boolean) => Promise<string>;
 }
 
+// VoteType enum (0-based, matches Rust on-chain enum)
+const VOTE_TYPE_MILESTONE_APPROVAL = 0;
+const VOTE_TYPE_EXTENSION_GRANT = 1;
+
 export function VoteCard({
-  campaign, milestone, connected, publicKey, txStatus, voteOnExtension,
+  campaign, milestone, connected, publicKey, txStatus, castVote,
 }: VoteCardProps) {
   const countdown = useCountdown(milestone.extension_deadline || milestone.deadline);
   const isVotingBusy = txStatus !== "idle" && txStatus !== "done" && txStatus !== "error";
   const quorumPct = Math.round((campaign.quorum_pct ?? 0.2) * 100);
   const isExtension = milestone.status === "extension_requested";
+  const voteType = isExtension ? VOTE_TYPE_EXTENSION_GRANT : VOTE_TYPE_MILESTONE_APPROVAL;
 
   const handleVote = async (approve: boolean) => {
     try {
-      await voteOnExtension(campaign.solana_pubkey, milestone.index, approve);
+      await castVote(campaign.solana_pubkey, milestone.index, voteType, approve);
       const { syncVote } = await import("@/lib/api");
       syncVote({
         campaign_pubkey: campaign.solana_pubkey,
         milestone_index: milestone.index,
         wallet: publicKey!.toBase58(),
         approve,
-        voting_power: 0, // placeholder — Block 1 will track real weight
+        vote_type: voteType,
+        voting_power: 0, // placeholder — real weight tracked on-chain
       }).catch(() => {});
       toast.success(`Vote cast — ${approve ? "Approve" : "Reject"}`, {
         description: "Your vote has been recorded on-chain.",

@@ -15,7 +15,8 @@ import {
   submitMilestoneTx,
   claimTokensTx,
   claimRefundTx,
-  voteOnExtensionTx,
+  castVoteTx,
+  resolveVoteTx,
   requestExtensionTx,
 } from "@/lib/program";
 
@@ -161,15 +162,29 @@ export function useQadamProgram() {
     return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Claim refund");
   }, [program, publicKey, sendTransaction, connection]);
 
-  const voteOnExtension = useCallback(async (
-    campaignPubkey: string, milestoneIndex: number, approve: boolean
+  const castVote = useCallback(async (
+    campaignPubkey: string, milestoneIndex: number, voteType: number, approve: boolean
   ) => {
     if (!program || !publicKey) throw new Error("Wallet not connected");
 
     setTxStatus("building");
     const campaignPda = new PublicKey(campaignPubkey);
-    const tx = await voteOnExtensionTx(program, publicKey, campaignPda, milestoneIndex, approve);
-    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, approve ? "Vote extend" : "Vote refund");
+    const tx = await castVoteTx(program, publicKey, campaignPda, milestoneIndex, voteType, approve);
+    const label = voteType === 1
+      ? (approve ? "Vote extend" : "Vote deny extension")
+      : (approve ? "Vote approve" : "Vote reject");
+    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, label);
+  }, [program, publicKey, sendTransaction, connection]);
+
+  const resolveVote = useCallback(async (
+    campaignPubkey: string, milestoneIndex: number, voteType: number
+  ) => {
+    if (!program || !publicKey) throw new Error("Wallet not connected");
+
+    setTxStatus("building");
+    const campaignPda = new PublicKey(campaignPubkey);
+    const tx = await resolveVoteTx(program, publicKey, campaignPda, milestoneIndex, voteType);
+    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Resolve vote");
   }, [program, publicKey, sendTransaction, connection]);
 
   const requestExtension = useCallback(async (
@@ -195,7 +210,8 @@ export function useQadamProgram() {
     submitMilestone,
     claimTokens,
     claimRefund,
-    voteOnExtension,
+    castVote,
+    resolveVote,
     requestExtension,
   };
 }

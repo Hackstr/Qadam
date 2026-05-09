@@ -217,24 +217,13 @@ export async function syncClaimTokens(data: {
 }
 
 export async function syncVote(data: {
-  campaign_pubkey: string; milestone_index: number; wallet: string; approve: boolean; voting_power: number;
+  campaign_pubkey: string; milestone_index: number; wallet: string; approve: boolean; vote_type: number; voting_power: number;
 }) {
   return fetchApi<{ ok: boolean }>("/webhooks/sync-vote", { method: "POST", body: JSON.stringify(data) });
 }
 
 export async function syncRefund(data: { campaign_pubkey: string; wallet: string }) {
   return fetchApi<{ ok: boolean }>("/webhooks/sync-refund", { method: "POST", body: JSON.stringify(data) });
-}
-
-// ═══════════════════════════════════════════
-// WEBHOOKS
-// ═══════════════════════════════════════════
-
-export async function triggerMilestoneVerification(campaignId: string, milestoneIndex: number) {
-  return fetchApi<{ ok: boolean; milestone_id: string }>("/webhooks/milestone-submitted", {
-    method: "POST",
-    body: JSON.stringify({ campaign_id: campaignId, milestone_index: milestoneIndex }),
-  });
 }
 
 // ═══════════════════════════════════════════
@@ -390,10 +379,9 @@ export async function getAdminCampaignDetail(id: string) {
   return fetchApi<{ data: any }>(`/admin/campaigns/${id}/detail`);
 }
 
-export async function getAdminMilestones(filters?: { status?: string; ai_decision?: string; campaign_id?: string; preset?: string }) {
+export async function getAdminMilestones(filters?: { status?: string; campaign_id?: string; preset?: string }) {
   const params = new URLSearchParams();
   if (filters?.status) params.set("status", filters.status);
-  if (filters?.ai_decision) params.set("ai_decision", filters.ai_decision);
   if (filters?.campaign_id) params.set("campaign_id", filters.campaign_id);
   if (filters?.preset) params.set("preset", filters.preset);
   const qs = params.toString();

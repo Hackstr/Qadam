@@ -82,8 +82,6 @@ export type MilestoneStatus =
   | "pending"
   | "grace_period"
   | "submitted"
-  | "ai_processing"
-  | "under_human_review"
   | "approved"
   | "rejected"
   | "extension_requested"
@@ -153,14 +151,13 @@ export interface AdminDashboard {
   total_backers: number;
   pending_reviews: number;
   success_rate: number;
-  ai_accuracy: number;
-  total_decisions: number;
+  total_votes_resolved: number;
   needs_attention: AdminAttentionItem[];
   recent_activity: AdminActivityItem[];
 }
 
 export interface AdminAttentionItem {
-  type: "needs_review" | "overdue" | "stuck_in_ai";
+  type: "needs_review" | "overdue" | "voting_stalled";
   milestone_id: string;
   milestone_index: number;
   milestone_title?: string;
