@@ -115,7 +115,7 @@ export default function AnalyticsPage() {
     backers: p.backers,
   }));
 
-  const totalCatSol = cats.reduce((sum, c) => sum + c.raised_lamports, 0);
+  const totalCatSol = cats.reduce((sum, c) => sum + Number(c.raised_lamports), 0);
 
   const updatedLabel = (() => {
     if (!s?.last_updated_at) return "Live";
@@ -127,8 +127,8 @@ export default function AnalyticsPage() {
     return `Updated ${Math.floor(mins / 60)}h ago`;
   })();
 
-  const totalRaisedSol = s ? lamportsToSol(s.total_raised_lamports) : 0;
-  const escrowSol = s ? lamportsToSol(s.sol_in_escrow) : 0;
+  const totalRaisedSol = s ? lamportsToSol(Number(s.total_raised_lamports)) : 0;
+  const escrowSol = s ? lamportsToSol(Number(s.sol_in_escrow)) : 0;
   const escrowPct = totalRaisedSol > 0 ? ((escrowSol / totalRaisedSol) * 100).toFixed(1) : "0";
   const approvedRatio = s ? `${s.approved_milestones} / ${s.total_milestones}` : "---";
 
@@ -352,11 +352,12 @@ export default function AnalyticsPage() {
           ) : (
             <div>
               {cats.map((cat, i) => {
-                const solVal = lamportsToSol(cat.raised_lamports);
-                const pct = totalCatSol > 0 ? ((cat.raised_lamports / totalCatSol) * 100).toFixed(1) : "0";
+                const raisedNum = Number(cat.raised_lamports);
+                const solVal = lamportsToSol(raisedNum);
+                const pct = totalCatSol > 0 ? ((raisedNum / totalCatSol) * 100).toFixed(1) : "0";
                 const barColor = CATEGORY_BAR_COLORS[i % CATEGORY_BAR_COLORS.length];
                 const swatchColor = CATEGORY_COLORS[i % CATEGORY_COLORS.length];
-                const barPct = totalCatSol > 0 ? (cat.raised_lamports / totalCatSol) * 100 : 0;
+                const barPct = totalCatSol > 0 ? (raisedNum / totalCatSol) * 100 : 0;
                 return (
                   <div key={cat.category} className={`py-3.5 ${i < cats.length - 1 ? "border-b border-black/[0.04]" : ""}`}>
                     <div className="flex items-baseline justify-between mb-2">
