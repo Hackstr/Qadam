@@ -5,10 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getNotifications, markNotificationsRead } from "@/lib/api";
-import { useAuthStore } from "@/stores/auth-store";
-import { Bell as BellIcon, Menu, X, User, Settings } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const WalletMultiButton = dynamic(
   () => import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
@@ -23,20 +20,9 @@ const NAV_LINKS = [
 ];
 
 export function Header() {
-  const { connected, publicKey } = useWallet();
+  const { connected } = useWallet();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuthStore();
-  const queryClient = useQueryClient();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const { data: notifData } = useQuery({
-    queryKey: ["notifications"],
-    queryFn: getNotifications,
-    enabled: connected && isAuthenticated(),
-    refetchInterval: 30000,
-    retry: false,
-  });
-  const unreadCount = notifData?.unread_count || 0;
 
   const visibleLinks = NAV_LINKS.filter((l) => l.public || connected);
 
@@ -70,36 +56,6 @@ export function Header() {
         <div className="w-px h-5 bg-black/[0.08]" />
 
         <div className="flex items-center gap-1">
-          {connected && (
-            <Link
-              href="/notifications"
-              className="relative p-2 rounded-full hover:bg-black/[0.04] transition-colors"
-              title="Notifications"
-            >
-              <BellIcon className="h-4 w-4 text-muted-foreground" />
-              {unreadCount > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500" />
-              )}
-            </Link>
-          )}
-          {connected && publicKey && (
-            <>
-              <Link
-                href={`/profile/${publicKey.toBase58()}`}
-                className="p-2 rounded-full hover:bg-black/[0.04] transition-colors"
-                title="My Profile"
-              >
-                <User className="h-4 w-4 text-muted-foreground" />
-              </Link>
-              <Link
-                href="/settings"
-                className="p-2 rounded-full hover:bg-black/[0.04] transition-colors"
-                title="Settings"
-              >
-                <Settings className="h-4 w-4 text-muted-foreground" />
-              </Link>
-            </>
-          )}
           <WalletMultiButton
             style={{
               backgroundColor: "var(--foreground)",
@@ -156,22 +112,6 @@ export function Header() {
               </Link>
             );
           })}
-          {connected && (
-            <>
-              <div className="border-t border-black/[0.06] my-1" />
-              <Link
-                href="/settings"
-                onClick={() => setMobileOpen(false)}
-                className={`px-4 py-2.5 rounded-xl text-sm transition-colors ${
-                  pathname === "/settings"
-                    ? "bg-black/[0.06] text-foreground font-medium"
-                    : "text-muted-foreground hover:bg-black/[0.04]"
-                }`}
-              >
-                Settings
-              </Link>
-            </>
-          )}
         </div>
       )}
     </header>
