@@ -25,9 +25,9 @@ const statusDot: Record<string, string> = {
 // Category covers — Foundation v1 + legacy
 export const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: LucideIcon }> = {
   // Foundation v1 categories — tonal forest/sage/warm palette
-  Tech:             { from: "#1B3B30", to: "#2D5F4E", icon: Cpu },
-  Hardware:         { from: "#1B3B30", to: "#478763", icon: HardDrive },
-  Software:         { from: "#122921", to: "#2D5F4E", icon: Code },
+  Tech:             { from: "#1F4731", to: "#2A5A3F", icon: Cpu },
+  Hardware:         { from: "#11271B", to: "#2A5A3F", icon: HardDrive },
+  Software:         { from: "#0D1F17", to: "#1F4731", icon: Code },
   "Art & Design":   { from: "#3B2F2F", to: "#8B7355", icon: Palette },
   Music:            { from: "#2D2B3D", to: "#6B5B8D", icon: Music },
   Film:             { from: "#1C1917", to: "#57534E", icon: Film },

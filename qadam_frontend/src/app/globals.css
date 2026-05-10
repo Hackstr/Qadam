@@ -50,14 +50,14 @@
   /* ═══ Qadam Brand Palette Override ═══
      Remap Tailwind amber-* to our deep forest green palette.
      Every bg-amber-500, text-amber-600 etc. now renders green. */
-  --color-amber-50: #E8F0EC;
+  --color-amber-50: #E4ECE5;
   --color-amber-100: #D1E1D8;
   --color-amber-200: #A3C3B1;
-  --color-amber-300: #75A58A;
-  --color-amber-400: #478763;
-  --color-amber-500: #2D5F4E;
-  --color-amber-600: #244D3F;
-  --color-amber-700: #1B3B30;
+  --color-amber-300: #6BD49B;
+  --color-amber-400: #2A5A3F;
+  --color-amber-500: #1F4731;
+  --color-amber-600: #183D2B;
+  --color-amber-700: #11271B;
   --color-amber-800: #122921;
   --color-amber-900: #091712;
   --color-amber-950: #040B09;
@@ -79,20 +79,20 @@
 
 :root {
   /* ═══ Base surfaces ═══ */
-  --background: #F7F4ED;
-  --foreground: #1A2421;
-  --card: #FFFFFF;
-  --card-foreground: #1A2421;
-  --popover: #FFFFFF;
-  --popover-foreground: #1A2421;
+  --background: #F1ECE1;
+  --foreground: #16201A;
+  --card: #FBF8F1;
+  --card-foreground: #16201A;
+  --popover: #FBF8F1;
+  --popover-foreground: #16201A;
 
   /* ═══ Semantic ═══ */
-  --primary: #2D5F4E;
+  --primary: #1F4731;
   --primary-foreground: #FFFFFF;
-  --secondary: #F0ECE3;
-  --secondary-foreground: #1A2421;
-  --muted: #F0ECE3;
-  --muted-foreground: #6B7065;
+  --secondary: #EAE3D4;
+  --secondary-foreground: #16201A;
+  --muted: #EAE3D4;
+  --muted-foreground: #6B6F66;
   --accent: #F0ECE3;
   --accent-foreground: #1A2421;
   --destructive: oklch(0.577 0.245 27.325);
@@ -124,6 +124,8 @@
   /* ═══ Landing-specific accents ═══ */
   --terracotta: #C2532E;
   --mustard: #C8923A;
+  --governance: #5B4FB8;
+  --info: #2D6C9E;
 
   /* Brand colors are defined via @theme inline (amber→green remap)
      and :root CSS variables above. No separate --qadam-* tokens needed.
