@@ -31,10 +31,10 @@ campaigns = [
     token_mint_address: "mint_nomad_001",
     tokens_per_lamport: 20_000,
     milestones: [
-      %{index: 0, title: "Prototype & Core Banking API", amount_lamports: trunc(12.5 * sol), deadline: past.(3), status: "approved", ai_decision: "approved", ai_explanation: "Prototype demonstrates working multi-currency account creation and basic transfer functionality. Live demo verified.", decided_at: past.(2)},
-      %{index: 1, title: "Crypto Off-Ramp Integration", amount_lamports: trunc(12.5 * sol), deadline: future.(14), status: "pending"},
-      %{index: 2, title: "Tax Reporting Engine", amount_lamports: trunc(12.5 * sol), deadline: future.(30), status: "pending"},
-      %{index: 3, title: "Public Launch + App Store", amount_lamports: trunc(12.5 * sol), deadline: future.(45), status: "pending"},
+      %{index: 0, title: "Prototype & Core Banking API", description: "Core banking API with multi-currency account creation, basic transfers, and KYC integration for 3 countries.", acceptance_criteria: "Live demo showing account creation, SOL↔USD transfer, and KYC flow completion.", amount_lamports: trunc(12.5 * sol), deadline: past.(3), status: "approved", ai_decision: "approved", ai_explanation: "Prototype demonstrates working multi-currency account creation and basic transfer functionality. Live demo verified.", decided_at: past.(2)},
+      %{index: 1, title: "Crypto Off-Ramp Integration", description: "Integration with local payment rails in KZ, RU, and EU for SOL-to-fiat conversion.", acceptance_criteria: "Working off-ramp demo: user converts 1 SOL to local currency. Transaction completes within 24 hours.", amount_lamports: trunc(12.5 * sol), deadline: future.(14), status: "pending"},
+      %{index: 2, title: "Tax Reporting Engine", description: "Automated tax report generation for freelancers in 40+ countries. Supports KZ, RU, EU tax formats.", acceptance_criteria: "Generate sample tax reports for 3 jurisdictions. Reports match local format requirements.", amount_lamports: trunc(12.5 * sol), deadline: future.(30), status: "pending"},
+      %{index: 3, title: "Public Launch + App Store", description: "iOS and Android app submission. Public launch with marketing site and onboarding flow.", acceptance_criteria: "App live on App Store and Google Play. 100+ downloads in first week.", amount_lamports: trunc(12.5 * sol), deadline: future.(45), status: "pending"},
     ]
   },
   %{
@@ -196,9 +196,9 @@ campaigns = [
     token_mint_address: "mint_solmail_009",
     tokens_per_lamport: 25_000,
     milestones: [
-      %{index: 0, title: "Encryption Protocol + Relay", amount_lamports: 15 * sol, deadline: future.(25), status: "pending"},
-      %{index: 1, title: "Web Client + Contacts", amount_lamports: 15 * sol, deadline: future.(45), status: "pending"},
-      %{index: 2, title: "Mobile App + Notifications", amount_lamports: 10 * sol, deadline: future.(60), status: "pending"},
+      %{index: 0, title: "Encryption Protocol + Relay", description: "Build the core encryption layer using Solana keypairs for identity. Set up relay infrastructure for message routing without storing plaintext.", acceptance_criteria: "Working demo: two wallets exchange encrypted messages via relay. Message unreadable by relay operator. Latency under 3 seconds.", amount_lamports: 15 * sol, deadline: future.(25), status: "pending"},
+      %{index: 1, title: "Web Client + Contacts", description: "Browser-based email client with wallet login. Contact management using on-chain identity. Inbox, sent, drafts.", acceptance_criteria: "Deployed web app at demo URL. User can log in with Phantom, send/receive encrypted email, manage contacts.", amount_lamports: 15 * sol, deadline: future.(45), status: "pending"},
+      %{index: 2, title: "Mobile App + Notifications", description: "React Native app for iOS and Android. Push notifications for new messages. Offline draft support.", acceptance_criteria: "TestFlight/APK available. Push notifications working. App loads inbox within 2 seconds.", amount_lamports: 10 * sol, deadline: future.(60), status: "pending"},
     ]
   },
 ]
