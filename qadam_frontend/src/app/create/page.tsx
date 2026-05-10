@@ -738,42 +738,62 @@ export default function CreateCampaignPage() {
 
                 {/* Team members */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Team members <span className="text-xs text-muted-foreground">(optional)</span></label>
-                  {teamMembers.map((member, idx) => (
-                    <div key={idx} className="border rounded-lg p-3 mb-2 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-muted-foreground">Member {idx + 1}</span>
-                        <Button type="button" variant="ghost" size="sm" onClick={() => setTeamMembers(teamMembers.filter((_, i) => i !== idx))} className="h-6 w-6 p-0">
-                          <Trash2 className="h-3 w-3 text-red-400" />
-                        </Button>
+                  <label className="text-sm font-medium mb-3 block">Team members <span className="text-xs text-muted-foreground">(optional)</span></label>
+
+                  {/* Saved members as cards */}
+                  {teamMembers.filter(m => m.name).map((member, idx) => (
+                    <div key={idx} className="flex items-center gap-3 p-3 rounded-xl border border-border bg-card mb-2">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                        {member.name[0]?.toUpperCase() || "?"}
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input
-                          value={member.name}
-                          onChange={(e) => { const u = [...teamMembers]; u[idx] = { ...u[idx], name: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
-                          placeholder="Name"
-                          className="text-sm"
-                        />
-                        <Input
-                          value={member.role}
-                          onChange={(e) => { const u = [...teamMembers]; u[idx] = { ...u[idx], role: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
-                          placeholder="Role (e.g. Design Lead)"
-                          className="text-sm"
-                        />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">{member.name}</p>
+                        <p className="text-xs text-muted-foreground">{member.role || "Team member"}</p>
                       </div>
-                      <Input
-                        value={member.social_link}
-                        onChange={(e) => { const u = [...teamMembers]; u[idx] = { ...u[idx], social_link: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
-                        placeholder="Social link (optional)"
-                        className="text-sm"
-                      />
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setTeamMembers(teamMembers.filter((_, i) => i !== idx))} className="h-7 w-7 p-0 text-muted-foreground hover:text-red-500">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
                     </div>
                   ))}
-                  {teamMembers.length < 10 && (
-                    <Button type="button" variant="outline" size="sm" onClick={() => setTeamMembers([...teamMembers, { name: "", role: "", social_link: "" }])} className="gap-1">
-                      <Plus className="h-3.5 w-3.5" /> Add team member
-                    </Button>
-                  )}
+
+                  {/* Add new member form */}
+                  {teamMembers.length < 10 && (() => {
+                    const emptyIdx = teamMembers.findIndex(m => !m.name);
+                    if (emptyIdx >= 0) {
+                      const member = teamMembers[emptyIdx];
+                      return (
+                        <div className="border border-dashed border-foreground/15 rounded-xl p-3 space-y-2 mt-2">
+                          <p className="text-xs font-medium text-muted-foreground">New member</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input
+                              value={member.name}
+                              onChange={(e) => { const u = [...teamMembers]; u[emptyIdx] = { ...u[emptyIdx], name: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
+                              placeholder="Name"
+                              className="text-sm"
+                              autoFocus
+                            />
+                            <Input
+                              value={member.role}
+                              onChange={(e) => { const u = [...teamMembers]; u[emptyIdx] = { ...u[emptyIdx], role: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
+                              placeholder="Role"
+                              className="text-sm"
+                            />
+                          </div>
+                          <Input
+                            value={member.social_link}
+                            onChange={(e) => { const u = [...teamMembers]; u[emptyIdx] = { ...u[emptyIdx], social_link: (e.target as HTMLInputElement).value }; setTeamMembers(u); }}
+                            placeholder="Social link (optional)"
+                            className="text-sm"
+                          />
+                        </div>
+                      );
+                    }
+                    return (
+                      <Button type="button" variant="outline" size="sm" onClick={() => setTeamMembers([...teamMembers, { name: "", role: "", social_link: "" }])} className="gap-1.5 mt-2">
+                        <Plus className="h-3.5 w-3.5" /> Add team member
+                      </Button>
+                    );
+                  })()}
                 </div>
               </CardContent>
             </Card>
