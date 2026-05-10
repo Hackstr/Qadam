@@ -53,8 +53,8 @@ defmodule QadamBackend.Campaigns do
 
   # Private filters
 
-  defp filter_demo(query, true), do: query
-  defp filter_demo(query, _), do: where(query, [c], not like(c.solana_pubkey, "demo_%"))
+  # On devnet, all campaigns are demo — always include them
+  defp filter_demo(query, _), do: query
 
   defp filter_by_status(query, nil), do: query
   defp filter_by_status(query, status), do: where(query, [c], c.status == ^status)

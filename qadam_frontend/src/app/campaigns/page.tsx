@@ -111,7 +111,7 @@ export default function CampaignsPage() {
 
           {/* Right: live pulse widget */}
           <LivePulse
-            solInEscrow={stats?.sol_in_escrow ?? 0}
+            solInEscrow={Math.round(Number(stats?.sol_in_escrow ?? 0) / 1_000_000_000)}
             activeCampaigns={stats?.active_campaigns ?? 0}
           />
         </div>
@@ -217,7 +217,7 @@ export default function CampaignsPage() {
                 {" "}
                 {status === "active" || !status ? "live" : status}
                 {stats?.sol_in_escrow
-                  ? ` \u00B7 \u25E6 ${stats.sol_in_escrow.toLocaleString()} funding pool`
+                  ? ` \u00B7 \u25E6 ${Math.round(Number(stats.sol_in_escrow) / 1_000_000_000).toLocaleString()} SOL funding pool`
                   : ""}
               </>
             )}
