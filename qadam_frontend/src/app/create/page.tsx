@@ -192,6 +192,18 @@ export default function CreateCampaignPage() {
     setMilestones(updated);
   };
 
+  // Check if step has meaningful content filled
+  const isStepFilled = (s: number): boolean => {
+    switch (s) {
+      case 1: return !!title && !!goal;
+      case 2: return !!problem || !!solution;
+      case 3: return true; // team is optional, always "done"
+      case 4: return milestones.some(m => !!m.title && !!m.amount);
+      case 5: return true;
+      default: return false;
+    }
+  };
+
   // Validation per step (5 steps now)
   const canProceed = (s: number): boolean => {
     switch (s) {
@@ -346,7 +358,7 @@ export default function CreateCampaignPage() {
             {STEPS.map((s) => {
               const Icon = s.icon;
               const isActive = step === s.num;
-              const isVisited = s.num <= maxStepVisited && !isActive;
+              const isFilled = isStepFilled(s.num) && !isActive;
               const labels = ["Name, pitch, goal", "Problem, solution, risks", "Your team", "Milestones and criteria", "Review and launch"];
               return (
                 <button
@@ -354,19 +366,18 @@ export default function CreateCampaignPage() {
                   onClick={() => goToStep(s.num)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer ${
                     isActive ? "bg-amber-50 border border-amber-200 shadow-sm" :
-                    isVisited ? "hover:bg-secondary border border-transparent" :
                     "hover:bg-secondary border border-transparent"
                   }`}
                 >
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
                     isActive ? "bg-amber-500 text-white" :
-                    isVisited ? "bg-green-500 text-white" :
+                    isFilled ? "bg-green-500 text-white" :
                     "bg-foreground/10 text-foreground/40"
                   }`}>
-                    {isVisited ? <Check className="h-3.5 w-3.5" /> : s.num}
+                    {isFilled ? <Check className="h-3.5 w-3.5" /> : s.num}
                   </div>
                   <div>
-                    <p className={`text-sm font-medium ${isActive ? "text-amber-700" : isVisited ? "text-foreground" : "text-foreground/60"}`}>
+                    <p className={`text-sm font-medium ${isActive ? "text-amber-700" : isFilled ? "text-foreground" : "text-foreground/60"}`}>
                       {s.num}. {s.title}
                     </p>
                     <p className="text-xs text-muted-foreground leading-tight">{labels[s.num - 1]}</p>
@@ -386,12 +397,12 @@ export default function CreateCampaignPage() {
               <button
                 onClick={() => goToStep(s.num)}
                 className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold cursor-pointer ${
-                  step === s.num ? "bg-amber-500 text-white" : s.num <= maxStepVisited ? "bg-green-500 text-white" : "bg-foreground/10 text-foreground/40"
+                  step === s.num ? "bg-amber-500 text-white" : isStepFilled(s.num) ? "bg-green-500 text-white" : "bg-foreground/10 text-foreground/40"
                 }`}
               >
-                {s.num <= maxStepVisited && s.num !== step ? <Check className="h-3 w-3" /> : s.num}
+                {isStepFilled(s.num) && s.num !== step ? <Check className="h-3 w-3" /> : s.num}
               </button>
-              {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-1 ${s.num <= maxStepVisited ? "bg-green-300" : "bg-foreground/10"}`} />}
+              {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-1 ${isStepFilled(s.num) ? "bg-green-300" : "bg-foreground/10"}`} />}
             </div>
           ))}
         </div>
