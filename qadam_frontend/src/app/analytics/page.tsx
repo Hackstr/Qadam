@@ -9,12 +9,12 @@ import {
   getAnalyticsTopCampaigns,
   getAnalyticsTimeseries,
 } from "@/lib/api";
-import { formatSol, getExplorerUrl, PROGRAM_ID, SOLANA_NETWORK, lamportsToSol } from "@/lib/constants";
+import { getExplorerUrl, PROGRAM_ID, SOLANA_NETWORK, lamportsToSol } from "@/lib/constants";
 import Link from "next/link";
 import {
   TrendingUp, Users, Shield, Rocket, CheckCircle2,
   ArrowUpRight, ExternalLink, GitBranch, CircleDot,
-  Vote, Lock, Download, ChevronUp, ArrowDown,
+  Vote, Lock, Download, ChevronUp,
   CheckSquare, BarChart3,
 } from "lucide-react";
 import {

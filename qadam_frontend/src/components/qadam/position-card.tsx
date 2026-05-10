@@ -6,12 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MilestoneDots } from "./milestone-dots";
 import { TierBadge } from "./tier-badge";
-import { formatSol, TIER_LABELS } from "@/lib/constants";
+import { formatSol } from "@/lib/constants";
 import { Vote, Gift, RotateCcw, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { BackerPosition } from "@/types";
 
 export interface PositionCardProps {
-  position: any;
+  position: BackerPosition;
   onClaimTokens?: (pubkey: string, wallet: string, tokensAllocated: number) => void;
   onClaimRefund?: (pubkey: string, wallet: string) => void;
   txBusy?: boolean;

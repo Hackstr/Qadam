@@ -147,8 +147,6 @@ export function TierConfigurator({ value, onChange, goalSol }: TierConfiguratorP
               {tiers.map((t, i) => {
                 const isLast = i === tiers.length - 1;
                 const spots = t.max_spots || "∞";
-                const avgSol = goalSol / (tiers.reduce((sum, tt) => sum + (tt.max_spots || 100), 0) || 1);
-                const tierSol = isLast ? "remainder" : `~${(avgSol * (t.max_spots || 0)).toFixed(1)} SOL`;
                 return (
                   <div key={i} className="flex items-center justify-between text-[11px]">
                     <span className="text-amber-700">

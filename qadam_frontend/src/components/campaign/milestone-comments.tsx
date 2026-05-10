@@ -14,7 +14,7 @@ interface MilestoneCommentsProps {
 }
 
 export function MilestoneComments({ milestoneId }: MilestoneCommentsProps) {
-  const { connected, publicKey } = useWallet();
+  const { connected } = useWallet();
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
   const [expanded, setExpanded] = useState(false);

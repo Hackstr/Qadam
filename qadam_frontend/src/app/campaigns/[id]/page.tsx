@@ -2,21 +2,18 @@
 
 import { useEffect, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { getCampaign, getCampaignBackers, getCampaignUpdates, getCampaigns } from "@/lib/api";
 import { MilestoneTimeline } from "@/components/campaign/milestone-timeline";
-import { MilestoneComments } from "@/components/campaign/milestone-comments";
 import { CampaignCard } from "@/components/campaign/campaign-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   formatSol, formatPercent, TIER_LABELS,
-  SOLANA_NETWORK, getExplorerUrl, lamportsToSol,
+  getExplorerUrl, lamportsToSol,
 } from "@/lib/constants";
-import { MilestoneDots } from "@/components/qadam/milestone-dots";
 import { FundingCard } from "@/components/qadam/funding-card";
 import { TierRewardsCard } from "@/components/qadam/tier-rewards-card";
 import { ActiveVoteWidget } from "@/components/qadam/active-vote-widget";
@@ -24,9 +21,9 @@ import { CreatorStrip } from "@/components/qadam/creator-strip";
 import {
   Users, Wallet, ArrowRight, Loader2, ArrowLeft,
   ExternalLink, Share2, AlertCircle,
-  Calendar, Copy, CheckCircle2, Clock, Vote,
-  Globe, Heart, MapPin, ShieldCheck, Code,
-  Image, Grid3X3, MessageSquare, Play,
+  CheckCircle2, Clock, Vote,
+  Globe, Heart, ShieldCheck, Code,
+  Image, Play,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -39,7 +36,6 @@ export default function CampaignDetailPage() {
 
 function CampaignDetailContent() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const isNew = searchParams.get("new") === "true";
   const { publicKey } = useWallet();

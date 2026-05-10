@@ -149,6 +149,7 @@ export default function CreateCampaignPage() {
   }, []);
 
   // Auto-save draft every 5 seconds
+  // eslint-disable-next-line react-hooks/exhaustive-deps — intentional: interval saves periodically regardless of which state changed
   useEffect(() => {
     const timer = setInterval(() => {
       if (title || description || problem || milestones[0]?.title) {
@@ -161,6 +162,7 @@ export default function CreateCampaignPage() {
       }
     }, 5000);
     return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, pitch, category, goal, description, pitchVideoUrl, risks, faqItems, milestones, step]);
 
   // Computed

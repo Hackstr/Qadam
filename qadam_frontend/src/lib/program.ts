@@ -1,7 +1,7 @@
 import { Program, AnchorProvider, BN } from "@coral-xyz/anchor";
-import { Connection, PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { PROGRAM_ID, SOLANA_RPC_URL } from "./constants";
+import { PROGRAM_ID } from "./constants";
 import idl from "./idl.json";
 
 // ═══════════════════════════════════════════
@@ -9,7 +9,6 @@ import idl from "./idl.json";
 // ═══════════════════════════════════════════
 
 export function getProgram(provider: AnchorProvider) {
-  const programId = new PublicKey(PROGRAM_ID);
   return new Program(idl as any, provider);
 }
 

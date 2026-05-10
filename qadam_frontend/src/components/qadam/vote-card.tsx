@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MilestoneComments } from "@/components/campaign/milestone-comments";
 import { useCountdown } from "@/hooks/use-countdown";
-import { formatSol, SOLANA_NETWORK } from "@/lib/constants";
+import { formatSol } from "@/lib/constants";
 import { toast } from "sonner";
 import type { Campaign, Milestone } from "@/types";
 import type { PublicKey } from "@solana/web3.js";

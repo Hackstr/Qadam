@@ -2,7 +2,7 @@
 
 import { useConnection, useWallet, useAnchorWallet } from "@solana/wallet-adapter-react";
 import { useMemo, useState, useCallback } from "react";
-import { AnchorProvider, BN } from "@coral-xyz/anchor";
+import { BN } from "@coral-xyz/anchor";
 import { PublicKey, Transaction, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { toast } from "sonner";
 import {
