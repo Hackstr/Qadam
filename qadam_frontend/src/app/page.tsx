@@ -217,21 +217,19 @@ export default function Home() {
                   Community Approved
                 </div>
 
-                {/* Floating badge: Escrow protected (bottom-right, dark) */}
-                <div className="absolute bottom-16 right-0 bg-foreground/90 text-background rounded-full px-3.5 py-2 flex items-center gap-2 text-[13px] font-semibold shadow-lg whitespace-nowrap rotate-[3deg]">
-                  <span className="w-[18px] h-[18px] rounded-full bg-white/[0.12] inline-grid place-items-center">
-                    <Lock className="w-3 h-3" />
-                  </span>
-                  Escrow protected
+                {/* Floating badge: Milestone 3 of 5 (bottom-right, dark) */}
+                <div className="absolute bottom-12 right-0 bg-foreground/90 text-background rounded-full px-3.5 py-2 flex items-center gap-2 text-[13px] font-semibold shadow-lg whitespace-nowrap rotate-[3deg]">
+                  <span className="w-2 h-2 rounded-full bg-amber-300" />
+                  Milestone 3 of 5
                 </div>
 
-                {/* Milestone badge — below image, not overlapping */}
+                {/* Escrow badge — below image */}
                 <div className="flex justify-center mt-3">
                   <div className="bg-card border border-foreground/10 rounded-full px-4 py-2 flex items-center gap-2.5 text-[12px] font-medium shadow-sm whitespace-nowrap text-muted-foreground">
-                    <span className="w-2 h-2 rounded-full bg-amber-500" />
-                    Milestone 3 of 5
+                    <Lock className="w-3 h-3 text-amber-500" />
+                    Escrow protected
                     <span className="text-foreground/40">·</span>
-                    <span className="font-mono text-[11px]">87% approved</span>
+                    <span className="font-mono text-[11px]">on-chain</span>
                   </div>
                 </div>
               </div>
