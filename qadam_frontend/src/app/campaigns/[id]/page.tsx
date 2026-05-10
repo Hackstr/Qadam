@@ -45,6 +45,7 @@ function CampaignDetailContent() {
   const { publicKey } = useWallet();
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("about");
+  const [selectedMilestone, setSelectedMilestone] = useState(0);
 
   const { data: campaignData, isLoading } = useQuery({
     queryKey: ["campaign", id],
@@ -484,36 +485,86 @@ function CampaignDetailContent() {
                 )}
 
                 {/* Milestone journey */}
-                {campaign.milestones && campaign.milestones.length > 0 && (
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-display text-xl tracking-tight">Milestone journey</h3>
-                      <button onClick={() => setActiveTab("milestones")} className="text-xs text-amber-600 hover:underline">View all milestones →</button>
-                    </div>
-                    <MilestoneDots
-                      total={campaign.milestones.length}
-                      approved={campaign.milestones_approved}
-                      variant="connected"
-                      size="md"
-                    />
-                    <div className="flex mt-3 gap-1">
-                      {campaign.milestones.map((m, i) => {
-                        const isDone = m.status === "approved";
-                        const isVoting = ["voting_active", "submitted", "extension_requested"].includes(m.status);
-                        return (
-                          <div key={m.id} className={`flex-1 text-center p-2.5 rounded-xl border transition-colors ${isDone ? "bg-green-50/50 border-green-200/50" : isVoting ? "bg-purple-50/50 border-purple-200/50" : "bg-card border-border"}`}>
-                            <p className="font-mono text-[10px] text-muted-foreground mb-0.5">M{i + 1}</p>
-                            <p className="text-xs font-medium truncate">{m.title || `Milestone ${i + 1}`}</p>
-                            <p className={`text-[10px] font-semibold mt-0.5 ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
-                              {isDone ? "✓ Approved" : isVoting ? "● Voting" : "○ Pending"}
-                            </p>
-                            <p className="font-mono text-[10px] text-muted-foreground mt-0.5">{formatSol(m.amount_lamports)}</p>
+                {campaign.milestones && campaign.milestones.length > 0 && (() => {
+                  const ms = campaign.milestones;
+                  const sel = ms[selectedMilestone] || ms[0];
+                  const selDone = sel?.status === "approved";
+                  const selVoting = ["voting_active", "submitted", "extension_requested"].includes(sel?.status || "");
+                  return (
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-display text-xl tracking-tight">Milestone journey</h3>
+                        <button onClick={() => setActiveTab("milestones")} className="text-xs text-amber-600 hover:underline">View all milestones →</button>
+                      </div>
+
+                      {/* Milestone selector buttons */}
+                      <div className="flex gap-1.5 mb-4">
+                        {ms.map((m, i) => {
+                          const isDone = m.status === "approved";
+                          const isVoting = ["voting_active", "submitted", "extension_requested"].includes(m.status);
+                          const isActive = i === selectedMilestone;
+                          return (
+                            <button
+                              key={m.id}
+                              onClick={() => setSelectedMilestone(i)}
+                              className={`flex-1 py-2.5 px-2 rounded-xl border text-center transition-all cursor-pointer ${
+                                isActive
+                                  ? isDone ? "bg-green-50 border-green-300 shadow-sm" : isVoting ? "bg-purple-50 border-purple-300 shadow-sm" : "bg-card border-amber-300 shadow-sm"
+                                  : "bg-card border-border hover:border-foreground/20"
+                              }`}
+                            >
+                              <p className="font-mono text-[10px] text-muted-foreground">M{i + 1}</p>
+                              <p className={`text-xs font-semibold truncate mt-0.5 ${isActive ? "text-foreground" : "text-muted-foreground"}`}>
+                                {m.title || `Milestone ${i + 1}`}
+                              </p>
+                              <p className={`text-[10px] mt-0.5 ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
+                                {isDone ? "✓ Approved" : isVoting ? "● Voting" : "○ Pending"}
+                              </p>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Selected milestone detail */}
+                      {sel && (
+                        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <span className="font-mono text-[10px] text-muted-foreground">M{selectedMilestone + 1}</span>
+                              <h4 className="font-display text-lg tracking-tight">{sel.title || `Milestone ${selectedMilestone + 1}`}</h4>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-mono text-sm font-semibold">{formatSol(sel.amount_lamports)}</p>
+                              <p className={`text-[10px] font-semibold ${selDone ? "text-green-600" : selVoting ? "text-purple-600" : "text-muted-foreground"}`}>
+                                {selDone ? "✓ Approved" : selVoting ? "● Voting" : "○ Pending"}
+                              </p>
+                            </div>
                           </div>
-                        );
-                      })}
+
+                          {sel.description && (
+                            <p className="text-sm text-muted-foreground leading-relaxed">{sel.description}</p>
+                          )}
+
+                          {sel.acceptance_criteria && (
+                            <div className="p-3 bg-amber-50/50 border border-amber-100/50 rounded-xl">
+                              <p className="text-[10px] font-semibold text-amber-700 uppercase tracking-wider mb-1">Acceptance criteria</p>
+                              <p className="text-xs text-muted-foreground leading-relaxed">{sel.acceptance_criteria}</p>
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1">
+                            {sel.deadline && (
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                Deadline: {new Date(sel.deadline).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </TabsContent>
 
               {/* Milestones */}
