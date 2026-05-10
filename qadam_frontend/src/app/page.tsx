@@ -86,7 +86,7 @@ export default function Home() {
   const campaigns = campaignsData?.data ?? [];
 
   const totalBackers = stats?.total_backers ?? 0;
-  const solInEscrow = stats?.sol_in_escrow ?? 0;
+  const solInEscrow = Math.round(Number(stats?.sol_in_escrow ?? 0) / LAMPORTS_PER_SOL);
   const approvedPct =
     stats && stats.total_milestones > 0
       ? Math.round((stats.approved_milestones / stats.total_milestones) * 100)
@@ -210,14 +210,13 @@ export default function Home() {
                   }}
                 />
 
-                {/* Sun disc */}
-                <div
-                  className="absolute w-[62%] aspect-square left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-90"
-                  style={{
-                    background:
-                      "radial-gradient(circle at 30% 30%, var(--mustard) 0%, var(--terracotta) 70%)",
-                    boxShadow: "0 30px 80px -30px color-mix(in srgb, var(--terracotta) 45%, transparent)",
-                  }}
+                {/* Hero illustration */}
+                <img
+                  src="/man-in-background.png"
+                  alt="Builder on Qadam"
+                  className="absolute inset-0 w-full h-full object-contain object-center select-none"
+                  style={{ mixBlendMode: "multiply" }}
+                  draggable={false}
                 />
 
                 {/* Floating badge: Community Approved (top-left) */}
@@ -270,10 +269,6 @@ export default function Home() {
                   Escrow protected
                 </div>
 
-                {/* Label */}
-                <div className="absolute left-5 bottom-5 font-mono text-[11px] text-muted-foreground tracking-wide">
-                  [ illustration . hero artwork ]
-                </div>
               </div>
             </motion.div>
           </div>
