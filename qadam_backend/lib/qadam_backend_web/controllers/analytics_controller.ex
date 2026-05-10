@@ -10,7 +10,8 @@ defmodule QadamBackendWeb.AnalyticsController do
 
   @foundation_categories [
     "Tech", "Hardware", "Software", "Art & Design", "Music",
-    "Film", "Education", "Community", "Research", "Climate"
+    "Film", "Education", "Community", "Research", "Climate",
+    "Experience", "Sports"
   ]
 
   def summary(conn, _params) do

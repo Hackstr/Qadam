@@ -8,6 +8,7 @@ defmodule QadamBackend.Campaigns.Campaign do
   @valid_statuses ~w(draft active funded in_progress completed failed refunded paused cancelled)
   @valid_accent_colors ~w(forest sage warm plum slate deep)
   @valid_categories ["Tech", "Hardware", "Software", "Art & Design", "Music", "Film", "Education", "Community", "Research", "Climate",
+                     "Experience", "Sports",
                      "Apps", "Games", "SaaS", "Tools", "Infrastructure"]
 
   schema "campaigns" do

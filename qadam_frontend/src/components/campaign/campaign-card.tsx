@@ -7,6 +7,7 @@ import type { Campaign } from "@/types";
 import {
   Users, Smartphone, Gamepad2, BarChart3, Wrench, Globe, Rocket,
   Cpu, HardDrive, Code, Palette, Music, Film, GraduationCap, Heart, Microscope, Leaf,
+  Sparkles, Trophy,
   type LucideIcon,
 } from "lucide-react";
 import { MilestoneDots } from "@/components/qadam/milestone-dots";
@@ -35,6 +36,8 @@ export const CATEGORY_COVERS: Record<string, { from: string; to: string; icon: L
   Community:        { from: "#1B3B30", to: "#A3C3B1", icon: Heart },
   Research:         { from: "#1A2421", to: "#478763", icon: Microscope },
   Climate:          { from: "#122921", to: "#75A58A", icon: Leaf },
+  Experience:       { from: "#3B2F2F", to: "#A07A3F", icon: Sparkles },
+  Sports:           { from: "#1C1917", to: "#57534E", icon: Trophy },
   // Legacy categories (backwards compat)
   Apps:             { from: "#122921", to: "#2D5F4E", icon: Smartphone },
   Games:            { from: "#2D2B3D", to: "#6B5B8D", icon: Gamepad2 },

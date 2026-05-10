@@ -201,6 +201,58 @@ campaigns = [
       %{index: 2, title: "Mobile App + Notifications", description: "React Native app for iOS and Android. Push notifications for new messages. Offline draft support.", acceptance_criteria: "TestFlight/APK available. Push notifications working. App loads inbox within 2 seconds.", amount_lamports: 10 * sol, deadline: future.(60), status: "pending"},
     ]
   },
+  %{
+    solana_pubkey: "demo_bootcamp_010",
+    creator_wallet: "E5k4pce2gbPhd2y3rBVfCnNKe4hqVJvsuswaNZGEA9nz",
+    title: "The Lobby Bootcamp — Esports Retreat in Almaty",
+    description: "The first esports retreat in Central Asia. A cottage in the Almaty foothills with five gaming PCs, a streaming station, six beds, and one mission — give serious CS2 players a place to live, train, and grow as a team.",
+    category: "Community",
+    status: "active",
+    goal_lamports: 200 * sol,
+    raised_lamports: 0,
+    backers_count: 0,
+    milestones_count: 4,
+    milestones_approved: 0,
+    token_mint_address: "mint_bootcamp_010",
+    tokens_per_lamport: 5_000,
+    # Foundation v1 story fields
+    problem: "CIS has 30 million CS2 players and zero infrastructure for them. In Almaty alone there are over 600 gaming clubs — all of them computer cafes, not training facilities. You rent a PC by the hour, bring your own peripherals, go home when your session ends. You can't stay overnight. You can't store equipment. You can't review demos with your team after midnight. For someone who wants to actually become a competitive player, there is no place to go in this region. Meanwhile Korea, Germany, Sweden, US have had bootcamps since 2002 — team houses with 24/7 access, coaches, kitchens, beds. We surveyed 84 CS2 players across Almaty, Astana, Tashkent, Bishkek — 7 of 84 had ever played from the same location as their whole team for more than one night. Zero had been in a place built for the purpose.",
+    solution: "A rented two-storey cottage in the Almaty foothills, 30 minutes from city center. Training room: 5 gaming PCs (i7-14700K, RTX 4070 Super, 240Hz monitors), 1 streaming/coaching station, 1 Gbps fiber. Common space: kitchen, 8-seat dining table, lounge with projector, outdoor terrace with mountain view. Sleeping: 3 bedrooms, 6 beds, 2 bathrooms. Teams book 5-day retreats — arrive Sunday night, train Monday through Friday with a coach, play scrims and ranked, review demos, eat together, leave Friday as a different team.",
+    why_now: "Three things converged: CS2 replaced CS:GO and reset the competitive ladder — every team in CIS is rebuilding strats from scratch, which means demand for focused practice is at an all-time high. Second, the Kazakhstan esports federation is launching a new national ranking system that rewards teams who train together. Third, we already have the community — the-lobby.pro platform has active tournament players, and Clash Arena events proved the demand.",
+    background: "We've been in this for three years. Khakim Yessenzhanov built The Lobby — a tournament platform at the-lobby.pro with active CS2 leagues. Alisher Yessenzhanov organized Clash Arena — Almaty's first grassroots CS2 LAN at 322 CyberLounge. Together we've seen hundreds of players who want to improve but have nowhere to go. This bootcamp is the answer to the question every serious player has asked us: where can my team actually train?",
+    risks: "1. Construction delays — Cottage renovation depends on contractor availability. Mitigated by starting lease in July (low season) and having backup venues scouted. 2. Demand risk — What if teams don't book? We have pre-interest from 12 teams via the-lobby.pro community + Clash Arena alumni. First 3 months of weekends are spoken for before we open. 3. Equipment costs fluctuate — GPU/monitor prices volatile. Budget includes 15% hardware buffer. We'll publish actual purchase receipts. 4. Location may change — If the specific cottage falls through, we move to another in the same area. The concept isn't tied to one building. 5. We're two people — Small team risk. Mitigated by The Lobby platform infrastructure (booking, payments, scheduling already built).",
+    team_members: [
+      %{"name" => "Khakim Yessenzhanov", "role" => "Co-founder & Platform", "social_link" => "https://x.com/khakim_y"},
+      %{"name" => "Alisher Yessenzhanov", "role" => "Co-founder & Operations", "social_link" => ""}
+    ],
+    tier_config: [
+      %{"name" => "Founders", "multiplier" => 1.0, "max_spots" => 20},
+      %{"name" => "Early Backers", "multiplier" => 0.7, "max_spots" => 50},
+      %{"name" => "Supporters", "multiplier" => 0.5, "max_spots" => nil}
+    ],
+    vote_period_days: 7,
+    quorum_pct: Decimal.new("0.2000"),
+    approval_threshold_pct: Decimal.new("0.5000"),
+    faq: [
+      %{"q" => "Where exactly is the bootcamp?", "a" => "Almaty foothills, ~30 min from city center. Exact address shared with backers after lease is signed."},
+      %{"q" => "What games do you support?", "a" => "CS2 at launch. Stretch goals unlock Dota 2 and Valorant setups."},
+      %{"q" => "Can individuals book, or only teams?", "a" => "Both. Solo players can join open weekends. Teams book 5-day retreats."},
+      %{"q" => "Is there a coach?", "a" => "Yes — a contracted CS2 coach for team sessions. Individual coaching available separately."},
+      %{"q" => "What's the minimum team size?", "a" => "3 players minimum for a team booking. We can mix partial teams for open weekends."},
+      %{"q" => "Do backers get lifetime benefits?", "a" => "Yes. Founders tier gets permanent 30% discount. All backers get priority booking for life."},
+      %{"q" => "What happens if the campaign doesn't reach its goal?", "a" => "On Qadam, funds are held in escrow and released per milestone. If milestones fail, community votes on refund."},
+      %{"q" => "Can I visit before backing?", "a" => "Yes — we'll host an open day in Almaty once the cottage is leased. Backers get first invite."}
+    ],
+    location: "Almaty, Kazakhstan",
+    launched_at: DateTime.utc_now() |> DateTime.truncate(:second),
+    funding_deadline: future.(35),
+    milestones: [
+      %{index: 0, title: "Lease + Renovation", description: "Lease the cottage, begin renovation, install electrical and internet infrastructure. Publish photos and floor plan.", acceptance_criteria: "Lease document hash on-chain. 3+ photos of renovation progress published in campaign update. Internet speed test screenshot showing 1 Gbps.", amount_lamports: 60 * sol, deadline: future.(60), status: "pending"},
+      %{index: 1, title: "PCs + Equipment Installed", description: "Assemble and install 5 gaming PCs, streaming station, monitors, peripherals. Test all equipment.", acceptance_criteria: "5-minute video walkthrough of training room with all PCs running. Equipment spec sheet published. Network latency test results.", amount_lamports: 60 * sol, deadline: future.(90), status: "pending"},
+      %{index: 2, title: "Soft Opening + First Cohort", description: "First weekend with Founders-tier backers. First full team bootcamp week. Collect feedback.", acceptance_criteria: "Live photos from bootcamp weekend. Signed attendance from at least 4 backers. Post-retreat survey results published.", amount_lamports: 50 * sol, deadline: future.(120), status: "pending"},
+      %{index: 3, title: "Public Opening", description: "Public booking calendar live. First public bookings accepted. Marketing launch.", acceptance_criteria: "Booking page live at the-lobby.pro/bootcamp. At least 3 public bookings confirmed. First month revenue report.", amount_lamports: 30 * sol, deadline: future.(150), status: "pending"}
+    ]
+  },
 ]
 
 for campaign_data <- campaigns do

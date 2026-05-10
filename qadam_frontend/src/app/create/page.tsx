@@ -45,6 +45,7 @@ const STEPS = [
 const CATEGORIES = [
   "Tech", "Hardware", "Software", "Art & Design", "Music",
   "Film", "Education", "Community", "Research", "Climate",
+  "Experience", "Sports",
 ];
 
 const ACCENT_COLORS = [

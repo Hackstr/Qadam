@@ -28,6 +28,8 @@ const CATEGORY_SWATCHES: Record<string, string> = {
   Community: "bg-[var(--mustard)]",
   Research: "bg-[var(--terracotta)]/70",
   Climate: "bg-amber-500",
+  Experience: "bg-amber-400",
+  Sports: "bg-foreground/80",
 };
 
 const CATEGORIES = Object.keys(CATEGORY_SWATCHES);
