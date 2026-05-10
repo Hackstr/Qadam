@@ -330,7 +330,7 @@ function CampaignDetailContent() {
                 <div className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground font-bold mb-1.5">Token</div>
                 <div className="font-display text-[22px] leading-none tracking-[-0.02em]">{tokenName}</div>
                 <div className="text-[11px] text-muted-foreground mt-1">
-                  {campaign.tokens_per_lamport ? `1 SOL = ${Math.round(campaign.tokens_per_lamport * 1e9)} pts` : "\u00A0"}
+                  {campaign.tokens_per_lamport ? `1 SOL = ${campaign.tokens_per_lamport.toLocaleString()} pts` : "\u00A0"}
                 </div>
               </div>
             </div>
@@ -496,17 +496,18 @@ function CampaignDetailContent() {
                       variant="connected"
                       size="md"
                     />
-                    <div className="flex mt-3">
+                    <div className="flex mt-3 gap-1">
                       {campaign.milestones.map((m, i) => {
                         const isDone = m.status === "approved";
                         const isVoting = ["voting_active", "submitted", "extension_requested"].includes(m.status);
                         return (
-                          <div key={m.id} className="flex-1 text-center">
-                            <p className="text-xs font-medium truncate">{m.title || `M${i + 1}`}</p>
-                            <p className={`text-[10px] ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
-                              {isDone ? "Approved" : isVoting ? "Voting" : "Pending"}
+                          <div key={m.id} className={`flex-1 text-center p-2.5 rounded-xl border transition-colors ${isDone ? "bg-green-50/50 border-green-200/50" : isVoting ? "bg-purple-50/50 border-purple-200/50" : "bg-card border-border"}`}>
+                            <p className="font-mono text-[10px] text-muted-foreground mb-0.5">M{i + 1}</p>
+                            <p className="text-xs font-medium truncate">{m.title || `Milestone ${i + 1}`}</p>
+                            <p className={`text-[10px] font-semibold mt-0.5 ${isDone ? "text-green-600" : isVoting ? "text-purple-600" : "text-muted-foreground"}`}>
+                              {isDone ? "✓ Approved" : isVoting ? "● Voting" : "○ Pending"}
                             </p>
-                            <p className="text-[10px] text-muted-foreground">{formatSol(m.amount_lamports)}</p>
+                            <p className="font-mono text-[10px] text-muted-foreground mt-0.5">{formatSol(m.amount_lamports)}</p>
                           </div>
                         );
                       })}
