@@ -1,6 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Landing page has its own rich footer — skip global one
+  if (pathname === "/") return null;
+
   return (
     <footer className="border-t bg-secondary/50 py-8 mt-auto">
       <div className="container mx-auto px-4">
