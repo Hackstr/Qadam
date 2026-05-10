@@ -200,75 +200,40 @@ export default function Home() {
               transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
               className="hidden lg:block"
             >
-              <div className="relative aspect-[5/5.4] bg-card border border-foreground/10 rounded-3xl overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.6),0_22px_44px_-28px_rgba(22,32,26,0.18)]">
-                {/* Diagonal hatching */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      "repeating-linear-gradient(135deg, transparent 0 14px, rgba(22,32,26,0.035) 14px 15px)",
-                  }}
-                />
-
-                {/* Hero illustration */}
+              <div className="relative aspect-[5/5.4]">
+                {/* Hero illustration — no card background, clean */}
                 <img
                   src="/man-in-background.png"
                   alt="Builder on Qadam"
-                  className="absolute inset-0 w-full h-full object-contain object-center select-none"
-                  style={{ mixBlendMode: "multiply" }}
+                  className="w-full h-full object-contain object-center select-none"
                   draggable={false}
                 />
 
                 {/* Floating badge: Community Approved (top-left) */}
-                <div className="absolute top-5 left-5 bg-card border border-foreground/10 rounded-[14px] px-3.5 py-2.5 flex items-center gap-2.5 text-[13px] font-semibold shadow-[0_12px_28px_-16px_rgba(22,32,26,0.25)] whitespace-nowrap">
+                <div className="absolute top-4 left-0 bg-card/90 backdrop-blur-sm border border-foreground/10 rounded-full px-3.5 py-2 flex items-center gap-2 text-[13px] font-semibold shadow-lg whitespace-nowrap -rotate-[4deg]">
                   <span className="w-[18px] h-[18px] rounded-full bg-amber-50 text-amber-500 inline-grid place-items-center">
                     <Check className="w-3 h-3" />
                   </span>
                   Community Approved
                 </div>
 
-                {/* Floating badge: Milestone 3 of 5 (top-right) */}
-                <div className="absolute top-5 right-5 bg-card border border-foreground/10 rounded-[14px] px-3.5 py-2.5 flex items-center gap-2.5 text-[13px] font-semibold shadow-[0_12px_28px_-16px_rgba(22,32,26,0.25)] whitespace-nowrap">
-                  <span
-                    className="w-[18px] h-[18px] rounded-full inline-grid place-items-center"
-                    style={{
-                      background: "color-mix(in srgb, var(--terracotta) 12%, transparent)",
-                      color: "var(--terracotta)",
-                    }}
-                  >
-                    <span className="text-[10px] font-bold">+</span>
-                  </span>
-                  Milestone&nbsp;3 of&nbsp;5
-                </div>
-
-                {/* Mini on-chain ticker (center-left) */}
-                <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-card border border-foreground/10 rounded-xl px-3 py-2.5 font-mono text-[11px] text-foreground/80 shadow-[0_10px_22px_-14px_rgba(22,32,26,0.2)] w-[200px]">
-                  <div className="flex justify-between py-0.5 whitespace-nowrap gap-2">
-                    <span>tx . release</span>
-                    <span className="text-amber-500">+&#9702; 480</span>
-                  </div>
-                  <div className="flex justify-between py-0.5 whitespace-nowrap gap-2 border-t border-dashed border-foreground/10">
-                    <span>vote . approve</span>
-                    <span className="text-amber-500">87%</span>
-                  </div>
-                  <div className="flex justify-between py-0.5 whitespace-nowrap gap-2 border-t border-dashed border-foreground/10">
-                    <span>backers</span>
-                    <span>1,240</span>
-                  </div>
-                  <div className="flex justify-between py-0.5 whitespace-nowrap gap-2 border-t border-dashed border-foreground/10">
-                    <span>chain</span>
-                    <span>solana</span>
-                  </div>
-                </div>
-
                 {/* Floating badge: Escrow protected (bottom-right, dark) */}
-                <div className="absolute bottom-5 right-5 bg-foreground text-background rounded-[14px] px-3.5 py-2.5 flex items-center gap-2.5 text-[13px] font-semibold shadow-[0_12px_28px_-16px_rgba(22,32,26,0.25)] whitespace-nowrap border border-transparent">
+                <div className="absolute bottom-16 right-0 bg-foreground/90 text-background rounded-full px-3.5 py-2 flex items-center gap-2 text-[13px] font-semibold shadow-lg whitespace-nowrap rotate-[3deg]">
                   <span className="w-[18px] h-[18px] rounded-full bg-white/[0.12] inline-grid place-items-center">
                     <Lock className="w-3 h-3" />
                   </span>
                   Escrow protected
                 </div>
 
+                {/* Milestone badge — below image, not overlapping */}
+                <div className="flex justify-center mt-3">
+                  <div className="bg-card border border-foreground/10 rounded-full px-4 py-2 flex items-center gap-2.5 text-[12px] font-medium shadow-sm whitespace-nowrap text-muted-foreground">
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    Milestone 3 of 5
+                    <span className="text-foreground/40">·</span>
+                    <span className="font-mono text-[11px]">87% approved</span>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
