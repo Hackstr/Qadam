@@ -318,7 +318,16 @@ function CampaignDetailContent() {
               <div className="px-4.5 border-r border-foreground/[0.06]">
                 <div className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground font-bold mb-1.5">Backers</div>
                 <div className="font-display text-[22px] leading-none tracking-[-0.02em]">{campaign.backers_count}</div>
-                <div className="text-[11px] text-muted-foreground mt-1">&nbsp;</div>
+                <div className="text-[11px] text-muted-foreground mt-1">
+                  {campaign.tier_config && campaign.tier_config.length > 0
+                    ? campaign.tier_config.map((t, i) => (
+                        <span key={i}>
+                          {i > 0 && " · "}
+                          {t.max_spots ? `${t.max_spots}` : "∞"} {t.name}
+                        </span>
+                      ))
+                    : "\u00A0"}
+                </div>
               </div>
               <div className="px-4.5 border-r border-foreground/[0.06]">
                 <div className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground font-bold mb-1.5">Milestones</div>

@@ -13,6 +13,7 @@ export interface TierConfigItem {
 export interface TierConfiguratorProps {
   value: TierConfigItem[];
   onChange: (tiers: TierConfigItem[]) => void;
+  goalSol?: number;
 }
 
 const DEFAULT_TIERS: TierConfigItem[] = [
@@ -21,7 +22,7 @@ const DEFAULT_TIERS: TierConfigItem[] = [
   { name: "Supporters", multiplier: 0.5, max_spots: null },
 ];
 
-export function TierConfigurator({ value, onChange }: TierConfiguratorProps) {
+export function TierConfigurator({ value, onChange, goalSol }: TierConfiguratorProps) {
   const tiers = value.length > 0 ? value : DEFAULT_TIERS;
 
   const updateTier = (idx: number, field: keyof TierConfigItem, val: any) => {
@@ -137,8 +138,33 @@ export function TierConfigurator({ value, onChange }: TierConfiguratorProps) {
       )}
 
       {/* Preview */}
-      <div className="p-3 bg-amber-50/50 border border-amber-100 rounded-lg">
+      <div className="p-3 bg-amber-50/50 border border-amber-100 rounded-lg space-y-2">
         <p className="text-xs text-amber-700">{previewParts.join(". ")}.</p>
+        {goalSol && goalSol > 0 && (
+          <div className="pt-2 border-t border-amber-200/50">
+            <p className="text-[10px] font-semibold text-amber-800 uppercase tracking-wider mb-1.5">Fundraising math</p>
+            <div className="space-y-1">
+              {tiers.map((t, i) => {
+                const isLast = i === tiers.length - 1;
+                const spots = t.max_spots || "∞";
+                const avgSol = goalSol / (tiers.reduce((sum, tt) => sum + (tt.max_spots || 100), 0) || 1);
+                const tierSol = isLast ? "remainder" : `~${(avgSol * (t.max_spots || 0)).toFixed(1)} SOL`;
+                return (
+                  <div key={i} className="flex items-center justify-between text-[11px]">
+                    <span className="text-amber-700">
+                      {t.name} · {spots} spots · {Math.round(t.multiplier * 100)}%
+                    </span>
+                    <span className="font-mono text-amber-800">{isLast ? "∞" : `${spots} × avg`}</span>
+                  </div>
+                );
+              })}
+              <div className="flex items-center justify-between text-[11px] pt-1 border-t border-amber-200/30 font-semibold text-amber-800">
+                <span>Total capacity</span>
+                <span className="font-mono">{tiers.reduce((sum, t) => sum + (t.max_spots || 0), 0)}+ backers</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

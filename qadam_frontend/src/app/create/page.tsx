@@ -902,7 +902,7 @@ export default function CreateCampaignPage() {
               {/* Tier configurator */}
               <Card>
                 <CardContent className="p-5">
-                  <TierConfigurator value={tierConfig} onChange={setTierConfig} />
+                  <TierConfigurator value={tierConfig} onChange={setTierConfig} goalSol={goalNum} />
                 </CardContent>
               </Card>
 
