@@ -215,8 +215,8 @@ export default function Home() {
                   className="absolute w-[62%] aspect-square left-1/2 top-[46%] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-90"
                   style={{
                     background:
-                      "radial-gradient(circle at 30% 30%, #E2A24F 0%, #C2532E 70%)",
-                    boxShadow: "0 30px 80px -30px rgba(194,83,46,0.45)",
+                      "radial-gradient(circle at 30% 30%, var(--mustard) 0%, var(--terracotta) 70%)",
+                    boxShadow: "0 30px 80px -30px color-mix(in srgb, var(--terracotta) 45%, transparent)",
                   }}
                 />
 
@@ -233,8 +233,8 @@ export default function Home() {
                   <span
                     className="w-[18px] h-[18px] rounded-full inline-grid place-items-center"
                     style={{
-                      background: "rgba(194,83,46,0.12)",
-                      color: "#C2532E",
+                      background: "color-mix(in srgb, var(--terracotta) 12%, transparent)",
+                      color: "var(--terracotta)",
                     }}
                   >
                     <span className="text-[10px] font-bold">+</span>
@@ -287,9 +287,9 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-14 bg-foreground text-background rounded-[22px] px-9 py-7 grid grid-cols-1 md:grid-cols-[1.1fr_repeat(4,1fr)] gap-6 items-center"
           >
-            <div className="font-display text-lg leading-snug text-[#F4EFE2] max-w-[280px]">
+            <div className="font-display text-lg leading-snug text-background max-w-[280px]">
               Live, on-chain,{" "}
-              <span className="text-[#9FCBA8]">verifiable</span>. Every number
+              <span className="text-amber-300">verifiable</span>. Every number
               below is queryable from any Solana RPC.
             </div>
             {[
@@ -311,10 +311,10 @@ export default function Home() {
               },
             ].map((cell) => (
               <div key={cell.lab}>
-                <div className="font-display text-[32px] leading-none tracking-tight text-[#F4EFE2]">
+                <div className="font-display text-[32px] leading-none tracking-tight text-background">
                   {cell.num}
                 </div>
-                <div className="mt-2 text-xs text-[#A9AC9E] tracking-wide">
+                <div className="mt-2 text-xs text-muted-foreground tracking-wide">
                   {cell.lab}
                 </div>
               </div>
@@ -609,21 +609,21 @@ export default function Home() {
               variants={fadeUp}
               className="rounded-[22px] p-9 bg-foreground text-background flex flex-col min-h-[320px]"
             >
-              <span className="text-[11px] tracking-[0.14em] uppercase text-[#9FA39B] font-semibold">
+              <span className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground font-semibold">
                 For Backers
               </span>
-              <h4 className="font-display text-[32px] leading-[1.1] tracking-tight mt-3 mb-3.5 text-[#F4EFE2]">
+              <h4 className="font-display text-[32px] leading-[1.1] tracking-tight mt-3 mb-3.5 text-background">
                 Back early. Vote often. Earn{" "}
-                <em className="italic text-[#9FCBA8]">ownership</em>.
+                <em className="italic text-amber-300">ownership</em>.
               </h4>
-              <p className="text-[14.5px] leading-relaxed text-[#C7C9BF] max-w-[360px] mb-6">
+              <p className="text-[14.5px] leading-relaxed text-foreground/60 max-w-[360px] mb-6">
                 Funds sit safely in escrow. You vote on progress. If a project
                 doesn&apos;t deliver, you get refunded. If it ships — you carry
                 ownership points.
               </p>
               <div className="mt-auto">
                 <Link href="/campaigns">
-                  <Button className="gap-2.5 bg-[#F4EFE2] hover:bg-white text-foreground rounded-full px-5 py-3 h-auto text-[14.5px] font-semibold border-transparent">
+                  <Button className="gap-2.5 bg-secondary hover:bg-card text-foreground rounded-full px-5 py-3 h-auto text-[14.5px] font-semibold border-transparent">
                     Explore Campaigns
                     <ArrowIcon />
                   </Button>
@@ -880,7 +880,7 @@ function EscrowVisual() {
           r.status === "released"
             ? "bg-amber-500"
             : r.status === "pending"
-              ? "bg-[#C8923A]"
+              ? "bg-[var(--mustard)]"
               : "bg-foreground";
         return (
           <div
@@ -950,7 +950,7 @@ function VotingVisual() {
             className={`font-mono text-[11px] px-2 py-0.5 rounded-full ${
               v.vote === "approve"
                 ? "text-amber-500 bg-amber-50"
-                : "text-[#C2532E] bg-[#C2532E]/10"
+                : "text-[var(--terracotta)] bg-[var(--terracotta)]/10"
             }`}
           >
             {v.vote}
@@ -1031,7 +1031,7 @@ function OwnershipVisual() {
           </div>
         </div>
         <Link href="/portfolio">
-          <Button className="bg-[#F4EFE2] hover:bg-white text-foreground rounded-full px-3.5 py-2 h-auto text-xs font-semibold border-transparent">
+          <Button className="bg-secondary hover:bg-card text-foreground rounded-full px-3.5 py-2 h-auto text-xs font-semibold border-transparent">
             Claim rewards &rarr;
           </Button>
         </Link>
@@ -1127,7 +1127,7 @@ function CampaignCard({
                   j < msApproved
                     ? "bg-amber-500"
                     : j === msCurrent
-                      ? "bg-[#C8923A]"
+                      ? "bg-[var(--mustard)]"
                       : "bg-foreground/10"
                 }`}
               />
@@ -1231,7 +1231,7 @@ function PlaceholderCampaignCard({ idx }: { idx: number }) {
                 done
                   ? "bg-amber-500"
                   : j === p.currentPip
-                    ? "bg-[#C8923A]"
+                    ? "bg-[var(--mustard)]"
                     : "bg-foreground/10"
               }`}
             />

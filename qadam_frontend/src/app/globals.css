@@ -121,6 +121,10 @@
   --sidebar-border: rgba(26, 36, 33, 0.08);
   --sidebar-ring: #7A9985;
 
+  /* ═══ Landing-specific accents ═══ */
+  --terracotta: #C2532E;
+  --mustard: #C8923A;
+
   /* Brand colors are defined via @theme inline (amber→green remap)
      and :root CSS variables above. No separate --qadam-* tokens needed.
      Single source of truth: @theme for Tailwind, :root for CSS vars. */
