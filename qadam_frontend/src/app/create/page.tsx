@@ -347,28 +347,26 @@ export default function CreateCampaignPage() {
               const Icon = s.icon;
               const isActive = step === s.num;
               const isVisited = s.num <= maxStepVisited && !isActive;
-              const isLocked = s.num > maxStepVisited;
               const labels = ["Name, pitch, goal", "Problem, solution, risks", "Your team", "Milestones and criteria", "Review and launch"];
               return (
                 <button
                   key={s.num}
-                  onClick={() => !isLocked && goToStep(s.num)}
-                  disabled={isLocked}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
+                  onClick={() => goToStep(s.num)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 cursor-pointer ${
                     isActive ? "bg-amber-50 border border-amber-200 shadow-sm" :
-                    isVisited ? "hover:bg-secondary cursor-pointer border border-transparent" :
-                    "opacity-40 cursor-not-allowed"
+                    isVisited ? "hover:bg-secondary border border-transparent" :
+                    "hover:bg-secondary border border-transparent"
                   }`}
                 >
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
                     isActive ? "bg-amber-500 text-white" :
                     isVisited ? "bg-green-500 text-white" :
-                    "bg-gray-100 text-gray-400"
+                    "bg-foreground/10 text-foreground/40"
                   }`}>
                     {isVisited ? <Check className="h-3.5 w-3.5" /> : s.num}
                   </div>
                   <div>
-                    <p className={`text-sm font-medium ${isActive ? "text-amber-700" : isVisited ? "text-foreground" : "text-muted-foreground"}`}>
+                    <p className={`text-sm font-medium ${isActive ? "text-amber-700" : isVisited ? "text-foreground" : "text-foreground/60"}`}>
                       {s.num}. {s.title}
                     </p>
                     <p className="text-xs text-muted-foreground leading-tight">{labels[s.num - 1]}</p>
@@ -385,12 +383,15 @@ export default function CreateCampaignPage() {
         <div className="md:hidden flex items-center gap-2 mb-6">
           {STEPS.map((s, i) => (
             <div key={s.num} className="flex items-center flex-1">
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                step === s.num ? "bg-amber-500 text-white" : step > s.num ? "bg-green-500 text-white" : "bg-gray-100 text-gray-400"
-              }`}>
-                {step > s.num ? <Check className="h-3 w-3" /> : s.num}
-              </div>
-              {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-1 ${step > s.num ? "bg-green-300" : "bg-gray-100"}`} />}
+              <button
+                onClick={() => goToStep(s.num)}
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold cursor-pointer ${
+                  step === s.num ? "bg-amber-500 text-white" : s.num <= maxStepVisited ? "bg-green-500 text-white" : "bg-foreground/10 text-foreground/40"
+                }`}
+              >
+                {s.num <= maxStepVisited && s.num !== step ? <Check className="h-3 w-3" /> : s.num}
+              </button>
+              {i < STEPS.length - 1 && <div className={`flex-1 h-px mx-1 ${s.num <= maxStepVisited ? "bg-green-300" : "bg-foreground/10"}`} />}
             </div>
           ))}
         </div>
