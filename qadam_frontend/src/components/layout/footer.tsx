@@ -20,7 +20,6 @@ export function Footer() {
             <Link href="/faq" className="hover:text-foreground transition-colors">FAQ</Link>
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-            <a href="https://github.com/Hackstr/Qadam" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
             <span>&middot;</span>
             <span>Powered by Solana</span>
           </div>

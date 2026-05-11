@@ -626,7 +626,7 @@ export default function Home() {
          ════════════════════════════════════════════════ */}
       <footer className="border-t border-foreground/10 pt-14 pb-8 mt-4">
         <div className="max-w-[1240px] mx-auto px-8">
-          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10 mb-14">
+          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-10 mb-14">
             {/* Brand */}
             <div>
               <h3 className="font-display text-[28px] tracking-tight mb-3.5 flex items-center gap-2">
@@ -639,7 +639,7 @@ export default function Home() {
               </p>
               <div className="inline-flex items-center gap-2.5 px-3 py-2 border border-foreground/10 rounded-[10px] bg-card font-mono text-xs text-foreground/80">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_0_3px_rgba(45,95,78,0.15)]" />
-                Program . Qa1mProgxxx...ZpKt . Audited by OtterSec
+                Program . Qa1mProgxxx...ZpKt
               </div>
             </div>
 
@@ -684,51 +684,6 @@ export default function Home() {
               </ul>
             </div>
 
-            {/* Developers */}
-            <div>
-              <h6 className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground font-bold mb-3.5">
-                Developers
-              </h6>
-              <ul className="flex flex-col gap-2">
-                <li>
-                  <Link
-                    href="/faq"
-                    className="text-sm text-foreground/80 hover:text-amber-500 transition-colors"
-                  >
-                    Documentation
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="https://github.com/Hackstr/Qadam"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-foreground/80 hover:text-amber-500 transition-colors"
-                  >
-                    Smart contract
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-sm text-foreground/80 hover:text-amber-500 transition-colors"
-                  >
-                    Audit report
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://github.com/Hackstr/Qadam"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-foreground/80 hover:text-amber-500 transition-colors"
-                  >
-                    GitHub
-                  </a>
-                </li>
-              </ul>
-            </div>
-
             {/* Community */}
             <div>
               <h6 className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground font-bold mb-3.5">
@@ -740,31 +695,7 @@ export default function Home() {
                     href="#"
                     className="text-sm text-foreground/80 hover:text-amber-500 transition-colors"
                   >
-                    Discord
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-sm text-foreground/80 hover:text-amber-500 transition-colors"
-                  >
                     X / Twitter
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-sm text-foreground/80 hover:text-amber-500 transition-colors"
-                  >
-                    Status
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="text-sm text-foreground/80 hover:text-amber-500 transition-colors"
-                  >
-                    Contact
                   </a>
                 </li>
               </ul>
