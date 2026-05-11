@@ -25,23 +25,28 @@ qadam_frontend/.next
 .env.*
 !.env.example
 
-# IDE
+# IDE & tools
 .idea
 .vscode
 *.swp
 .playwright-mcp/
 
-# Working artifacts that don't belong in git
-# Screenshots (audit, design refresh, ad-hoc) — keep them out of repo
+# AI agent / skill configs (local per-machine)
+.agents/
+.claude/skills/
+.kiro/
+.windsurf/
+skills-lock.json
+
+# Design files (binary, managed externally)
+*.pen
+
+# Screenshots (local working artifacts)
 *.png
 !qadam_frontend/public/**/*.png
 !qadam_frontend/src/**/*.png
-
-# Internal scratch folder for Claude Code mega-prompts
-.claude-prompts/
-
-# Locally-cached test data
-E2E_TEST_DATA.md
-
-# Local screenshots (live demo verification, Colosseum prep, etc.)
 .screenshots/
+
+# Internal scratch
+.claude-prompts/
+E2E_TEST_DATA.md
