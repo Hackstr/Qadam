@@ -32,9 +32,9 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 pointer-events-none">
       {/* Desktop nav */}
       <nav className="pointer-events-auto hidden md:flex items-center gap-1 bg-card/90 backdrop-blur-xl border border-foreground/[0.08] shadow-lg rounded-full px-2 py-1.5">
-        <Link href="/" className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-foreground/[0.04] transition-colors">
-          <img src="/qadam_logo_sm.png" alt="Qadam" className="h-7 w-auto" />
-          <span className="font-display text-[17px] tracking-tight">Qadam</span>
+        <Link href="/" className="flex items-center gap-1 px-3 py-1.5 rounded-full hover:bg-foreground/[0.04] transition-colors">
+          <img src="/qadam_logo_sm.png" alt="" className="h-7 w-auto" />
+          <span className="font-display text-[18px] font-medium tracking-tight">adam</span>
         </Link>
 
         <div className="w-px h-5 bg-foreground/[0.08]" />
@@ -79,9 +79,9 @@ export function Header() {
 
       {/* Mobile nav */}
       <div className="pointer-events-auto md:hidden flex items-center justify-between w-full bg-card/90 backdrop-blur-xl border border-foreground/[0.08] shadow-lg rounded-2xl px-3 py-2">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/qadam_logo_sm.png" alt="Qadam" className="h-7 w-auto" />
-          <span className="font-display text-[15px] tracking-tight">Qadam</span>
+        <Link href="/" className="flex items-center gap-1">
+          <img src="/qadam_logo_sm.png" alt="" className="h-6 w-auto" />
+          <span className="font-display text-[16px] font-medium tracking-tight">adam</span>
         </Link>
         <div className="flex items-center gap-2">
           <WalletMultiButton

@@ -26,6 +26,10 @@ export const metadata: Metadata = {
   title: "Qadam — Build step by step",
   description:
     "Community-governed crowdfunding on Solana. SOL stays in escrow until backers approve each milestone.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "Qadam — Crowdfunding where progress unlocks funding",
     description: "Back projects on Solana. Community votes on milestones. Your contribution earns you a share in the project.",
