@@ -26,6 +26,7 @@ import {
   Image, Play,
 } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useState } from "react";
 import { CATEGORY_COVERS, DEFAULT_COVER } from "@/components/campaign/campaign-card";
@@ -380,23 +381,34 @@ function CampaignDetailContent() {
           {/* Left — Content */}
           <div>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="border-b border-border bg-transparent p-0 h-auto gap-1">
-                <TabsTrigger value="about" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-4.5 pb-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground">About</TabsTrigger>
-                <TabsTrigger value="milestones" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-4.5 pb-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground flex items-center gap-2">
-                  Milestones
-                  {campaign.milestones_count > 0 && <span className="font-mono text-[11px] px-1.5 py-px rounded-full bg-amber-100 text-amber-600 font-semibold">{campaign.milestones_count}</span>}
-                </TabsTrigger>
-                <TabsTrigger value="updates" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-4.5 pb-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground flex items-center gap-2">
-                  Updates
-                  {updates.length > 0 && <span className="font-mono text-[11px] px-1.5 py-px rounded-full bg-amber-100 text-amber-600 font-semibold">{updates.length}</span>}
-                </TabsTrigger>
-                <TabsTrigger value="backers" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-4.5 pb-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground flex items-center gap-2">
-                  Backers
-                  {campaign.backers_count > 0 && <span className="font-mono text-[11px] px-1.5 py-px rounded-full bg-amber-100 text-amber-600 font-semibold">{campaign.backers_count}</span>}
-                </TabsTrigger>
-                {campaign.faq && campaign.faq.length > 0 && (
-                  <TabsTrigger value="faq" className="rounded-none border-b-2 border-transparent data-[state=active]:border-amber-500 data-[state=active]:bg-transparent px-4.5 pb-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground">FAQ</TabsTrigger>
-                )}
+              <TabsList className="relative border-b border-border bg-transparent p-0 h-auto gap-0">
+                {[
+                  { value: "about", label: "About" },
+                  { value: "milestones", label: "Milestones", count: campaign.milestones_count },
+                  { value: "updates", label: "Updates", count: updates.length },
+                  { value: "backers", label: "Backers", count: campaign.backers_count },
+                  ...(campaign.faq && campaign.faq.length > 0 ? [{ value: "faq", label: "FAQ" }] : []),
+                ].map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="relative rounded-none border-b-2 border-transparent data-[state=active]:border-transparent data-[state=active]:bg-transparent px-4.5 pb-3 text-sm font-medium text-muted-foreground data-[state=active]:text-foreground"
+                  >
+                    {activeTab === tab.value && (
+                      <motion.div
+                        layoutId="tab-underline"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                      />
+                    )}
+                    <span className="flex items-center gap-2">
+                      {tab.label}
+                      {"count" in tab && (tab as any).count > 0 && (
+                        <span className="font-mono text-[11px] px-1.5 py-px rounded-full bg-amber-100 text-amber-600 font-semibold">{(tab as any).count}</span>
+                      )}
+                    </span>
+                  </TabsTrigger>
+                ))}
               </TabsList>
 
               {/* About — Foundation v1 story split */}

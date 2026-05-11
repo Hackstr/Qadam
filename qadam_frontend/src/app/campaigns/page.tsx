@@ -178,13 +178,18 @@ export default function CampaignsPage() {
         <div className="flex flex-wrap gap-1.5 pt-4">
           <button
             onClick={() => setCategory(undefined)}
-            className={`inline-flex items-center gap-2 px-3 py-[7px] rounded-full text-[13px] font-medium transition-all border whitespace-nowrap ${
-              !category
-                ? "bg-foreground border-foreground text-background"
-                : "bg-transparent border-foreground/10 text-foreground/80 hover:border-foreground/20 hover:bg-card"
-            }`}
+            className="relative inline-flex items-center gap-2 px-3 py-[7px] rounded-full text-[13px] font-medium border border-transparent whitespace-nowrap"
           >
-            All
+            {!category && (
+              <motion.div
+                layoutId="category-pill"
+                className="absolute inset-0 bg-foreground rounded-full"
+                transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+              />
+            )}
+            <span className={`relative z-10 transition-colors ${!category ? "text-background" : "text-foreground/70 hover:text-foreground"}`}>
+              All
+            </span>
           </button>
           {CATEGORIES.map((cat) => (
             <button
@@ -192,16 +197,21 @@ export default function CampaignsPage() {
               onClick={() =>
                 setCategory(category === cat ? undefined : cat)
               }
-              className={`inline-flex items-center gap-2 px-3 py-[7px] rounded-full text-[13px] font-medium transition-all border whitespace-nowrap ${
-                category === cat
-                  ? "bg-foreground border-foreground text-background"
-                  : "bg-transparent border-foreground/10 text-foreground/80 hover:border-foreground/20 hover:bg-card"
-              }`}
+              className="relative inline-flex items-center gap-2 px-3 py-[7px] rounded-full text-[13px] font-medium border border-transparent whitespace-nowrap"
             >
+              {category === cat && (
+                <motion.div
+                  layoutId="category-pill"
+                  className="absolute inset-0 bg-foreground rounded-full"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                />
+              )}
               <span
-                className={`w-[7px] h-[7px] rounded-full ${CATEGORY_SWATCHES[cat] || "bg-foreground/40"}`}
+                className={`relative z-10 w-[7px] h-[7px] rounded-full ${category === cat ? "bg-background/60" : (CATEGORY_SWATCHES[cat] || "bg-foreground/40")}`}
               />
-              {cat}
+              <span className={`relative z-10 transition-colors ${category === cat ? "text-background" : "text-foreground/70 hover:text-foreground"}`}>
+                {cat}
+              </span>
             </button>
           ))}
         </div>
