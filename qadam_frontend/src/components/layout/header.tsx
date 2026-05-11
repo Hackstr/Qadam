@@ -34,7 +34,7 @@ export function Header() {
       <nav className="pointer-events-auto hidden md:flex items-center gap-1 bg-card/90 backdrop-blur-xl border border-foreground/[0.08] shadow-lg rounded-full px-2 py-1.5">
         <Link href="/" className="flex items-center gap-0 px-3 py-1.5 rounded-full hover:bg-foreground/[0.04] transition-colors">
           <img src="/qadam_logo_sm.png" alt="" className="h-7 w-auto -mr-0.5" />
-          <span className="font-display text-[18px] font-medium tracking-tight">adam</span>
+          <span className="font-display text-[18px] font-bold italic tracking-tight">adam</span>
         </Link>
 
         <div className="w-px h-5 bg-foreground/[0.08]" />
@@ -81,7 +81,7 @@ export function Header() {
       <div className="pointer-events-auto md:hidden flex items-center justify-between w-full bg-card/90 backdrop-blur-xl border border-foreground/[0.08] shadow-lg rounded-2xl px-3 py-2">
         <Link href="/" className="flex items-center gap-0">
           <img src="/qadam_logo_sm.png" alt="" className="h-6 w-auto -mr-0.5" />
-          <span className="font-display text-[16px] font-medium tracking-tight">adam</span>
+          <span className="font-display text-[16px] font-bold italic tracking-tight">adam</span>
         </Link>
         <div className="flex items-center gap-2">
           <WalletMultiButton
