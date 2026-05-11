@@ -33,7 +33,7 @@ export function Header() {
       {/* Desktop nav */}
       <nav className="pointer-events-auto hidden md:flex items-center gap-1 bg-card/90 backdrop-blur-xl border border-foreground/[0.08] shadow-lg rounded-full px-2 py-1.5">
         <Link href="/" className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-foreground/[0.04] transition-colors">
-          <img src="/qadam_logo.png" alt="Qadam" className="h-5 w-auto" />
+          <img src="/qadam_logo_sm.png" alt="Qadam" className="h-7 w-auto" />
           <span className="font-display text-[17px] tracking-tight">Qadam</span>
         </Link>
 
@@ -80,7 +80,7 @@ export function Header() {
       {/* Mobile nav */}
       <div className="pointer-events-auto md:hidden flex items-center justify-between w-full bg-card/90 backdrop-blur-xl border border-foreground/[0.08] shadow-lg rounded-2xl px-3 py-2">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/qadam_logo.png" alt="Qadam" className="h-5 w-auto" />
+          <img src="/qadam_logo_sm.png" alt="Qadam" className="h-7 w-auto" />
           <span className="font-display text-[15px] tracking-tight">Qadam</span>
         </Link>
         <div className="flex items-center gap-2">
