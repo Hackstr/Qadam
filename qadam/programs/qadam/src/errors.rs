@@ -105,6 +105,9 @@ pub enum QadamError {
     #[msg("Milestone is not currently in voting status")]
     MilestoneNotInVoting,
 
+    #[msg("Quorum not reached — not enough voting participation")]
+    QuorumNotMet,
+
     // Math
     #[msg("Arithmetic overflow")]
     MathOverflow,

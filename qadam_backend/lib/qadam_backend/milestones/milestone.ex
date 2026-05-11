@@ -25,12 +25,6 @@ defmodule QadamBackend.Milestones.Milestone do
     field :evidence_files, :map, default: %{}
     field :evidence_hash, :string
 
-    # AI decision
-    field :ai_decision, :string
-    field :ai_explanation, :string
-    field :ai_decision_hash, :string
-    field :ai_solana_tx, :string
-
     # Foundation v1 — structured acceptance criteria + deliverables
     field :acceptance_criteria_list, {:array, :string}, default: []
     field :deliverables, :string
@@ -52,7 +46,6 @@ defmodule QadamBackend.Milestones.Milestone do
       :campaign_id, :index, :title, :description, :acceptance_criteria,
       :amount_lamports, :deadline, :grace_deadline, :extension_deadline,
       :status, :evidence_text, :evidence_links, :evidence_files, :evidence_hash,
-      :ai_decision, :ai_explanation, :ai_decision_hash, :ai_solana_tx,
       :submitted_at, :decided_at, :released_at,
       :acceptance_criteria_list, :deliverables
     ])

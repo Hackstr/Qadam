@@ -42,3 +42,6 @@ qadam_frontend/.next
 
 # Locally-cached test data
 E2E_TEST_DATA.md
+
+# Local screenshots (live demo verification, Colosseum prep, etc.)
+.screenshots/

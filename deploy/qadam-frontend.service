@@ -9,7 +9,7 @@ Group=ubuntu
 WorkingDirectory=/home/ubuntu/qadam/qadam_frontend
 Environment=NODE_ENV=production
 Environment=PORT=3000
-Environment=NEXT_PUBLIC_API_URL=https://qadam.duckdns.org/api
+Environment=NEXT_PUBLIC_API_URL=https://qadam.tips/api
 Environment=NEXT_PUBLIC_SOLANA_NETWORK=devnet
 Environment=NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com
 Environment=NEXT_PUBLIC_PROGRAM_ID=4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj

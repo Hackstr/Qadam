@@ -56,8 +56,6 @@ defmodule QadamBackendWeb.AdminController do
           evidence_text: m.evidence_text,
           evidence_links: m.evidence_links,
           evidence_files: m.evidence_files,
-          ai_decision: m.ai_decision,
-          ai_explanation: m.ai_explanation,
           submitted_at: m.submitted_at,
           decided_at: m.decided_at,
           deadline: m.deadline,
@@ -74,28 +72,17 @@ defmodule QadamBackendWeb.AdminController do
     })
   end
 
-  @doc "Admin override decision on a voting_active milestone — updates DB + broadcasts Anchor tx"
+  @doc "Admin override decision on a voting_active milestone — updates DB state only.
+  On-chain resolution happens via resolve_vote (community voting). This is an emergency override."
   def decide(conn, %{"id" => id, "approved" => approved}) do
     milestone = Milestones.get_milestone!(id) |> QadamBackend.Repo.preload(:campaign)
     new_status = if approved, do: "approved", else: "rejected"
-    decision_hash = :crypto.strong_rand_bytes(32) |> Base.encode16(case: :lower)
 
     case Milestones.transition_state(milestone, new_status, %{decided_by: "admin"}) do
       {:ok, %{milestone: updated}} ->
-        # Broadcast Anchor transaction for admin_override_decision
-        if approved do
-          %{
-            milestone_id: updated.id,
-            instruction: "admin_override_decision",
-            ai_decision_hash: decision_hash
-          }
-          |> QadamBackend.Workers.TxBroadcastWorker.new()
-          |> Oban.insert()
-
-          # Update reputation
-          if milestone.campaign do
-            QadamBackend.Reputation.record_milestone_on_time(milestone.campaign.creator_wallet)
-          end
+        # Update reputation
+        if approved && milestone.campaign do
+          QadamBackend.Reputation.record_milestone_on_time(milestone.campaign.creator_wallet)
         end
 
         # Notify about decision
@@ -185,7 +172,6 @@ defmodule QadamBackendWeb.AdminController do
             acceptance_criteria: m.acceptance_criteria, status: m.status,
             amount_lamports: m.amount_lamports, deadline: m.deadline,
             evidence_text: m.evidence_text, evidence_links: m.evidence_links,
-            ai_decision: m.ai_decision, ai_explanation: m.ai_explanation,
             submitted_at: m.submitted_at, decided_at: m.decided_at, released_at: m.released_at,
           }
         end),

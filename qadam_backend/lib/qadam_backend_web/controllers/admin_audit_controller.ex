@@ -5,7 +5,6 @@ defmodule QadamBackendWeb.AdminAuditController do
 
   alias QadamBackend.Repo
   alias QadamBackend.Milestones.{Milestone, StateTransition}
-  alias QadamBackend.AI.AiDecision
   alias QadamBackend.Accounts.User
   alias QadamBackend.Campaigns.Campaign
   alias QadamBackend.Backers.BackerPosition
@@ -14,7 +13,7 @@ defmodule QadamBackendWeb.AdminAuditController do
 
   # ── Milestones ──
 
-  @doc "All milestones with filters: status, ai_decision, campaign_id, preset"
+  @doc "All milestones with filters: status, campaign_id, preset"
   def list_milestones(conn, params) do
     now = DateTime.utc_now()
     five_min_ago = DateTime.add(now, -300, :second)
@@ -27,11 +26,6 @@ defmodule QadamBackendWeb.AdminAuditController do
     query = case params["status"] do
       nil -> query
       s -> where(query, [m], m.status == ^s)
-    end
-
-    query = case params["ai_decision"] do
-      nil -> query
-      d -> where(query, [m], m.ai_decision == ^d)
     end
 
     query = case params["campaign_id"] do
@@ -59,7 +53,6 @@ defmodule QadamBackendWeb.AdminAuditController do
           index: m.index,
           title: m.title,
           status: m.status,
-          ai_decision: m.ai_decision,
           amount_lamports: m.amount_lamports,
           deadline: m.deadline,
           submitted_at: m.submitted_at,
@@ -80,13 +73,6 @@ defmodule QadamBackendWeb.AdminAuditController do
       |> order_by(asc: :inserted_at)
       |> Repo.all()
 
-    ai_decision =
-      AiDecision
-      |> where([d], d.milestone_id == ^id)
-      |> order_by(desc: :inserted_at)
-      |> limit(1)
-      |> Repo.one()
-
     json(conn, %{
       data: %{
         id: milestone.id,
@@ -103,19 +89,9 @@ defmodule QadamBackendWeb.AdminAuditController do
         evidence_text: milestone.evidence_text,
         evidence_links: milestone.evidence_links,
         evidence_files: milestone.evidence_files,
-        ai_decision: milestone.ai_decision,
-        ai_explanation: milestone.ai_explanation,
-        ai_solana_tx: milestone.ai_solana_tx,
         submitted_at: milestone.submitted_at,
         decided_at: milestone.decided_at,
         released_at: milestone.released_at,
-        ai_detail: ai_decision && %{
-          decision: ai_decision.decision,
-          explanation: ai_decision.explanation,
-          claude_model: ai_decision.claude_model,
-          latency_ms: ai_decision.latency_ms,
-          solana_tx_signature: ai_decision.solana_tx_signature,
-        },
         transitions: Enum.map(transitions, fn t ->
           %{from_state: t.from_state, to_state: t.to_state, metadata: t.metadata, timestamp: t.inserted_at}
         end),

@@ -149,8 +149,6 @@ defmodule QadamBackendWeb.CampaignController do
       deadline: m.deadline,
       extension_deadline: m.extension_deadline,
       status: m.status,
-      ai_decision: m.ai_decision,
-      ai_explanation: m.ai_explanation,
       evidence_text: m.evidence_text,
       evidence_links: m.evidence_links,
       submitted_at: m.submitted_at,

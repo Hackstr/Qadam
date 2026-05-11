@@ -1,6 +1,10 @@
 defmodule QadamBackend.AI.AiDecision do
+  @moduledoc """
+  Legacy schema — AI verification decisions removed in Foundation v1.
+  Community votes now resolve milestones.
+  Schema kept for migration compatibility only.
+  """
   use Ecto.Schema
-  import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -17,13 +21,5 @@ defmodule QadamBackend.AI.AiDecision do
     belongs_to :milestone, QadamBackend.Milestones.Milestone
 
     timestamps(type: :utc_datetime)
-  end
-
-  def changeset(ai_decision, attrs) do
-    ai_decision
-    |> cast(attrs, [:milestone_id, :prompt_hash, :response_hash, :decision,
-                    :explanation, :claude_model, :latency_ms, :solana_tx_signature])
-    |> validate_required([:milestone_id, :decision])
-    |> validate_inclusion(:decision, ~w(approved rejected partial))
   end
 end

@@ -43,7 +43,6 @@ config :phoenix, :json_library, Jason
 config :qadam_backend, Oban,
   repo: QadamBackend.Repo,
   queues: [
-    ai_verification: 2,
     solana_tx: 3,
     notifications: 5,
     deadline_monitor: 1,

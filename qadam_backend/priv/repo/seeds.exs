@@ -31,7 +31,7 @@ campaigns = [
     token_mint_address: "mint_nomad_001",
     tokens_per_lamport: 20_000,
     milestones: [
-      %{index: 0, title: "Prototype & Core Banking API", description: "Core banking API with multi-currency account creation, basic transfers, and KYC integration for 3 countries.", acceptance_criteria: "Live demo showing account creation, SOL↔USD transfer, and KYC flow completion.", amount_lamports: trunc(12.5 * sol), deadline: past.(3), status: "approved", ai_decision: "approved", ai_explanation: "Prototype demonstrates working multi-currency account creation and basic transfer functionality. Live demo verified.", decided_at: past.(2)},
+      %{index: 0, title: "Prototype & Core Banking API", description: "Core banking API with multi-currency account creation, basic transfers, and KYC integration for 3 countries.", acceptance_criteria: "Live demo showing account creation, SOL↔USD transfer, and KYC flow completion.", amount_lamports: trunc(12.5 * sol), deadline: past.(3), status: "approved", decided_at: past.(2)},
       %{index: 1, title: "Crypto Off-Ramp Integration", description: "Integration with local payment rails in KZ, RU, and EU for SOL-to-fiat conversion.", acceptance_criteria: "Working off-ramp demo: user converts 1 SOL to local currency. Transaction completes within 24 hours.", amount_lamports: trunc(12.5 * sol), deadline: future.(14), status: "pending"},
       %{index: 2, title: "Tax Reporting Engine", description: "Automated tax report generation for freelancers in 40+ countries. Supports KZ, RU, EU tax formats.", acceptance_criteria: "Generate sample tax reports for 3 jurisdictions. Reports match local format requirements.", amount_lamports: trunc(12.5 * sol), deadline: future.(30), status: "pending"},
       %{index: 3, title: "Public Launch + App Store", description: "iOS and Android app submission. Public launch with marketing site and onboarding flow.", acceptance_criteria: "App live on App Store and Google Play. 100+ downloads in first week.", amount_lamports: trunc(12.5 * sol), deadline: future.(45), status: "pending"},
@@ -74,8 +74,8 @@ campaigns = [
     token_mint_address: "mint_invoiceflow_003",
     tokens_per_lamport: 50_000,
     milestones: [
-      %{index: 0, title: "OCR + AI Categorization", amount_lamports: 7 * sol, deadline: past.(15), status: "approved", ai_decision: "approved", ai_explanation: "OCR accurately reads invoices in 3 languages. AI categorization 94% accurate on test set.", decided_at: past.(14)},
-      %{index: 1, title: "Tax Report Generation", amount_lamports: 7 * sol, deadline: past.(5), status: "approved", ai_decision: "approved", ai_explanation: "Tax reports generated correctly for KZ and RU formats. EU support confirmed with sample data.", decided_at: past.(4)},
+      %{index: 0, title: "OCR + AI Categorization", amount_lamports: 7 * sol, deadline: past.(15), status: "approved", decided_at: past.(14)},
+      %{index: 1, title: "Tax Report Generation", amount_lamports: 7 * sol, deadline: past.(5), status: "approved", decided_at: past.(4)},
       %{index: 2, title: "Mobile App + Integrations", amount_lamports: 6 * sol, deadline: future.(10), status: "pending"},
     ]
   },
@@ -94,9 +94,9 @@ campaigns = [
     token_mint_address: "mint_solanaguard_004",
     tokens_per_lamport: 30_000,
     milestones: [
-      %{index: 0, title: "Vulnerability Scanner Core", amount_lamports: 10 * sol, deadline: past.(25), status: "approved", ai_decision: "approved", ai_explanation: "Scanner detects 12 common vulnerability patterns. Test suite passes with 95% accuracy.", decided_at: past.(24)},
-      %{index: 1, title: "Anchor Program Support", amount_lamports: 10 * sol, deadline: past.(18), status: "approved", ai_decision: "approved", ai_explanation: "Full Anchor IDL parsing. Detects PDA misuse, missing signer checks, arithmetic overflow.", decided_at: past.(17)},
-      %{index: 2, title: "Web Dashboard + CI/CD Plugin", amount_lamports: 10 * sol, deadline: past.(10), status: "approved", ai_decision: "approved", ai_explanation: "Dashboard live at demo URL. GitHub Actions plugin works. Documentation complete.", decided_at: past.(9)},
+      %{index: 0, title: "Vulnerability Scanner Core", amount_lamports: 10 * sol, deadline: past.(25), status: "approved", decided_at: past.(24)},
+      %{index: 1, title: "Anchor Program Support", amount_lamports: 10 * sol, deadline: past.(18), status: "approved", decided_at: past.(17)},
+      %{index: 2, title: "Web Dashboard + CI/CD Plugin", amount_lamports: 10 * sol, deadline: past.(10), status: "approved", decided_at: past.(9)},
     ]
   },
   %{
@@ -136,7 +136,7 @@ campaigns = [
     token_mint_address: "mint_langbridge_006",
     tokens_per_lamport: 8_000,
     milestones: [
-      %{index: 0, title: "AI Translation Model", amount_lamports: trunc(37.5 * sol), deadline: past.(10), status: "approved", ai_decision: "approved", ai_explanation: "Translation model handles 30 languages. Demo shows <500ms latency on test phrases.", decided_at: past.(9)},
+      %{index: 0, title: "AI Translation Model", amount_lamports: trunc(37.5 * sol), deadline: past.(10), status: "approved", decided_at: past.(9)},
       %{index: 1, title: "Hardware Prototype", amount_lamports: trunc(37.5 * sol), deadline: future.(15), status: "submitted", submitted_at: past.(2)},
       %{index: 2, title: "Manufacturing Partner", amount_lamports: trunc(37.5 * sol), deadline: future.(40), status: "pending"},
       %{index: 3, title: "Shipping v1", amount_lamports: trunc(37.5 * sol), deadline: future.(60), status: "pending"},
@@ -157,7 +157,7 @@ campaigns = [
     token_mint_address: "mint_farmdao_007",
     tokens_per_lamport: 12_000,
     milestones: [
-      %{index: 0, title: "IoT Sensor Network", amount_lamports: 27 * sol, deadline: past.(8), status: "approved", ai_decision: "approved", ai_explanation: "Sensor network deployed on 3 test farms. Dashboard shows real-time soil moisture and temperature.", decided_at: past.(7)},
+      %{index: 0, title: "IoT Sensor Network", amount_lamports: 27 * sol, deadline: past.(8), status: "approved", decided_at: past.(7)},
       %{index: 1, title: "Token + Dashboard", amount_lamports: 27 * sol, deadline: future.(12), status: "pending"},
       %{index: 2, title: "First Harvest + Distribution", amount_lamports: 26 * sol, deadline: future.(30), status: "pending"},
     ]
@@ -177,8 +177,8 @@ campaigns = [
     token_mint_address: "mint_pixelforge_008",
     tokens_per_lamport: 60_000,
     milestones: [
-      %{index: 0, title: "2D Sprite Generation", amount_lamports: trunc(7.5 * sol), deadline: past.(30), status: "approved", ai_decision: "approved", ai_explanation: "Sprite generation produces consistent style. 16x16 to 128x128 supported. Tileset generation working.", decided_at: past.(29)},
-      %{index: 1, title: "3D Models + Animation", amount_lamports: trunc(7.5 * sol), deadline: past.(20), status: "approved", ai_decision: "approved", ai_explanation: "3D model generation from text prompts working. Basic walk/idle animations. Export to glTF format.", decided_at: past.(19)},
+      %{index: 0, title: "2D Sprite Generation", amount_lamports: trunc(7.5 * sol), deadline: past.(30), status: "approved", decided_at: past.(29)},
+      %{index: 1, title: "3D Models + Animation", amount_lamports: trunc(7.5 * sol), deadline: past.(20), status: "approved", decided_at: past.(19)},
     ]
   },
   %{

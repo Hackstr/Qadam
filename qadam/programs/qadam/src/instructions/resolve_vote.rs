@@ -45,11 +45,34 @@ pub fn handler(
         .ok_or(QadamError::MathOverflow)?;
 
     let approval_threshold_bps = ctx.accounts.campaign.approval_threshold_bps;
+    let quorum_bps = ctx.accounts.campaign.quorum_bps;
+    let total_tokens_allocated = ctx.accounts.campaign.total_tokens_allocated;
 
-    let approved = if cast_power == 0 {
+    // Quorum check: cast_power / total_tokens_allocated >= quorum_bps / 10000
+    // Rearranged to avoid division: cast_power * 10000 >= quorum_bps * total_tokens_allocated
+    let quorum_met = if total_tokens_allocated == 0 || cast_power == 0 {
+        // No backers or no votes — apathy = approval (skip quorum)
         true
     } else {
-        // Use u128 to avoid overflow: approve_power * 10000 / cast_power
+        let cast_bps = (cast_power as u128)
+            .checked_mul(10_000)
+            .ok_or(QadamError::MathOverflow)?;
+        let quorum_threshold = (quorum_bps as u128)
+            .checked_mul(total_tokens_allocated as u128)
+            .ok_or(QadamError::MathOverflow)?;
+        cast_bps >= quorum_threshold
+    };
+
+    // If quorum not met and votes were cast, the vote is invalid
+    // Quorum failure with zero votes = apathy = approval (handled above)
+    let approved = if !quorum_met {
+        // Quorum failed — milestone not approved, falls through to deadline/grace path
+        false
+    } else if cast_power == 0 {
+        // No votes cast at all — apathy = approval
+        true
+    } else {
+        // Quorum met — check approval threshold
         let approve_bps = (approve_power as u128)
             .checked_mul(10_000)
             .ok_or(QadamError::MathOverflow)?

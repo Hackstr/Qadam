@@ -65,8 +65,6 @@ export interface Milestone {
   status: MilestoneStatus;
   evidence_text?: string;
   evidence_links?: string[];
-  ai_decision?: string;
-  ai_explanation?: string;
   extension_deadline?: string;
   submitted_at?: string;
   decided_at?: string;

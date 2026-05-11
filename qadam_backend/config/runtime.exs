@@ -29,7 +29,9 @@ config :qadam_backend,
   solana_rpc_url: System.get_env("SOLANA_RPC_URL") || "https://api.devnet.solana.com",
   solana_ws_url: System.get_env("SOLANA_WS_URL") || "wss://api.devnet.solana.com",
   solana_program_id: System.get_env("SOLANA_PROGRAM_ID"),
-  admin_wallet: System.get_env("ADMIN_WALLET"),
+  admin_wallets: (System.get_env("ADMIN_WALLETS") || System.get_env("ADMIN_WALLET") || "")
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.trim/1),
   claude_api_key: System.get_env("CLAUDE_API_KEY")
 
 # Email (Resend for production, Local adapter for dev)

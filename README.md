@@ -8,7 +8,7 @@
 
 > Crowdfunding where progress unlocks funding. Backers' SOL stays in escrow. The community of backers votes on each milestone before funds release. Creators get paid for real progress.
 
-**Live devnet:** [qadam.duckdns.org](https://qadam.duckdns.org)
+**Live devnet:** [qadam.tips](https://qadam.tips)
 **Solana program (devnet):** `4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj`
 
 ---
