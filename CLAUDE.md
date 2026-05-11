@@ -8,11 +8,16 @@ Crowdfunding on Solana with milestone-gated escrow. Backers commit SOL into an o
 
 If you find yourself writing code that puts AI in a judgment seat, stop. That's the old model. The Foundation rebuild (April 2026) moved verification to the community and reframed AI as a companion. Reread the Foundation if uncertain.
 
-## Important: On-chain mechanic vs schema (May 6, 2026)
+## On-chain mechanic status (May 11, 2026)
 
-The schema is Foundation-correct (per-campaign `tier_config`, `vote_period_days`, `quorum_bps`, `approval_threshold_bps` are stored on `Campaign`). **The mechanic that consumes them is not yet rebuilt.** Today the on-chain `release_milestone` instruction is signed by `ai_agent_wallet`, `mark_under_human_review` and `admin_override_decision` instructions exist, the `MilestoneStatus` enum still contains `AIProcessing` and `UnderHumanReview`, and the Elixir `AIVerificationWorker` actively consumes submitted evidence and triggers releases via Claude API decisions.
+Both schema and runtime are Foundation-correct. The AI-judge path has been fully removed:
 
-The full rebuild is specified at `~/AI/qadam-business/02-strategy/voting-redesign-spec.md` and the Pass A mega-prompt at `.claude-prompts/MEGAPROMPT_BLOCK1_PASS_A_ANCHOR.md`. Until those execute, the production mechanic is hybrid — schema talks Foundation, runtime still talks AI-judge. New code should be written for the Foundation target (community votes resolve milestones), not for the hybrid present. If you find yourself adding to the AI verification path, stop and surface it.
+- **On-chain:** `release_milestone`, `mark_under_human_review`, `admin_override_decision` instructions are gone. `AIProcessing` and `UnderHumanReview` statuses removed from `MilestoneStatus`. No `ai_agent_wallet` on config.
+- **Backend:** `verify_milestone`, `build_verification_prompt` deleted. `ai_decision`/`ai_explanation` fields removed from Milestone schema. `ai_verification` Oban queue removed. `sign_transaction.js` only handles `execute_extension_result`.
+- **Voting:** `resolve_vote` is permissionless (anyone can call after deadline). Quorum enforcement checks `quorum_bps` against `total_tokens_allocated`. Approval threshold checked via `approval_threshold_bps`. Apathy (no votes) = approval.
+- **Admin override:** `AdminController.decide` transitions DB state only (emergency use). No on-chain tx broadcast.
+
+If you find yourself adding AI verification or judgment code, stop. Community votes resolve milestones.
 
 ## Project structure
 
@@ -54,6 +59,15 @@ Qadam/
 │   │   └── evidence.ts             # SHA-256 of content
 │   └── src/stores/                 # Zustand
 │
+├── deploy/                         # Production infrastructure
+│   ├── nginx.conf                  # Nginx + SSL config
+│   ├── qadam-backend.service       # Systemd service (Phoenix)
+│   ├── qadam-frontend.service      # Systemd service (Next.js)
+│   ├── deploy.sh                   # Manual deploy script
+│   ├── backup-db.sh                # PostgreSQL daily backup
+│   └── healthcheck.sh              # Auto-restart on failure
+│
+├── .github/workflows/deploy.yml    # CI/CD: push main → deploy
 ├── README.md                       # Public-facing project description
 ├── CLAUDE.md                       # This file
 └── QADAM_FOUNDATION.md             # Source of truth for product semantics
@@ -100,7 +114,7 @@ The program's instruction set centers around the campaign lifecycle: create_camp
 ### Oban workers
 
 - **CompanionDigestWorker** — daily cron at 9am creator-local-time, generates Daily Nudge for active campaigns. Dedup window of 20 hours.
-- **TxBroadcastWorker** — signs and broadcasts on-chain transactions (e.g. release after vote resolution). Always fetches fresh blockhash before signing.
+- **TxBroadcastWorker** — signs and broadcasts on-chain transactions (extension results only post-Foundation). Always fetches fresh blockhash before signing.
 - **TxConfirmationWorker** — polls until finality, updates state.
 - **DeadlineMonitorWorker** — cron every 5 min, transitions overdue milestones into grace period or extension flow.
 - **Sync workers** — keep Postgres in sync with on-chain state via webhooks.
@@ -149,32 +163,42 @@ The program's instruction set centers around the campaign lifecycle: create_camp
 
 ## Deploy
 
+### CI/CD (automatic)
+
+Push to `main` triggers GitHub Actions (`.github/workflows/deploy.yml`):
+1. TypeScript type check
+2. SSH to server → `git pull` → build frontend → compile backend → migrate → restart systemd services
+3. Healthcheck
+
+GitHub Secrets: `SERVER_IP`, `SSH_PRIVATE_KEY`.
+
+### Manual deploy
+
+```bash
+ssh ubuntu@185.22.65.51
+cd ~/qadam
+./deploy/deploy.sh              # deploy everything
+./deploy/deploy.sh frontend     # frontend only
+./deploy/deploy.sh backend      # backend only
+```
+
+### Production infrastructure
+
+- **Server:** 185.22.65.51 (VPS, Ubuntu)
+- **Domain:** qadam.tips (SSL via Let's Encrypt, auto-renew)
+- **Nginx:** reverse proxy, `/` → :3000, `/api` → :4000, HTTP→HTTPS redirect
+- **Systemd:** `qadam-frontend.service`, `qadam-backend.service` (auto-restart on failure)
+- **Environment:** `/home/ubuntu/qadam/.env.production` (single source, loaded via `EnvironmentFile`)
+- **DB backups:** `deploy/backup-db.sh` — cron daily 3am, pg_dump, 7 days retention, stored at `~/backups/postgres/`
+- **Healthcheck:** `deploy/healthcheck.sh` — cron every 5 min, auto-restarts dead services
+- **Logs:** `journalctl -u qadam-backend -f` / `journalctl -u qadam-frontend -f`
+
 ### Anchor (devnet)
 
 ```bash
 cd qadam
 anchor deploy --provider.cluster devnet
 # Update PROGRAM_ID in .env files after deploy
-```
-
-### Backend (production)
-
-The current production runs on a VPS with nginx + systemd. Configs live in `deploy/`. Backend service: `qadam-backend.service`. Reverse proxy routes `/api` → port 4000.
-
-```bash
-MIX_ENV=prod mix deps.get --only prod
-MIX_ENV=prod mix compile
-MIX_ENV=prod mix ecto.migrate
-MIX_ENV=prod mix phx.server
-```
-
-### Frontend (production)
-
-```bash
-cd qadam_frontend
-npm install
-NODE_ENV=production npx next build
-npx next start -p 3000
 ```
 
 ## Where business documentation lives
@@ -189,4 +213,4 @@ Code-related docs live here in the repo. Business / product / strategy / custome
 
 ---
 
-*Qadam — Guide for AI Coding Assistants. Updated April 30, 2026 after Foundation v1 ship.*
+*Qadam — Guide for AI Coding Assistants. Updated May 11, 2026 — AI-judge removed, quorum enforced, CI/CD + systemd deployed.*

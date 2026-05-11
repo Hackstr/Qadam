@@ -104,7 +104,8 @@ Qadam/
 │   ├── src/hooks/                  # useQadamProgram, useProfile, useAutoAuth
 │   └── src/lib/                    # Anchor client + REST API
 │
-├── deploy/                         # Production configs (nginx, systemd)
+├── deploy/                         # Production infra (nginx, systemd, CI/CD, backups)
+├── .github/workflows/deploy.yml    # CI/CD: push main → auto-deploy
 ├── README.md                       # This file
 ├── CLAUDE.md                       # Guide for AI coding assistants
 └── QADAM_FOUNDATION.md             # Source of truth for what Qadam IS
@@ -151,18 +152,20 @@ npm run dev  # → http://localhost:3000
 
 Required env vars (`.env.local`): `NEXT_PUBLIC_SOLANA_NETWORK`, `NEXT_PUBLIC_SOLANA_RPC_URL`, `NEXT_PUBLIC_PROGRAM_ID`, `NEXT_PUBLIC_API_URL`.
 
-## Status (May 6, 2026)
+## Status (May 11, 2026)
 
-**Schema layer fully Foundation v1.** Per-campaign `tier_config` and voting parameters stored on-chain and respected by the wizard, dashboard, and read-side surfaces.
+**Schema and runtime fully Foundation v1.** AI-judge path removed. Community voting resolves milestones on-chain with quorum enforcement.
 
 - ✅ Foundation v1 schema rebuild (8 blocks shipped April)
 - ✅ Anchor program deployed on devnet with per-campaign tier_config + voting params
+- ✅ Community voting: `cast_vote` → `resolve_vote` (permissionless, quorum + threshold enforced)
+- ✅ AI-judge remnants fully removed (no `release_milestone`, no `AIProcessing`, no `verify_milestone`)
 - ✅ Backend service layer + AI Companion (Daily Nudge, Evidence Outline, Update Draft, Ask AI Panel)
 - ✅ Frontend: 5-step create wizard, read-side updates, marketing pages aligned to Foundation
 - ✅ Visual identity refresh: forest green palette + warm cream background (May 2026)
-- ✅ Production deployment with SSL
-- ⏳ **Block 1 — Voting Mechanic rewrite (next major work).** On-chain mechanic still uses pre-Foundation AI-as-judge path. Spec in `~/AI/qadam-business/02-strategy/voting-redesign-spec.md`.
-- ⏳ Mainnet deployment (Q2 2026, after Block 1)
+- ✅ Production deployment with SSL, systemd, CI/CD (GitHub Actions), DB backups, healthchecks
+- ✅ Admin wallet whitelist (multi-admin support)
+- ⏳ Mainnet deployment (Q2 2026)
 - ⏳ External code review
 - ⏳ First real concierge campaigns
 
