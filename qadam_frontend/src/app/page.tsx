@@ -19,12 +19,24 @@ import {
 
 /* ═══ Animation variants ═══ */
 const fadeUp: any = {
-  hidden: { opacity: 0, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.25, 0.1, 0.25, 1] } },
+};
+const fadeUpSlow: any = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] } },
 };
 const stagger: any = {
   hidden: { opacity: 1 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
+};
+const staggerFast: any = {
+  hidden: { opacity: 1 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.07 } },
+};
+const scaleIn: any = {
+  hidden: { opacity: 0, scale: 0.92 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] } },
 };
 
 /* ═══ Helpers ═══ */
@@ -210,18 +222,26 @@ export default function Home() {
                 />
 
                 {/* Floating badge: Community Approved (top-left) */}
-                <div className="absolute top-4 left-0 bg-card/90 backdrop-blur-sm border border-foreground/10 rounded-full px-3.5 py-2 flex items-center gap-2 text-[13px] font-semibold shadow-lg whitespace-nowrap -rotate-[4deg]">
+                <motion.div
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-4 left-0 bg-card/90 backdrop-blur-sm border border-foreground/10 rounded-full px-3.5 py-2 flex items-center gap-2 text-[13px] font-semibold shadow-lg whitespace-nowrap -rotate-[4deg]"
+                >
                   <span className="w-[18px] h-[18px] rounded-full bg-amber-50 text-amber-500 inline-grid place-items-center">
                     <Check className="w-3 h-3" />
                   </span>
                   Community Approved
-                </div>
+                </motion.div>
 
                 {/* Floating badge: Milestone 3 of 5 (bottom-right, dark) */}
-                <div className="absolute bottom-12 right-0 bg-foreground/90 text-background rounded-full px-3.5 py-2 flex items-center gap-2 text-[13px] font-semibold shadow-lg whitespace-nowrap rotate-[3deg]">
+                <motion.div
+                  animate={{ y: [0, 5, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                  className="absolute bottom-12 right-0 bg-foreground/90 text-background rounded-full px-3.5 py-2 flex items-center gap-2 text-[13px] font-semibold shadow-lg whitespace-nowrap rotate-[3deg]"
+                >
                   <span className="w-2 h-2 rounded-full bg-amber-300" />
                   Milestone 3 of 5
-                </div>
+                </motion.div>
 
                 {/* Escrow badge — below image */}
                 <div className="flex justify-center mt-3">
@@ -353,11 +373,16 @@ export default function Home() {
                 <motion.div
                   key={step.num}
                   variants={fadeUp}
-                  className="relative z-10 px-6"
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                  className="relative z-10 px-6 cursor-default"
                 >
-                  <div className="w-[76px] h-[76px] bg-card border border-foreground/10 rounded-full grid place-items-center font-display text-[28px] mx-auto shadow-[0_10px_24px_-16px_rgba(22,32,26,0.25)]">
+                  <motion.div
+                    whileHover={{ scale: 1.08, boxShadow: "0 14px 32px -16px rgba(22,32,26,0.3)" }}
+                    transition={{ duration: 0.2 }}
+                    className="w-[76px] h-[76px] bg-card border border-foreground/10 rounded-full grid place-items-center font-display text-[28px] mx-auto shadow-[0_10px_24px_-16px_rgba(22,32,26,0.25)]"
+                  >
                     <em className="italic text-amber-500">{step.num}</em>
-                  </div>
+                  </motion.div>
                   <h4 className="font-display text-[22px] font-medium text-center mt-5 mb-2 tracking-tight">
                     {step.title}
                   </h4>
@@ -538,6 +563,8 @@ export default function Home() {
             {/* For Creators */}
             <motion.div
               variants={fadeUp}
+              whileHover={{ y: -4, boxShadow: "0 20px 40px -20px rgba(22,32,26,0.15)" }}
+              transition={{ duration: 0.25 }}
               className="rounded-[22px] p-9 border border-foreground/10 bg-card flex flex-col min-h-[320px]"
             >
               <span className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground font-semibold">
@@ -565,6 +592,8 @@ export default function Home() {
             {/* For Backers */}
             <motion.div
               variants={fadeUp}
+              whileHover={{ y: -4, boxShadow: "0 20px 40px -20px rgba(22,32,26,0.3)" }}
+              transition={{ duration: 0.25 }}
               className="rounded-[22px] p-9 bg-foreground text-background flex flex-col min-h-[320px]"
             >
               <span className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground font-semibold">
@@ -794,16 +823,22 @@ function FeatureBlock({
         <p className="text-foreground/80 text-[16.5px] leading-relaxed max-w-[440px] mb-5">
           {body}
         </p>
-        <ul className="flex flex-col gap-2.5">
+        <motion.ul
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={staggerFast}
+          className="flex flex-col gap-2.5"
+        >
           {points.map((pt) => (
-            <li key={pt} className="flex gap-3 text-[14.5px] text-foreground/80">
+            <motion.li key={pt} variants={fadeUp} className="flex gap-3 text-[14.5px] text-foreground/80">
               <span className="shrink-0 w-[18px] h-[18px] rounded-full bg-amber-50 text-amber-500 grid place-items-center mt-0.5">
                 <CheckIcon />
               </span>
               {pt}
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       </div>
       <div>{visual}</div>
     </motion.div>
@@ -829,7 +864,7 @@ function EscrowVisual() {
           campaign . 8f2e...a1c4
         </div>
       </div>
-      {rows.map((r) => {
+      {rows.map((r, i) => {
         const bgClass =
           r.status === "released"
             ? "bg-amber-50 border-amber-500/[0.18]"
@@ -841,9 +876,14 @@ function EscrowVisual() {
               ? "bg-[var(--mustard)]"
               : "bg-foreground";
         return (
-          <div
+          <motion.div
             key={r.ms}
-            className={`flex items-center gap-3 px-3.5 py-3 border rounded-xl mb-2.5 text-[13px] ${bgClass}`}
+            initial={{ opacity: 0, x: -12 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.35, delay: i * 0.08 }}
+            whileHover={{ x: 4, boxShadow: "0 4px 16px -6px rgba(22,32,26,0.12)" }}
+            className={`flex items-center gap-3 px-3.5 py-3 border rounded-xl mb-2.5 text-[13px] cursor-default transition-colors ${bgClass}`}
           >
             <div
               className={`w-7 h-7 rounded-lg ${iconBg} text-background grid place-items-center`}
@@ -861,12 +901,18 @@ function EscrowVisual() {
               <div className="text-xs text-muted-foreground">{r.sub}</div>
             </div>
             <div className="font-mono text-[13px] whitespace-nowrap">{r.amt}</div>
-          </div>
+          </motion.div>
         );
       })}
       {/* Progress bar */}
       <div className="mt-4 h-1.5 rounded bg-foreground/[0.06] overflow-hidden">
-        <div className="h-full w-[65%] bg-gradient-to-r from-amber-500 to-amber-600 rounded" />
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: "65%" }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded"
+        />
       </div>
       <div className="flex justify-between mt-2 text-[11px] text-muted-foreground font-mono">
         <span>\u25E6 1,200 of \u25E6 4,200 released</span>
@@ -895,12 +941,18 @@ function VotingVisual() {
           vote . open
         </div>
       </div>
-      {voters.map((v) => (
-        <div
+      {voters.map((v, i) => (
+        <motion.div
           key={v.name}
-          className="flex items-center gap-3 px-3.5 py-2.5 border border-foreground/10 rounded-full mb-2 text-[13px] bg-background"
+          initial={{ opacity: 0, x: -12 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.35, delay: i * 0.08 }}
+          whileHover={{ scale: 1.02, boxShadow: "0 4px 16px -6px rgba(22,32,26,0.12)" }}
+          className="flex items-center gap-3 px-3.5 py-2.5 border border-foreground/10 rounded-full mb-2 text-[13px] bg-background cursor-default"
         >
-          <div
+          <motion.div
+            whileHover={{ scale: 1.15 }}
             className={`w-[26px] h-[26px] rounded-full bg-gradient-to-br ${v.gradient}`}
           />
           <div className="flex-1 font-medium">{v.name}</div>
@@ -913,7 +965,7 @@ function VotingVisual() {
           >
             {v.vote}
           </span>
-        </div>
+        </motion.div>
       ))}
       {/* Tally */}
       <div className="mt-4 px-3.5 py-3.5 border border-dashed border-foreground/10 rounded-xl flex justify-between items-center">
@@ -952,10 +1004,15 @@ function OwnershipVisual() {
           3 projects backed
         </div>
       </div>
-      {cards.map((c) => (
-        <div
+      {cards.map((c, i) => (
+        <motion.div
           key={c.tier}
-          className={`border rounded-[14px] p-4 mb-3 ${
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.35, delay: i * 0.1 }}
+          whileHover={{ y: -2, boxShadow: "0 6px 20px -8px rgba(22,32,26,0.12)" }}
+          className={`border rounded-[14px] p-4 mb-3 cursor-default ${
             c.founder
               ? "bg-amber-50 border-amber-500/[0.18]"
               : "bg-background border-foreground/10"
@@ -973,12 +1030,15 @@ function OwnershipVisual() {
             </span>
           </div>
           <div className="h-1 bg-foreground/[0.06] rounded overflow-hidden">
-            <div
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: `${c.pct}%` }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 + i * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
               className="h-full bg-amber-500 rounded"
-              style={{ width: `${c.pct}%` }}
             />
           </div>
-        </div>
+        </motion.div>
       ))}
       {/* Total */}
       <div className="mt-3.5 px-3.5 py-3 bg-amber-500 text-white rounded-xl flex justify-between items-center">
