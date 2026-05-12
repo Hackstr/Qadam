@@ -662,7 +662,7 @@ function CampaignDetailContent() {
           </div>
 
           {/* ═══ SIDEBAR ═══ */}
-          <div className="min-w-0 overflow-hidden space-y-4 lg:sticky lg:top-20">
+          <div className="min-w-0 space-y-4 lg:sticky lg:top-20">
             <FundingCard campaign={campaign} accentClass={accent.bg} />
             <TierRewardsCard backersCount={campaign.backers_count} tierConfig={campaign.tier_config} />
 

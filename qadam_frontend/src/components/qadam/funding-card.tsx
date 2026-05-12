@@ -68,9 +68,9 @@ export function FundingCard({ campaign, accentClass, className }: FundingCardPro
         )}
 
         {tier === 1 && foundersSpotsLeft > 0 && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-amber-700">
-            <Crown className="h-3.5 w-3.5 text-amber-500" />
-            <span><strong>{foundersSpotsLeft} Founders spots left</strong> — back now for the full 1.0 points/SOL</span>
+          <div className="mt-3 flex items-start gap-2 text-xs text-amber-700">
+            <Crown className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
+            <span className="break-words"><strong>{foundersSpotsLeft} Founders spots left</strong> — back now for full 1.0 pts/SOL</span>
           </div>
         )}
       </CardContent>
