@@ -1,5 +1,5 @@
 {
-  "address": "4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj",
+  "address": "4PSh2FkJ4rkqnNZGKMtGmZBa1KRYUdqZmcn2V96mEwPd",
   "metadata": {
     "name": "qadam",
     "version": "0.1.0",
@@ -96,131 +96,6 @@
         {
           "name": "deadline",
           "type": "i64"
-        }
-      ]
-    },
-    {
-      "name": "admin_override_decision",
-      "discriminator": [
-        187,
-        175,
-        111,
-        58,
-        110,
-        188,
-        15,
-        57
-      ],
-      "accounts": [
-        {
-          "name": "admin",
-          "signer": true
-        },
-        {
-          "name": "config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "campaign",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  97,
-                  109,
-                  112,
-                  97,
-                  105,
-                  103,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "campaign.creator",
-                "account": "Campaign"
-              },
-              {
-                "kind": "account",
-                "path": "campaign.nonce",
-                "account": "Campaign"
-              }
-            ]
-          }
-        },
-        {
-          "name": "milestone",
-          "writable": true
-        },
-        {
-          "name": "campaign_vault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "campaign"
-              }
-            ]
-          }
-        },
-        {
-          "name": "creator",
-          "writable": true
-        },
-        {
-          "name": "qadam_treasury",
-          "writable": true
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "milestone_index",
-          "type": "u8"
-        },
-        {
-          "name": "approved",
-          "type": "bool"
-        },
-        {
-          "name": "decision_hash",
-          "type": {
-            "array": [
-              "u8",
-              32
-            ]
-          }
         }
       ]
     },
@@ -434,6 +309,158 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "cast_vote",
+      "discriminator": [
+        20,
+        212,
+        15,
+        189,
+        69,
+        180,
+        69,
+        151
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "campaign",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  109,
+                  112,
+                  97,
+                  105,
+                  103,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "campaign.creator",
+                "account": "Campaign"
+              },
+              {
+                "kind": "account",
+                "path": "campaign.nonce",
+                "account": "Campaign"
+              }
+            ]
+          }
+        },
+        {
+          "name": "milestone",
+          "docs": [
+            "The context account this vote is for (currently always a milestone)."
+          ]
+        },
+        {
+          "name": "backer_position",
+          "docs": [
+            "Backer position proves the voter has skin in this campaign"
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  98,
+                  97,
+                  99,
+                  107,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "campaign"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "voting_state",
+          "docs": [
+            "The voting state account — must already exist (opened by submit_milestone or request_extension)"
+          ],
+          "writable": true
+        },
+        {
+          "name": "vote",
+          "docs": [
+            "Vote PDA — collision prevents double voting"
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "voting_state"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "vote_type",
+          "type": "u8"
+        },
+        {
+          "name": "approve",
+          "type": "bool"
+        }
+      ]
     },
     {
       "name": "claim_refund",
@@ -1037,110 +1064,28 @@
         {
           "name": "tokens_per_lamport",
           "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "execute_extension_result",
-      "discriminator": [
-        123,
-        164,
-        165,
-        6,
-        244,
-        164,
-        140,
-        26
-      ],
-      "accounts": [
-        {
-          "name": "payer",
-          "docs": [
-            "Anyone can execute after voting deadline"
-          ],
-          "signer": true
         },
         {
-          "name": "config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
+          "name": "tier_configs_input",
+          "type": {
+            "vec": {
+              "defined": {
+                "name": "TierConfig"
               }
-            ]
+            }
           }
         },
         {
-          "name": "campaign",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  97,
-                  109,
-                  112,
-                  97,
-                  105,
-                  103,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "campaign.creator",
-                "account": "Campaign"
-              },
-              {
-                "kind": "account",
-                "path": "campaign.nonce",
-                "account": "Campaign"
-              }
-            ]
-          }
-        },
-        {
-          "name": "milestone",
-          "writable": true
-        },
-        {
-          "name": "voting_state",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  118,
-                  111,
-                  116,
-                  105,
-                  110,
-                  103
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "milestone"
-              }
-            ]
-          }
-        }
-      ],
-      "args": [
-        {
-          "name": "milestone_index",
+          "name": "vote_period_days",
           "type": "u8"
+        },
+        {
+          "name": "quorum_bps",
+          "type": "u16"
+        },
+        {
+          "name": "approval_threshold_bps",
+          "type": "u16"
         }
       ]
     },
@@ -1323,225 +1268,8 @@
           "type": "pubkey"
         },
         {
-          "name": "ai_agent_wallet",
-          "type": "pubkey"
-        },
-        {
           "name": "qadam_treasury",
           "type": "pubkey"
-        }
-      ]
-    },
-    {
-      "name": "mark_under_human_review",
-      "discriminator": [
-        112,
-        236,
-        145,
-        89,
-        190,
-        127,
-        255,
-        231
-      ],
-      "accounts": [
-        {
-          "name": "authority",
-          "docs": [
-            "AI agent wallet"
-          ],
-          "signer": true
-        },
-        {
-          "name": "config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "campaign",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  97,
-                  109,
-                  112,
-                  97,
-                  105,
-                  103,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "campaign.creator",
-                "account": "Campaign"
-              },
-              {
-                "kind": "account",
-                "path": "campaign.nonce",
-                "account": "Campaign"
-              }
-            ]
-          }
-        },
-        {
-          "name": "milestone",
-          "writable": true
-        }
-      ],
-      "args": [
-        {
-          "name": "milestone_index",
-          "type": "u8"
-        },
-        {
-          "name": "ai_decision_hash",
-          "type": {
-            "array": [
-              "u8",
-              32
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "release_milestone",
-      "discriminator": [
-        56,
-        2,
-        199,
-        164,
-        184,
-        108,
-        167,
-        222
-      ],
-      "accounts": [
-        {
-          "name": "authority",
-          "docs": [
-            "AI agent or admin wallet"
-          ],
-          "signer": true
-        },
-        {
-          "name": "config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "campaign",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  97,
-                  109,
-                  112,
-                  97,
-                  105,
-                  103,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "campaign.creator",
-                "account": "Campaign"
-              },
-              {
-                "kind": "account",
-                "path": "campaign.nonce",
-                "account": "Campaign"
-              }
-            ]
-          }
-        },
-        {
-          "name": "milestone",
-          "writable": true
-        },
-        {
-          "name": "campaign_vault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "campaign"
-              }
-            ]
-          }
-        },
-        {
-          "name": "creator",
-          "writable": true
-        },
-        {
-          "name": "qadam_treasury",
-          "writable": true
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "milestone_index",
-          "type": "u8"
-        },
-        {
-          "name": "ai_decision_hash",
-          "type": {
-            "array": [
-              "u8",
-              32
-            ]
-          }
         }
       ]
     },
@@ -1619,26 +1347,7 @@
         },
         {
           "name": "voting_state",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  118,
-                  111,
-                  116,
-                  105,
-                  110,
-                  103
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "milestone"
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "system_program",
@@ -1662,6 +1371,120 @@
         {
           "name": "new_deadline",
           "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "resolve_vote",
+      "discriminator": [
+        190,
+        135,
+        168,
+        149,
+        112,
+        96,
+        20,
+        138
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "docs": [
+            "Anyone can call resolve — no admin or creator requirement"
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "campaign",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  109,
+                  112,
+                  97,
+                  105,
+                  103,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "campaign.creator",
+                "account": "Campaign"
+              },
+              {
+                "kind": "account",
+                "path": "campaign.nonce",
+                "account": "Campaign"
+              }
+            ]
+          }
+        },
+        {
+          "name": "milestone",
+          "writable": true
+        },
+        {
+          "name": "voting_state",
+          "writable": true
+        },
+        {
+          "name": "campaign_vault",
+          "docs": [
+            "Campaign vault — required for MilestoneApproval release, optional otherwise"
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "creator_account",
+          "docs": [
+            "Creator wallet — required for MilestoneApproval release, optional otherwise"
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "qadam_treasury",
+          "docs": [
+            "Qadam treasury — required for MilestoneApproval release, optional otherwise"
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "vote_type",
+          "type": "u8"
         }
       ]
     },
@@ -1724,6 +1547,7 @@
       "accounts": [
         {
           "name": "creator",
+          "writable": true,
           "signer": true,
           "relations": [
             "campaign"
@@ -1779,6 +1603,14 @@
         {
           "name": "milestone",
           "writable": true
+        },
+        {
+          "name": "voting_state",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -1794,168 +1626,6 @@
               32
             ]
           }
-        }
-      ]
-    },
-    {
-      "name": "vote_on_extension",
-      "discriminator": [
-        232,
-        232,
-        30,
-        115,
-        220,
-        0,
-        179,
-        87
-      ],
-      "accounts": [
-        {
-          "name": "voter",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "campaign",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  99,
-                  97,
-                  109,
-                  112,
-                  97,
-                  105,
-                  103,
-                  110
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "campaign.creator",
-                "account": "Campaign"
-              },
-              {
-                "kind": "account",
-                "path": "campaign.nonce",
-                "account": "Campaign"
-              }
-            ]
-          }
-        },
-        {
-          "name": "milestone"
-        },
-        {
-          "name": "backer_position",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  98,
-                  97,
-                  99,
-                  107,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "campaign"
-              },
-              {
-                "kind": "account",
-                "path": "voter"
-              }
-            ]
-          }
-        },
-        {
-          "name": "voting_state",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  118,
-                  111,
-                  116,
-                  105,
-                  110,
-                  103
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "milestone"
-              }
-            ]
-          }
-        },
-        {
-          "name": "extension_vote",
-          "docs": [
-            "Vote PDA — prevents double voting"
-          ],
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  118,
-                  111,
-                  116,
-                  101
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "milestone"
-              },
-              {
-                "kind": "account",
-                "path": "voter"
-              }
-            ]
-          }
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "milestone_index",
-          "type": "u8"
-        },
-        {
-          "name": "approve",
-          "type": "bool"
         }
       ]
     }
@@ -1988,32 +1658,6 @@
       ]
     },
     {
-      "name": "ExtensionVote",
-      "discriminator": [
-        110,
-        164,
-        30,
-        14,
-        175,
-        3,
-        184,
-        127
-      ]
-    },
-    {
-      "name": "ExtensionVotingState",
-      "discriminator": [
-        216,
-        22,
-        164,
-        40,
-        15,
-        111,
-        9,
-        229
-      ]
-    },
-    {
       "name": "MilestoneAccount",
       "discriminator": [
         21,
@@ -2037,6 +1681,32 @@
         78,
         38,
         9
+      ]
+    },
+    {
+      "name": "Vote",
+      "discriminator": [
+        96,
+        91,
+        104,
+        57,
+        145,
+        35,
+        172,
+        155
+      ]
+    },
+    {
+      "name": "VotingState",
+      "discriminator": [
+        96,
+        6,
+        102,
+        202,
+        44,
+        29,
+        199,
+        133
       ]
     }
   ],
@@ -2107,16 +1777,16 @@
       ]
     },
     {
-      "name": "ExtensionExecuted",
+      "name": "ExtensionDenied",
       "discriminator": [
-        113,
-        145,
-        196,
-        25,
-        147,
-        68,
-        199,
-        19
+        53,
+        54,
+        6,
+        22,
+        57,
+        246,
+        181,
+        62
       ]
     },
     {
@@ -2172,19 +1842,6 @@
       ]
     },
     {
-      "name": "MilestoneUnderReview",
-      "discriminator": [
-        254,
-        61,
-        183,
-        76,
-        161,
-        226,
-        225,
-        104
-      ]
-    },
-    {
       "name": "RefundClaimed",
       "discriminator": [
         136,
@@ -2209,6 +1866,32 @@
         225,
         213
       ]
+    },
+    {
+      "name": "VoteOpened",
+      "discriminator": [
+        183,
+        93,
+        205,
+        75,
+        114,
+        121,
+        216,
+        251
+      ]
+    },
+    {
+      "name": "VoteResolved",
+      "discriminator": [
+        93,
+        64,
+        194,
+        56,
+        68,
+        98,
+        144,
+        248
+      ]
     }
   ],
   "errors": [
@@ -2219,171 +1902,166 @@
     },
     {
       "code": 6001,
-      "name": "UnauthorizedSigner",
-      "msg": "Only the AI agent or admin wallet can perform this action"
-    },
-    {
-      "code": 6002,
       "name": "ProgramPaused",
       "msg": "Program is paused by admin"
     },
     {
-      "code": 6003,
+      "code": 6002,
       "name": "InvalidCampaignStatus",
       "msg": "Campaign is not in the expected status"
     },
     {
-      "code": 6004,
+      "code": 6003,
       "name": "TitleTooLong",
       "msg": "Campaign title exceeds maximum length"
     },
     {
-      "code": 6005,
+      "code": 6004,
       "name": "TooManyMilestones",
       "msg": "Too many milestones (max 5)"
     },
     {
-      "code": 6006,
+      "code": 6005,
       "name": "MilestoneAmountMismatch",
       "msg": "Milestone amounts must sum to campaign goal"
     },
     {
-      "code": 6007,
+      "code": 6006,
       "name": "MilestonesNotComplete",
       "msg": "All milestones must be added before activating"
     },
     {
-      "code": 6008,
+      "code": 6007,
       "name": "DeadlineInPast",
       "msg": "Milestone deadline must be in the future"
     },
     {
-      "code": 6009,
+      "code": 6008,
       "name": "CampaignNotActive",
       "msg": "Campaign is not active for backing"
     },
     {
-      "code": 6010,
+      "code": 6009,
       "name": "BelowMinimumBacking",
       "msg": "Backing amount is below minimum (0.1 SOL)"
     },
     {
-      "code": 6011,
+      "code": 6010,
       "name": "InvalidMilestoneStatus",
       "msg": "Milestone is not in the expected status"
     },
     {
-      "code": 6012,
+      "code": 6011,
       "name": "NotCreator",
       "msg": "Only the campaign creator can perform this action"
     },
     {
-      "code": 6013,
+      "code": 6012,
       "name": "MilestoneOutOfOrder",
       "msg": "Milestones must be submitted in order"
     },
     {
-      "code": 6014,
+      "code": 6013,
       "name": "NothingToClaim",
       "msg": "No tokens available to claim"
     },
     {
-      "code": 6015,
+      "code": 6014,
       "name": "NotABacker",
       "msg": "Not a backer of this campaign"
     },
     {
-      "code": 6016,
+      "code": 6015,
       "name": "AlreadyVoted",
       "msg": "Already voted on this extension"
     },
     {
-      "code": 6017,
+      "code": 6016,
       "name": "VotingNotEnded",
       "msg": "Voting period has not ended yet"
     },
     {
-      "code": 6018,
+      "code": 6017,
       "name": "VotingEnded",
       "msg": "Voting period has already ended"
     },
     {
-      "code": 6019,
+      "code": 6018,
       "name": "AlreadyExecuted",
       "msg": "Extension result already executed"
     },
     {
-      "code": 6020,
+      "code": 6019,
       "name": "ExtensionTooLong",
       "msg": "New deadline exceeds maximum extension period"
     },
     {
-      "code": 6021,
+      "code": 6020,
       "name": "NotRefunded",
       "msg": "Campaign is not in refunded status"
     },
     {
-      "code": 6022,
+      "code": 6021,
       "name": "AlreadyRefunded",
       "msg": "Refund already claimed"
     },
     {
-      "code": 6023,
+      "code": 6022,
       "name": "CampaignStillActive",
       "msg": "Campaign is still active — cannot close"
     },
     {
-      "code": 6024,
+      "code": 6023,
       "name": "TokensNotClaimed",
       "msg": "Tokens not fully claimed — cannot close position"
     },
     {
-      "code": 6025,
+      "code": 6024,
       "name": "RefundNotClaimed",
       "msg": "Refund not claimed — cannot close position"
     },
     {
-      "code": 6026,
+      "code": 6025,
       "name": "PositionsNotClosed",
       "msg": "Not all backer positions are closed yet"
     },
     {
-      "code": 6027,
+      "code": 6026,
       "name": "CampaignHasBackers",
       "msg": "Campaign has backers — cannot cancel, use governance"
     },
     {
-      "code": 6028,
+      "code": 6027,
       "name": "PastGraceDeadline",
       "msg": "Milestone grace deadline has passed — too late to submit"
     },
     {
+      "code": 6028,
+      "name": "VoteAlreadyResolved",
+      "msg": "This vote has already been resolved"
+    },
+    {
       "code": 6029,
+      "name": "VoteTypeMismatch",
+      "msg": "Vote type parameter does not match the voting state account's type"
+    },
+    {
+      "code": 6030,
+      "name": "MilestoneNotInVoting",
+      "msg": "Milestone is not currently in voting status"
+    },
+    {
+      "code": 6031,
+      "name": "QuorumNotMet",
+      "msg": "Quorum not reached — not enough voting participation"
+    },
+    {
+      "code": 6032,
       "name": "MathOverflow",
       "msg": "Arithmetic overflow"
     }
   ],
   "types": [
-    {
-      "name": "AiDecision",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "None"
-          },
-          {
-            "name": "Approved"
-          },
-          {
-            "name": "Rejected"
-          },
-          {
-            "name": "Partial"
-          }
-        ]
-      }
-    },
     {
       "name": "BackerPosition",
       "type": {
@@ -2572,8 +2250,7 @@
           {
             "name": "milestone_amounts",
             "docs": [
-              "Amount of each milestone in lamports (indexed by milestone index)",
-              "Stored here so claim_tokens doesn't need milestone accounts"
+              "Amount of each milestone in lamports (indexed by milestone index)"
             ],
             "type": {
               "array": [
@@ -2599,8 +2276,7 @@
           {
             "name": "refund_snapshot_vault_balance",
             "docs": [
-              "Vault balance snapshot taken when entering Refunded status",
-              "Prevents race condition in concurrent claim_refund calls"
+              "Vault balance snapshot taken when entering Refunded status"
             ],
             "type": "u64"
           },
@@ -2617,6 +2293,50 @@
               "Unix timestamp of campaign creation"
             ],
             "type": "i64"
+          },
+          {
+            "name": "tiers_count",
+            "docs": [
+              "Number of active tiers (1-10). Only first `tiers_count` entries in `tier_configs` are used."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "tier_configs",
+            "docs": [
+              "Fixed-size array of tier configs. Only first `tiers_count` entries matter."
+            ],
+            "type": {
+              "array": [
+                {
+                  "defined": {
+                    "name": "TierConfig"
+                  }
+                },
+                10
+              ]
+            }
+          },
+          {
+            "name": "vote_period_days",
+            "docs": [
+              "How many days voting stays open (3-14)"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "quorum_bps",
+            "docs": [
+              "Quorum in basis points (1000 = 10%, 5000 = 50%)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "approval_threshold_bps",
+            "docs": [
+              "Approval threshold in basis points (5000 = 50%, 7500 = 75%)"
+            ],
+            "type": "u16"
           },
           {
             "name": "bump",
@@ -2743,12 +2463,15 @@
           },
           {
             "name": "Paused"
+          },
+          {
+            "name": "Cancelled"
           }
         ]
       }
     },
     {
-      "name": "ExtensionExecuted",
+      "name": "ExtensionDenied",
       "type": {
         "kind": "struct",
         "fields": [
@@ -2759,10 +2482,6 @@
           {
             "name": "milestone_index",
             "type": "u8"
-          },
-          {
-            "name": "extended",
-            "type": "bool"
           }
         ]
       }
@@ -2783,123 +2502,6 @@
           {
             "name": "new_deadline",
             "type": "i64"
-          },
-          {
-            "name": "voting_deadline",
-            "type": "i64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "ExtensionVote",
-      "docs": [
-        "Individual vote record (one per backer per milestone)"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "milestone",
-            "docs": [
-              "The milestone this vote is for"
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "voter",
-            "docs": [
-              "Voter's wallet address"
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "voting_power",
-            "docs": [
-              "Voting power used (capped at 20% of total)"
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "vote_approve",
-            "docs": [
-              "true = extend, false = refund"
-            ],
-            "type": "bool"
-          },
-          {
-            "name": "voted_at",
-            "docs": [
-              "Unix timestamp of vote"
-            ],
-            "type": "i64"
-          },
-          {
-            "name": "bump",
-            "docs": [
-              "PDA bump seed"
-            ],
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
-      "name": "ExtensionVotingState",
-      "docs": [
-        "Aggregate voting state for a milestone extension request"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "milestone",
-            "docs": [
-              "The milestone this vote is for"
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "total_approve_power",
-            "docs": [
-              "Sum of voting power for \"extend\""
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "total_reject_power",
-            "docs": [
-              "Sum of voting power for \"refund\""
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "voting_deadline",
-            "docs": [
-              "Voting deadline (unix timestamp)"
-            ],
-            "type": "i64"
-          },
-          {
-            "name": "proposed_deadline",
-            "docs": [
-              "Proposed new deadline if extension wins"
-            ],
-            "type": "i64"
-          },
-          {
-            "name": "executed",
-            "docs": [
-              "Whether the result has been executed"
-            ],
-            "type": "bool"
-          },
-          {
-            "name": "bump",
-            "docs": [
-              "PDA bump seed"
-            ],
-            "type": "u8"
           }
         ]
       }
@@ -2975,29 +2577,6 @@
             }
           },
           {
-            "name": "ai_decision",
-            "docs": [
-              "AI verification decision"
-            ],
-            "type": {
-              "defined": {
-                "name": "AiDecision"
-              }
-            }
-          },
-          {
-            "name": "ai_decision_hash",
-            "docs": [
-              "SHA-256 hash of full Claude response (for audit trail)"
-            ],
-            "type": {
-              "array": [
-                "u8",
-                32
-              ]
-            }
-          },
-          {
             "name": "submitted_at",
             "docs": [
               "When evidence was submitted (unix timestamp)"
@@ -3007,9 +2586,27 @@
           {
             "name": "decided_at",
             "docs": [
-              "When AI/admin made decision (unix timestamp)"
+              "When decision was made (unix timestamp)"
             ],
             "type": "i64"
+          },
+          {
+            "name": "voting_state",
+            "docs": [
+              "Active voting state for this milestone, if any.",
+              "Some(pda) when a vote is open or resolved; None when no vote has ever been opened."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "revision_count",
+            "docs": [
+              "Number of times the creator has resubmitted evidence after a rejection.",
+              "Informational only — backers can see the value but no on-chain logic enforces a cap."
+            ],
+            "type": "u8"
           },
           {
             "name": "bump",
@@ -3077,15 +2674,6 @@
             "name": "GracePeriod"
           },
           {
-            "name": "Submitted"
-          },
-          {
-            "name": "AIProcessing"
-          },
-          {
-            "name": "UnderHumanReview"
-          },
-          {
             "name": "Approved"
           },
           {
@@ -3132,22 +2720,6 @@
       }
     },
     {
-      "name": "MilestoneUnderReview",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "campaign",
-            "type": "pubkey"
-          },
-          {
-            "name": "milestone_index",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "QadamConfig",
       "type": {
         "kind": "struct",
@@ -3155,14 +2727,7 @@
           {
             "name": "admin_wallet",
             "docs": [
-              "Admin wallet — can pause, override decisions, manage config"
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "ai_agent_wallet",
-            "docs": [
-              "AI agent wallet — signs release_milestone transactions"
+              "Admin wallet — can pause, manage config"
             ],
             "type": "pubkey"
           },
@@ -3211,17 +2776,82 @@
       }
     },
     {
+      "name": "TierConfig",
+      "docs": [
+        "Per-tier configuration stored on-chain"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "multiplier_bps",
+            "docs": [
+              "Multiplier in basis points (10000 = 100%, 7000 = 70%)"
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "max_spots",
+            "docs": [
+              "Max spots for this tier. 0 = unlimited (used for last tier)"
+            ],
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vote",
+      "docs": [
+        "Individual vote record. One per (voting_state, voter).",
+        "PDA seeds: [b\"vote\", voting_state.as_ref(), voter.as_ref()]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "voting_state",
+            "type": "pubkey"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "voting_power",
+            "docs": [
+              "Voting power as captured at the time the vote was cast",
+              "(snapshotted from BackerPosition.tokens_allocated)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "approve",
+            "type": "bool"
+          },
+          {
+            "name": "voted_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "VoteCast",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "campaign",
-            "type": "pubkey"
+            "name": "vote_type",
+            "type": "u8"
           },
           {
-            "name": "milestone_index",
-            "type": "u8"
+            "name": "voting_state",
+            "type": "pubkey"
           },
           {
             "name": "voter",
@@ -3234,6 +2864,204 @@
           {
             "name": "voting_power",
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteOpened",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vote_type",
+            "type": "u8"
+          },
+          {
+            "name": "campaign",
+            "type": "pubkey"
+          },
+          {
+            "name": "context",
+            "type": "pubkey"
+          },
+          {
+            "name": "voting_state",
+            "type": "pubkey"
+          },
+          {
+            "name": "voting_deadline",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteResolution",
+      "docs": [
+        "Resolution outcome of a vote."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Unresolved"
+          },
+          {
+            "name": "Approved"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteResolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vote_type",
+            "type": "u8"
+          },
+          {
+            "name": "voting_state",
+            "type": "pubkey"
+          },
+          {
+            "name": "decision",
+            "type": "u8"
+          },
+          {
+            "name": "approve_power",
+            "type": "u64"
+          },
+          {
+            "name": "reject_power",
+            "type": "u64"
+          },
+          {
+            "name": "votes_count",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteType",
+      "docs": [
+        "Discriminator for vote types. Stored as u8 on-chain.",
+        "0 = MilestoneApproval (milestone vote after evidence submit)",
+        "1 = ExtensionGrant (creator-requested deadline extension)",
+        "2 = Refund (community-initiated refund — Block 3, not used in Pass A)"
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "MilestoneApproval"
+          },
+          {
+            "name": "ExtensionGrant"
+          },
+          {
+            "name": "Refund"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VotingState",
+      "docs": [
+        "Aggregate state for an active or resolved vote, regardless of type.",
+        "One per active vote. PDA seeds: [b\"vote_state\", &[vote_type as u8], context.as_ref()]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vote_type",
+            "type": {
+              "defined": {
+                "name": "VoteType"
+              }
+            }
+          },
+          {
+            "name": "campaign",
+            "docs": [
+              "Campaign this vote belongs to (for fast off-chain filtering)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "context",
+            "docs": [
+              "Context account for this vote — the milestone PDA for type 1 and 2,",
+              "the milestone PDA again for type 3 (refund triggered by a milestone)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "voting_deadline",
+            "docs": [
+              "Voting deadline as unix seconds"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "approve_power",
+            "docs": [
+              "Sum of voting power on the approve side"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "reject_power",
+            "docs": [
+              "Sum of voting power on the reject side"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "votes_count",
+            "docs": [
+              "Number of distinct voters (informational; for analytics)"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "resolved",
+            "docs": [
+              "True after resolve_vote has run successfully"
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "resolution",
+            "docs": [
+              "Outcome — only meaningful when resolved == true"
+            ],
+            "type": {
+              "defined": {
+                "name": "VoteResolution"
+              }
+            }
+          },
+          {
+            "name": "resolved_at",
+            "docs": [
+              "When resolution happened (0 until resolved)"
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump seed"
+            ],
+            "type": "u8"
           }
         ]
       }

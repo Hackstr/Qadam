@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-qadam = "4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj"
+qadam = "4PSh2FkJ4rkqnNZGKMtGmZBa1KRYUdqZmcn2V96mEwPd"
 
 [programs.devnet]
-qadam = "4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj"
+qadam = "4PSh2FkJ4rkqnNZGKMtGmZBa1KRYUdqZmcn2V96mEwPd"
 
 [registry]
 url = "https://api.apr.dev"

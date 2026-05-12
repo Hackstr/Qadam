@@ -9,7 +9,7 @@ pub mod state;
 
 use instructions::*;
 
-declare_id!("4bummNmZFSwyRgwnfPHG6B9JPC8K6BigXgQYxoVKBcXj");
+declare_id!("4PSh2FkJ4rkqnNZGKMtGmZBa1KRYUdqZmcn2V96mEwPd");
 
 #[program]
 pub mod qadam {
