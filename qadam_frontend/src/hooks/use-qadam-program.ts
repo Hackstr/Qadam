@@ -27,19 +27,31 @@ async function sendWithFeedback(
   sendTransaction: any,
   tx: Transaction,
   connection: any,
+  feePayer: PublicKey,
   setStatus: (s: TxStatus) => void,
   label: string
 ): Promise<string> {
   try {
+    // Set feePayer and fresh blockhash before sending
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash("confirmed");
+    tx.recentBlockhash = blockhash;
+    tx.feePayer = feePayer;
+
     setStatus("signing");
     toast.loading(`Waiting for wallet approval...`, { id: label });
 
-    const sig = await sendTransaction(tx, connection);
+    const sig = await sendTransaction(tx, connection, {
+      skipPreflight: false,
+      preflightCommitment: "confirmed",
+    });
 
     setStatus("confirming");
     toast.loading(`Confirming transaction...`, { id: label });
 
-    await connection.confirmTransaction(sig, "confirmed");
+    await connection.confirmTransaction(
+      { signature: sig, blockhash, lastValidBlockHeight },
+      "confirmed"
+    );
 
     setStatus("done");
     toast.success(`${label} successful!`, { id: label });
@@ -48,17 +60,31 @@ async function sendWithFeedback(
   } catch (err: any) {
     setStatus("error");
 
-    // Wallet rejection — not an error, just user cancelled
+    // User explicitly rejected in wallet popup
+    const msg = err?.message || "";
     if (
-      err?.name === "WalletSendTransactionError" ||
-      err?.message?.includes("User rejected") ||
-      err?.message?.includes("rejected")
+      msg.includes("User rejected") ||
+      msg.includes("rejected the request") ||
+      msg.includes("user rejected") ||
+      err?.code === 4001
     ) {
       toast.info("Transaction cancelled", { id: label });
       throw new Error("cancelled");
     }
 
-    toast.error(`${label} failed: ${err?.message || "Unknown error"}`, { id: label });
+    // Extract meaningful error from Solana logs
+    const logs: string[] = err?.logs || err?.transactionLogs || [];
+    const programError = logs.find((l: string) => l.includes("Error") || l.includes("failed"));
+    const errorDetail = programError
+      ? programError.replace(/^Program log: /, "")
+      : msg.includes("Unexpected error")
+        ? "Transaction simulation failed. Check your balance and try again."
+        : msg;
+
+    console.error(`${label} failed:`, err);
+    if (logs.length > 0) console.error("Program logs:", logs);
+
+    toast.error(`${label} failed: ${errorDetail}`, { id: label, duration: 8000 });
     throw err;
   }
 }
@@ -119,7 +145,7 @@ export function useQadamProgram() {
     tx.add(createTx);
     milestoneTxs.forEach((mt) => tx.add(mt));
 
-    const sig = await sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Create campaign");
+    const sig = await sendWithFeedback(sendTransaction, tx, connection, publicKey, setTxStatus, "Create campaign");
     return { signature: sig, campaignPda: campaignPda.toBase58() };
   }, [program, publicKey, sendTransaction, connection]);
 
@@ -129,7 +155,7 @@ export function useQadamProgram() {
     setTxStatus("building");
     const campaignPda = new PublicKey(campaignPubkey);
     const tx = await backCampaignTx(program, publicKey, campaignPda, new BN(amountSol * LAMPORTS_PER_SOL));
-    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Back campaign");
+    return sendWithFeedback(sendTransaction, tx, connection, publicKey, setTxStatus, "Back campaign");
   }, [program, publicKey, sendTransaction, connection]);
 
   const submitMilestone = useCallback(async (
@@ -141,7 +167,7 @@ export function useQadamProgram() {
     const hashBytes = Array.from(Buffer.from(evidenceHash, "hex"));
     const campaignPda = new PublicKey(campaignPubkey);
     const tx = await submitMilestoneTx(program, publicKey, campaignPda, milestoneIndex, hashBytes);
-    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Submit evidence");
+    return sendWithFeedback(sendTransaction, tx, connection, publicKey, setTxStatus, "Submit evidence");
   }, [program, publicKey, sendTransaction, connection]);
 
   const claimTokens = useCallback(async (campaignPubkey: string) => {
@@ -150,7 +176,7 @@ export function useQadamProgram() {
     setTxStatus("building");
     const campaignPda = new PublicKey(campaignPubkey);
     const tx = await claimTokensTx(program, publicKey, campaignPda);
-    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Claim tokens");
+    return sendWithFeedback(sendTransaction, tx, connection, publicKey, setTxStatus, "Claim tokens");
   }, [program, publicKey, sendTransaction, connection]);
 
   const claimRefund = useCallback(async (campaignPubkey: string) => {
@@ -159,7 +185,7 @@ export function useQadamProgram() {
     setTxStatus("building");
     const campaignPda = new PublicKey(campaignPubkey);
     const tx = await claimRefundTx(program, publicKey, campaignPda);
-    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Claim refund");
+    return sendWithFeedback(sendTransaction, tx, connection, publicKey, setTxStatus, "Claim refund");
   }, [program, publicKey, sendTransaction, connection]);
 
   const castVote = useCallback(async (
@@ -173,7 +199,7 @@ export function useQadamProgram() {
     const label = voteType === 1
       ? (approve ? "Vote extend" : "Vote deny extension")
       : (approve ? "Vote approve" : "Vote reject");
-    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, label);
+    return sendWithFeedback(sendTransaction, tx, connection, publicKey, setTxStatus, label);
   }, [program, publicKey, sendTransaction, connection]);
 
   const resolveVote = useCallback(async (
@@ -184,7 +210,7 @@ export function useQadamProgram() {
     setTxStatus("building");
     const campaignPda = new PublicKey(campaignPubkey);
     const tx = await resolveVoteTx(program, publicKey, campaignPda, milestoneIndex, voteType);
-    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Resolve vote");
+    return sendWithFeedback(sendTransaction, tx, connection, publicKey, setTxStatus, "Resolve vote");
   }, [program, publicKey, sendTransaction, connection]);
 
   const requestExtension = useCallback(async (
@@ -197,7 +223,7 @@ export function useQadamProgram() {
     const hashBytes = Array.from(Buffer.from(reasonHash, "hex"));
     const deadlineBN = new BN(Math.floor(newDeadline.getTime() / 1000));
     const tx = await requestExtensionTx(program, publicKey, campaignPda, milestoneIndex, hashBytes, deadlineBN);
-    return sendWithFeedback(sendTransaction, tx, connection, setTxStatus, "Request extension");
+    return sendWithFeedback(sendTransaction, tx, connection, publicKey, setTxStatus, "Request extension");
   }, [program, publicKey, sendTransaction, connection]);
 
   return {
