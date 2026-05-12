@@ -41,8 +41,19 @@ if resend_key = System.get_env("RESEND_API_KEY") do
     api_key: resend_key
 end
 
-# JWT secret
-if jwt_secret = System.get_env("JWT_SECRET") do
+# JWT secret — required in production
+jwt_secret = System.get_env("JWT_SECRET")
+
+if config_env() == :prod do
+  unless jwt_secret && byte_size(jwt_secret) >= 32 do
+    raise """
+    JWT_SECRET is missing or too short (min 32 chars).
+    Generate one with: openssl rand -hex 32
+    """
+  end
+end
+
+if jwt_secret do
   config :joken,
     default_signer: [
       signer_alg: "HS256",

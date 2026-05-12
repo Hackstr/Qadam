@@ -90,8 +90,8 @@ export default function BackCampaignPage() {
   const tier = getCurrentTier(campaign.backers_count, campaign.tier_config);
   const tierInfo = TIER_LABELS[tier as 1 | 2 | 3] || TIER_LABELS[3];
   const tierMultiplier = campaign.tier_config?.[tier - 1]?.multiplier ?? (tier === 1 ? 1 : tier === 2 ? 0.67 : 0.5);
-  const tokensPerSol = campaign.tokens_per_lamport || 100;
-  const baseTokens = amountNum * tokensPerSol;
+  const tokensPerLamport = campaign.tokens_per_lamport || 100;
+  const baseTokens = amountNum * LAMPORTS_PER_SOL * tokensPerLamport;
   const estimatedTokens = Math.floor(baseTokens * tierMultiplier);
   const belowMinimum = amountNum > 0 && amountNum < MIN_BACKING_SOL;
   const aboveBalance = walletBalance !== null && amountNum > walletBalance;

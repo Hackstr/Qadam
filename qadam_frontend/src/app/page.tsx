@@ -639,7 +639,7 @@ export default function Home() {
               </p>
               <div className="inline-flex items-center gap-2.5 px-3 py-2 border border-foreground/10 rounded-[10px] bg-card font-mono text-xs text-foreground/80">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_0_3px_rgba(45,95,78,0.15)]" />
-                Program . Qa1mProgxxx...ZpKt
+                Program . {(process.env.NEXT_PUBLIC_PROGRAM_ID || "").slice(0, 6)}...{(process.env.NEXT_PUBLIC_PROGRAM_ID || "").slice(-4)}
               </div>
             </div>
 

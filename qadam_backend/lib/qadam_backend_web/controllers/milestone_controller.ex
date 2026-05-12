@@ -33,27 +33,32 @@ defmodule QadamBackendWeb.MilestoneController do
         submitted_at: DateTime.utc_now()
       }
 
-      case Milestones.update_milestone(milestone, attrs) do
-        {:ok, updated} ->
-          # Transition to voting_active — community votes on this evidence
-          case Milestones.transition_state(updated, "voting_active") do
-            {:ok, transitioned} ->
-              # Notify backers that voting is open
-              try do
-                QadamBackend.Notifications.Notify.notify_backers(
-                  campaign, "vote_opened",
-                  "Vote opened on milestone #{milestone.index + 1}",
-                  "Evidence submitted for \"#{milestone.title || "Milestone #{milestone.index + 1}"}\". Cast your vote."
-                )
-              rescue
-                _ -> :ok
-              end
-              json(conn, %{data: milestone_detail_json(transitioned)})
-            {:error, _} ->
-              # Transition failed but evidence saved — still ok
-              json(conn, %{data: milestone_detail_json(updated)})
+      # Atomic: save evidence + transition to voting_active in one transaction
+      result = QadamBackend.Repo.transaction(fn ->
+        with {:ok, updated} <- Milestones.update_milestone(milestone, attrs),
+             {:ok, %{milestone: transitioned}} <- Milestones.transition_state(updated, "voting_active") do
+          transitioned
+        else
+          {:error, reason} -> QadamBackend.Repo.rollback(reason)
+        end
+      end)
+
+      case result do
+        {:ok, transitioned} ->
+          # Notify backers that voting is open
+          try do
+            QadamBackend.Notifications.Notify.notify_backers(
+              campaign, "vote_opened",
+              "Vote opened on milestone #{milestone.index + 1}",
+              "Evidence submitted for \"#{milestone.title || "Milestone #{milestone.index + 1}"}\". Cast your vote."
+            )
+          rescue
+            _ -> :ok
           end
-        {:error, changeset} -> conn |> put_status(:unprocessable_entity) |> json(%{error: format_errors(changeset)})
+          json(conn, %{data: milestone_detail_json(transitioned)})
+
+        {:error, reason} ->
+          conn |> put_status(:unprocessable_entity) |> json(%{error: inspect(reason)})
       end
     else
       false -> conn |> put_status(:forbidden) |> json(%{error: "not_creator"})

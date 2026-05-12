@@ -55,7 +55,15 @@ defmodule QadamBackendWeb.Router do
     get "/analytics/top-campaigns", AnalyticsController, :top_campaigns
     get "/analytics/timeseries", AnalyticsController, :timeseries
 
-    # Webhooks — sync on-chain events with PostgreSQL
+  end
+
+  # ═══════════════════════════════════════════
+  # WEBHOOKS — require authentication to prevent data injection
+  # ═══════════════════════════════════════════
+
+  scope "/api", QadamBackendWeb do
+    pipe_through [:api, :authenticated]
+
     post "/webhooks/milestone-submitted", WebhookController, :milestone_submitted
     post "/webhooks/sync-campaign", SyncController, :sync_campaign
     post "/webhooks/sync-backing", SyncController, :sync_backing

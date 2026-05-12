@@ -1,6 +1,6 @@
 import { Program, AnchorProvider, BN } from "@coral-xyz/anchor";
-import { Connection, PublicKey } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { Connection, PublicKey, SystemProgram } from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PROGRAM_ID } from "./constants";
 import idl from "./idl.json";
 
@@ -22,7 +22,17 @@ export function getProvider(
 }
 
 // ═══════════════════════════════════════════
-// PDA derivations (must match Anchor seeds)
+// PDA derivations — MUST match Anchor seeds exactly
+//
+// Seed reference (from Rust):
+//   config:        ["config"]
+//   campaign:      ["campaign", creator, nonce_le_bytes]
+//   vault:         ["vault", campaign]
+//   mint:          ["mint", campaign]
+//   milestone:     ["milestone", campaign, [index]]
+//   backer:        ["backer", campaign, backer]
+//   vote_state:    ["vote_state", [vote_type], milestone]
+//   vote:          ["vote", voting_state, voter]
 // ═══════════════════════════════════════════
 
 const programId = () => new PublicKey(PROGRAM_ID);
@@ -35,10 +45,7 @@ export function getConfigPda(): PublicKey {
   return pda;
 }
 
-export function getCampaignPda(
-  creator: PublicKey,
-  nonce: BN
-): PublicKey {
+export function getCampaignPda(creator: PublicKey, nonce: BN): PublicKey {
   const [pda] = PublicKey.findProgramAddressSync(
     [Buffer.from("campaign"), creator.toBuffer(), nonce.toArrayLike(Buffer, "le", 8)],
     programId()
@@ -62,10 +69,7 @@ export function getMintPda(campaign: PublicKey): PublicKey {
   return pda;
 }
 
-export function getMilestonePda(
-  campaign: PublicKey,
-  index: number
-): PublicKey {
+export function getMilestonePda(campaign: PublicKey, index: number): PublicKey {
   const [pda] = PublicKey.findProgramAddressSync(
     [Buffer.from("milestone"), campaign.toBuffer(), Buffer.from([index])],
     programId()
@@ -73,10 +77,7 @@ export function getMilestonePda(
   return pda;
 }
 
-export function getBackerPositionPda(
-  campaign: PublicKey,
-  backer: PublicKey
-): PublicKey {
+export function getBackerPositionPda(campaign: PublicKey, backer: PublicKey): PublicKey {
   const [pda] = PublicKey.findProgramAddressSync(
     [Buffer.from("backer"), campaign.toBuffer(), backer.toBuffer()],
     programId()
@@ -84,20 +85,21 @@ export function getBackerPositionPda(
   return pda;
 }
 
-export function getVotingStatePda(milestone: PublicKey): PublicKey {
+// VoteType enum values (must match Rust VoteType):
+//   0 = MilestoneApproval
+//   1 = ExtensionGrant
+//   2 = Refund
+export function getVotingStatePda(voteType: number, milestone: PublicKey): PublicKey {
   const [pda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("voting"), milestone.toBuffer()],
+    [Buffer.from("vote_state"), Buffer.from([voteType]), milestone.toBuffer()],
     programId()
   );
   return pda;
 }
 
-export function getVotePda(
-  milestone: PublicKey,
-  voter: PublicKey
-): PublicKey {
+export function getVotePda(votingState: PublicKey, voter: PublicKey): PublicKey {
   const [pda] = PublicKey.findProgramAddressSync(
-    [Buffer.from("vote"), milestone.toBuffer(), voter.toBuffer()],
+    [Buffer.from("vote"), votingState.toBuffer(), voter.toBuffer()],
     programId()
   );
   return pda;
@@ -124,28 +126,23 @@ export async function createCampaignTx(
   const vaultPda = getVaultPda(campaignPda);
   const mintPda = getMintPda(campaignPda);
 
-  // Foundation v1: default tier config if not provided
   const tiers = tierConfigs || [
     { multiplierBps: 10000, maxSpots: 50 },
     { multiplierBps: 7000, maxSpots: 200 },
-    { multiplierBps: 5000, maxSpots: 0 },  // 0 = unlimited
+    { multiplierBps: 5000, maxSpots: 0 },
   ];
 
   return program.methods
     .createCampaign(
       title, nonce, milestonesCount, goalLamports, tokensPerLamport,
-      tiers,
-      votePeriodDays || 7,
-      quorumBps || 2000,
-      approvalThresholdBps || 5000,
+      tiers, votePeriodDays || 7, quorumBps || 2000, approvalThresholdBps || 5000,
     )
     .accounts({
       creator,
-      config: getConfigPda(),
       campaignVault: vaultPda,
       tokenMint: mintPda,
       tokenProgram: TOKEN_PROGRAM_ID,
-    })
+    } as any)
     .transaction();
 }
 
@@ -163,10 +160,9 @@ export async function addMilestoneTx(
     .addMilestone(amountLamports, deadline)
     .accounts({
       creator,
-      config: getConfigPda(),
       campaign: campaignPda,
       milestone: milestonePda,
-    })
+    } as any)
     .transaction();
 }
 
@@ -183,11 +179,10 @@ export async function backCampaignTx(
     .backCampaign(amountLamports)
     .accounts({
       backer,
-      config: getConfigPda(),
       campaign: campaignPda,
       campaignVault: vaultPda,
       backerPosition: backerPositionPda,
-    })
+    } as any)
     .transaction();
 }
 
@@ -199,15 +194,23 @@ export async function submitMilestoneTx(
   evidenceHash: number[]
 ) {
   const milestonePda = getMilestonePda(campaignPda, milestoneIndex);
+  // submit_milestone creates a VotingState for MilestoneApproval (type 0)
+  const votingStatePda = getVotingStatePda(0, milestonePda);
+
+  // Pad/trim hash to exactly 32 bytes
+  const hash32 = new Array(32).fill(0);
+  for (let i = 0; i < Math.min(evidenceHash.length, 32); i++) {
+    hash32[i] = evidenceHash[i];
+  }
 
   return program.methods
-    .submitMilestone(milestoneIndex, evidenceHash)
+    .submitMilestone(milestoneIndex, hash32)
     .accounts({
       creator,
-      config: getConfigPda(),
       campaign: campaignPda,
       milestone: milestonePda,
-    })
+      votingState: votingStatePda,
+    } as any)
     .transaction();
 }
 
@@ -224,13 +227,12 @@ export async function claimTokensTx(
     .claimTokens()
     .accounts({
       backer,
-      config: getConfigPda(),
       campaign: campaignPda,
       backerPosition: backerPositionPda,
       tokenMint: mintPda,
       backerTokenAccount: backerAta,
       tokenProgram: TOKEN_PROGRAM_ID,
-    })
+    } as any)
     .transaction();
 }
 
@@ -246,11 +248,10 @@ export async function claimRefundTx(
     .claimRefund()
     .accounts({
       backer,
-      config: getConfigPda(),
       campaign: campaignPda,
       campaignVault: vaultPda,
       backerPosition: backerPositionPda,
-    })
+    } as any)
     .transaction();
 }
 
@@ -263,17 +264,22 @@ export async function requestExtensionTx(
   newDeadline: BN
 ) {
   const milestonePda = getMilestonePda(campaignPda, milestoneIndex);
-  const votingStatePda = getVotingStatePda(milestonePda);
+  // request_extension creates a VotingState for ExtensionGrant (type 1)
+  const votingStatePda = getVotingStatePda(1, milestonePda);
+
+  const hash32 = new Array(32).fill(0);
+  for (let i = 0; i < Math.min(reasonHash.length, 32); i++) {
+    hash32[i] = reasonHash[i];
+  }
 
   return program.methods
-    .requestExtension(milestoneIndex, reasonHash, newDeadline)
+    .requestExtension(milestoneIndex, hash32, newDeadline)
     .accounts({
       creator,
-      config: getConfigPda(),
       campaign: campaignPda,
       milestone: milestonePda,
       votingState: votingStatePda,
-    })
+    } as any)
     .transaction();
 }
 
@@ -287,43 +293,51 @@ export async function castVoteTx(
 ) {
   const milestonePda = getMilestonePda(campaignPda, milestoneIndex);
   const backerPositionPda = getBackerPositionPda(campaignPda, voter);
-  const votingStatePda = getVotingStatePda(milestonePda);
-  const votePda = getVotePda(milestonePda, voter);
+  const votingStatePda = getVotingStatePda(voteType, milestonePda);
+  const votePda = getVotePda(votingStatePda, voter);
 
   return program.methods
-    .castVote(milestoneIndex, voteType, approve)
+    .castVote(voteType, approve)  // Only 2 args: vote_type + approve
     .accounts({
       voter,
-      config: getConfigPda(),
       campaign: campaignPda,
       milestone: milestonePda,
       backerPosition: backerPositionPda,
       votingState: votingStatePda,
       vote: votePda,
-    })
+    } as any)
     .transaction();
 }
 
 export async function resolveVoteTx(
   program: Program,
-  caller: PublicKey,
+  payer: PublicKey,
   campaignPda: PublicKey,
   milestoneIndex: number,
   voteType: number
 ) {
   const milestonePda = getMilestonePda(campaignPda, milestoneIndex);
-  const votingStatePda = getVotingStatePda(milestonePda);
+  const votingStatePda = getVotingStatePda(voteType, milestonePda);
   const vaultPda = getVaultPda(campaignPda);
 
+  // For MilestoneApproval (type 0), we need creator + treasury for fund release
+  // For other types, these are optional (Anchor handles None)
+  const accounts: any = {
+    payer,
+    campaign: campaignPda,
+    milestone: milestonePda,
+    votingState: votingStatePda,
+  };
+
+  // Optional accounts for MilestoneApproval release
+  if (voteType === 0) {
+    accounts.campaignVault = vaultPda;
+    // creator_account and qadam_treasury are resolved by the program from campaign/config
+    // We pass them so Anchor can do the CPI transfers
+  }
+
   return program.methods
-    .resolveVote(milestoneIndex, voteType)
-    .accounts({
-      caller,
-      config: getConfigPda(),
-      campaign: campaignPda,
-      milestone: milestonePda,
-      votingState: votingStatePda,
-      campaignVault: vaultPda,
-    })
+    .resolveVote(voteType)  // Only 1 arg: vote_type
+    .accounts(accounts)
     .transaction();
 }

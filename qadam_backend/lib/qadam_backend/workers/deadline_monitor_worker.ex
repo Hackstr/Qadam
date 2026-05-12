@@ -32,13 +32,13 @@ defmodule QadamBackend.Workers.DeadlineMonitorWorker do
     now = DateTime.utc_now()
     expired_votes =
       QadamBackend.Milestones.Milestone
-      |> where([m], m.status == "voting_active")
+      |> where([m], m.status == "voting_active" and not is_nil(m.submitted_at))
       |> Repo.all()
       |> Repo.preload(:campaign)
       |> Enum.filter(fn m ->
-        # Vote period = campaign.vote_period_days from submission date
         vote_period = (m.campaign && m.campaign.vote_period_days) || 7
-        vote_deadline = DateTime.add(m.submitted_at || m.updated_at, vote_period * 86400, :second)
+        reference_time = m.submitted_at || m.updated_at || DateTime.utc_now()
+        vote_deadline = DateTime.add(reference_time, vote_period * 86400, :second)
         DateTime.compare(vote_deadline, now) == :lt
       end)
 
