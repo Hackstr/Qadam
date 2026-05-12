@@ -127,7 +127,7 @@ function CampaignDetailContent() {
   const galleryExtra = Math.max(0, galleryUrls.length - 4);
 
   return (
-    <div className="animate-page-enter overflow-x-hidden">
+    <div className="animate-page-enter">
       {/* ═══ BREADCRUMB ═══ */}
       <div className="max-w-[1240px] mx-auto px-8 pt-6">
         <Link href="/campaigns" className="inline-flex items-center gap-2 text-[13px] font-medium text-muted-foreground hover:text-amber-600 transition-colors">
@@ -376,7 +376,7 @@ function CampaignDetailContent() {
       </div>
 
       {/* ═══ MAIN CONTENT + SIDEBAR ═══ */}
-      <div className="max-w-[1240px] mx-auto px-8 py-8 overflow-hidden">
+      <div className="max-w-[1240px] mx-auto px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 items-start">
           {/* Left — Content */}
           <div className="min-w-0">
