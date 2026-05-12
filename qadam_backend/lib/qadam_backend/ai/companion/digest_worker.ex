@@ -155,13 +155,14 @@ defmodule QadamBackend.AI.Companion.DigestWorker do
         {"anthropic-version", "2023-06-01"},
       ]
 
-      case HTTPoison.post(@anthropic_url, body, headers, recv_timeout: 30_000) do
-        {:ok, %{status_code: 200, body: resp_body}} ->
-          case Jason.decode(resp_body) do
-            {:ok, %{"content" => [%{"text" => text} | _]}} -> {:ok, String.trim(text)}
-            _ -> {:error, "unexpected_response"}
-          end
-        {:ok, %{status_code: code}} ->
+      case Req.post(@anthropic_url,
+        json: Jason.decode!(body),
+        headers: headers,
+        receive_timeout: 30_000
+      ) do
+        {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]}}} ->
+          {:ok, String.trim(text)}
+        {:ok, %{status: code}} ->
           {:error, "anthropic_#{code}"}
         {:error, reason} ->
           {:error, inspect(reason)}

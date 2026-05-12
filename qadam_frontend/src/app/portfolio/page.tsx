@@ -32,10 +32,10 @@ export default function PortfolioPage() {
   });
 
   const positions = data?.data || [];
-  const totalBacked = positions.reduce((sum, p) => sum + p.amount_lamports, 0);
-  const totalTokens = positions.reduce((sum, p) => sum + p.tokens_allocated, 0);
+  const totalBacked = positions.reduce((sum, p) => sum + (p.amount_lamports || 0), 0);
+  const totalTokens = positions.reduce((sum, p) => sum + (p.tokens_allocated || 0), 0);
   const activePositions = positions.filter(p => p.campaign_status === "active");
-  const claimableTokens = positions.reduce((sum, p) => sum + Math.max(0, p.tokens_allocated - p.tokens_claimed), 0);
+  const claimableTokens = positions.reduce((sum, p) => sum + Math.max(0, (p.tokens_allocated || 0) - (p.tokens_claimed || 0)), 0);
   const pendingRefunds = positions.filter(p => p.campaign_status === "refunded" && !p.refund_claimed);
 
   if (!connected) {

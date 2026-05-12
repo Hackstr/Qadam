@@ -201,14 +201,15 @@ defmodule QadamBackendWeb.CompanionController do
         {"anthropic-version", "2023-06-01"},
       ]
 
-      case HTTPoison.post(@anthropic_url, Jason.encode!(body), headers, recv_timeout: 30_000) do
-        {:ok, %{status_code: 200, body: resp_body}} ->
-          case Jason.decode(resp_body) do
-            {:ok, %{"content" => [%{"text" => text} | _]}} -> {:ok, text}
-            _ -> {:error, "unexpected_response"}
-          end
-        {:ok, %{status_code: code, body: resp_body}} ->
-          {:error, "anthropic_error_#{code}: #{String.slice(resp_body, 0, 200)}"}
+      case Req.post(@anthropic_url,
+        json: body,
+        headers: headers,
+        receive_timeout: 30_000
+      ) do
+        {:ok, %{status: 200, body: %{"content" => [%{"text" => text} | _]}}} ->
+          {:ok, text}
+        {:ok, %{status: code, body: resp_body}} ->
+          {:error, "anthropic_error_#{code}: #{inspect(resp_body) |> String.slice(0, 200)}"}
         {:error, reason} ->
           {:error, "request_failed: #{inspect(reason)}"}
       end

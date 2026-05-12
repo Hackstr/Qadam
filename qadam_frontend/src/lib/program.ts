@@ -320,8 +320,6 @@ export async function resolveVoteTx(
   const votingStatePda = getVotingStatePda(voteType, milestonePda);
   const vaultPda = getVaultPda(campaignPda);
 
-  // For MilestoneApproval (type 0), we need creator + treasury for fund release
-  // For other types, these are optional (Anchor handles None)
   const accounts: any = {
     payer,
     campaign: campaignPda,
@@ -329,15 +327,21 @@ export async function resolveVoteTx(
     votingState: votingStatePda,
   };
 
-  // Optional accounts for MilestoneApproval release
+  // MilestoneApproval (type 0) requires vault + creator + treasury for fund release
   if (voteType === 0) {
     accounts.campaignVault = vaultPda;
-    // creator_account and qadam_treasury are resolved by the program from campaign/config
-    // We pass them so Anchor can do the CPI transfers
+
+    // Fetch campaign and config to get creator wallet and treasury address
+    const campaign = await (program.account as any).campaign.fetch(campaignPda);
+    const configPda = getConfigPda();
+    const config = await (program.account as any).qadamConfig.fetch(configPda);
+
+    accounts.creatorAccount = (campaign as any).creator;
+    accounts.qadamTreasury = (config as any).qadamTreasury;
   }
 
   return program.methods
-    .resolveVote(voteType)  // Only 1 arg: vote_type
+    .resolveVote(voteType)
     .accounts(accounts)
     .transaction();
 }
