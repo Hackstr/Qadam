@@ -127,7 +127,7 @@ function CampaignDetailContent() {
   const galleryExtra = Math.max(0, galleryUrls.length - 4);
 
   return (
-    <div className="animate-page-enter">
+    <div className="animate-page-enter overflow-x-hidden">
       {/* ═══ BREADCRUMB ═══ */}
       <div className="max-w-[1240px] mx-auto px-8 pt-6">
         <Link href="/campaigns" className="inline-flex items-center gap-2 text-[13px] font-medium text-muted-foreground hover:text-amber-600 transition-colors">
@@ -376,10 +376,10 @@ function CampaignDetailContent() {
       </div>
 
       {/* ═══ MAIN CONTENT + SIDEBAR ═══ */}
-      <div className="max-w-[1240px] mx-auto px-8 py-8">
+      <div className="max-w-[1240px] mx-auto px-8 py-8 overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 items-start">
           {/* Left — Content */}
-          <div>
+          <div className="min-w-0">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="relative border-b border-border bg-transparent p-0 h-auto gap-0">
                 {[
@@ -662,7 +662,7 @@ function CampaignDetailContent() {
           </div>
 
           {/* ═══ SIDEBAR ═══ */}
-          <div className="space-y-4 lg:sticky lg:top-20">
+          <div className="min-w-0 overflow-hidden space-y-4 lg:sticky lg:top-20">
             <FundingCard campaign={campaign} accentClass={accent.bg} />
             <TierRewardsCard backersCount={campaign.backers_count} tierConfig={campaign.tier_config} />
 
