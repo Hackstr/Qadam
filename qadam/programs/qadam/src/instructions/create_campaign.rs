@@ -42,6 +42,14 @@ pub fn handler(
         );
     }
 
+    // Non-last tiers must have max_spots > 0
+    for i in 0..tiers_count - 1 {
+        require!(
+            tier_configs_input[i].max_spots > 0,
+            QadamError::InvalidCampaignStatus
+        );
+    }
+
     // Last tier must have max_spots = 0 (unlimited)
     require!(
         tier_configs_input[tiers_count - 1].max_spots == 0,

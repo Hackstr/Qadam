@@ -133,10 +133,28 @@ defmodule QadamBackendWeb.CampaignController do
     |> Map.put(:creator_location, creator && creator.location)
     |> Map.put(:creator_socials, (creator && creator.socials) || %{})
     |> Map.put(:days_to_funding_deadline, days_to_deadline)
-    |> Map.put(:milestones, Enum.map(c.milestones || [], &milestone_json/1))
+    |> Map.put(:milestones, milestones_with_votes(c.milestones || []))
   end
 
-  defp milestone_json(m) do
+  # Batch-load votes for all voting milestones in one query (avoids N+1)
+  defp milestones_with_votes(milestones) do
+    voting_ids = milestones
+      |> Enum.filter(&(&1.status in ["voting_active", "extension_requested"]))
+      |> Enum.map(& &1.id)
+
+    votes_by_milestone = if voting_ids == [] do
+      %{}
+    else
+      QadamBackend.Repo.all(
+        from(v in QadamBackend.Governance.ExtensionVote, where: v.milestone_id in ^voting_ids)
+      )
+      |> Enum.group_by(& &1.milestone_id)
+    end
+
+    Enum.map(milestones, fn m -> milestone_json(m, Map.get(votes_by_milestone, m.id, [])) end)
+  end
+
+  defp milestone_json(m, votes) do
     base = %{
       id: m.id,
       index: m.index,
@@ -156,12 +174,7 @@ defmodule QadamBackendWeb.CampaignController do
       released_at: m.released_at
     }
 
-    # Add vote counts for milestones in voting state
-    if m.status in ["voting_active", "extension_requested"] do
-      votes = QadamBackend.Repo.all(
-        from(v in QadamBackend.Governance.ExtensionVote,
-          where: v.milestone_id == ^m.id)
-      )
+    if m.status in ["voting_active", "extension_requested"] and votes != [] do
       approve_power = votes |> Enum.filter(& &1.vote_approve) |> Enum.reduce(0, fn v, acc -> acc + (v.voting_power || 0) end)
       reject_power = votes |> Enum.reject(& &1.vote_approve) |> Enum.reduce(0, fn v, acc -> acc + (v.voting_power || 0) end)
       total_power = approve_power + reject_power
