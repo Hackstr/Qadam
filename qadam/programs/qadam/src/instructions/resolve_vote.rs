@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
-use crate::state::{Campaign, MilestoneAccount, MilestoneStatus, VotingState, VoteType, VoteResolution, QadamConfig};
+use crate::state::{Campaign, CampaignStatus, MilestoneAccount, MilestoneStatus, VotingState, VoteType, VoteResolution, QadamConfig};
 use crate::constants::GRACE_PERIOD_SECONDS;
 use crate::errors::QadamError;
-use crate::events::{VoteResolved, MilestoneRejected, ExtensionDenied};
+use crate::events::{VoteResolved, MilestoneRejected, ExtensionDenied, CampaignRefunded};
 use crate::helpers::release::execute_release;
 
 pub fn handler(
@@ -151,8 +151,14 @@ pub fn handler(
             }
         }
         VoteType::Refund => {
-            // Pass A: resolve and emit event, but do not touch campaign/milestone state.
-            // Block 3 will add refund distribution logic here.
+            if approved {
+                campaign.status = CampaignStatus::Refunded;
+                campaign.refund_snapshot_vault_balance = campaign.vault_balance;
+                emit!(CampaignRefunded {
+                    campaign: campaign_key,
+                    vault_balance_snapshot: campaign.vault_balance,
+                });
+            }
         }
     }
 

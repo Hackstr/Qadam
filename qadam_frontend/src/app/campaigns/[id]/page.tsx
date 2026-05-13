@@ -43,6 +43,7 @@ function CampaignDetailContent() {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("about");
   const [selectedMilestone, setSelectedMilestone] = useState(0);
+  const [showAllBackers, setShowAllBackers] = useState(false);
 
   const { data: campaignData, isLoading } = useQuery({
     queryKey: ["campaign", id],
@@ -619,7 +620,7 @@ function CampaignDetailContent() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {backers.map((b: any, idx: number) => (
+                    {(showAllBackers ? backers : backers.slice(0, 20)).map((b: any, idx: number) => (
                       <div key={idx} className="flex items-center justify-between py-2.5 border-b border-foreground/[0.04] last:border-0">
                         <div className="flex items-center gap-3">
                           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-[10px] font-bold">
@@ -643,6 +644,14 @@ function CampaignDetailContent() {
                         </div>
                       </div>
                     ))}
+                    {!showAllBackers && backers.length > 20 && (
+                      <button
+                        onClick={() => setShowAllBackers(true)}
+                        className="w-full py-3 text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
+                      >
+                        Show all {backers.length} backers
+                      </button>
+                    )}
                   </div>
                 )}
               </TabsContent>
