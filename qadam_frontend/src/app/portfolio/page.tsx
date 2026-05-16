@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { getPortfolio } from "@/lib/api";
@@ -10,10 +9,9 @@ import { formatSol } from "@/lib/constants";
 import { StatsGrid } from "@/components/qadam/stats-grid";
 import { ActionRequiredBanner } from "@/components/qadam/action-required-banner";
 import { PositionCard } from "@/components/qadam/position-card";
+import { getCampaigns } from "@/lib/api";
 import {
-  Loader2, Wallet, RotateCcw,
-  TrendingUp, Coins, ArrowRight, ChevronDown,
-  Shield, Users, Code, Crown, Lock, Vote,
+  Loader2, Wallet, RotateCcw, TrendingUp, Coins, ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -146,67 +144,44 @@ const fadeUp = {
 }
 
 function PortfolioEmptyState() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-
-  const faqs = [
-    {
-      q: "What happens to my SOL when I back?",
-      a: "Your SOL goes to an on-chain escrow vault controlled by the program. It stays there until the community votes to release it milestone by milestone, or votes to refund.",
-    },
-    {
-      q: "Can I get a refund?",
-      a: "If a milestone fails, the community votes on next steps. If the vote resolves to refund, your SOL is returned proportionally from the escrow vault.",
-    },
-    {
-      q: "What are ownership points?",
-      a: "Points give you voting weight on milestone decisions. They compound for early backers — the earlier you join, the more weight you carry in governance.",
-    },
-  ]
+  // Fetch live campaigns for "Picked for you" section
+  const { data: campaignsData } = useQuery({
+    queryKey: ["campaigns-active"],
+    queryFn: () => getCampaigns({ status: "active", limit: 3 }),
+  });
+  const liveCampaigns = campaignsData?.data || [];
 
   return (
     <div className="space-y-16 pb-20">
-      {/* ── SECTION 1: Hero in cream container ── */}
+      {/* ── SECTION 1: Hero — NO container, plain text ── */}
       <motion.section
         initial="hidden"
         animate="visible"
-        className="max-w-2xl"
       >
-        <div className="bg-secondary/40 rounded-[22px] p-8 md:p-10">
-          <motion.p
-            custom={0}
-            variants={fadeUp}
-            className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-4"
-          >
-            YOUR PORTFOLIO
-          </motion.p>
-          <motion.h1
-            custom={1}
-            variants={fadeUp}
-            className="font-display text-[52px] leading-[1.05] tracking-tight mb-4"
-          >
-            Nothing <span className="italic">backed</span> yet.
-          </motion.h1>
-          <motion.p
-            custom={2}
-            variants={fadeUp}
-            className="text-lg text-muted-foreground leading-relaxed max-w-lg mb-6"
-          >
-            Once you back a project, this becomes your portfolio — votes, tokens, milestone updates, all in one place.
-          </motion.p>
-          {/* Backed / Watchlist tabs */}
-          <motion.div custom={3} variants={fadeUp} className="flex items-center gap-1 mb-6">
-            <span className="text-sm font-medium bg-foreground text-background px-4 py-1.5 rounded-full">
-              Backed
-            </span>
-            <span className="text-sm text-muted-foreground px-3 py-1.5">
-              Watchlist &middot; 0
-            </span>
-          </motion.div>
-          <div className="h-px bg-foreground/10" />
-        </div>
+        <motion.p
+          custom={0}
+          variants={fadeUp}
+          className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-4"
+        >
+          YOUR PORTFOLIO
+        </motion.p>
+        <motion.h1
+          custom={1}
+          variants={fadeUp}
+          className="font-display text-[52px] leading-[1.05] tracking-tight mb-4"
+        >
+          Nothing <span className="italic">backed</span> yet.
+        </motion.h1>
+        <motion.p
+          custom={2}
+          variants={fadeUp}
+          className="text-lg text-muted-foreground leading-relaxed max-w-2xl"
+        >
+          Once you back a project, this becomes your portfolio — votes, tokens, milestone updates, all in one place.
+        </motion.p>
       </motion.section>
 
-      {/* ── SECTION 2: CTA + Preview card ── */}
+      {/* ── SECTION 2: CTA + Floating phantom cards ── */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -252,100 +227,166 @@ function PortfolioEmptyState() {
           </motion.div>
         </div>
 
-        {/* Right — white preview card with list rows */}
+        {/* Right — floating phantom cards in grey container */}
         <motion.div custom={2} variants={fadeUp}>
-          <div className="rounded-[18px] border border-black/[0.06] bg-white p-5 shadow-sm">
-            <p className="text-[10px] tracking-[0.14em] uppercase text-muted-foreground mb-4">
+          <div className="rounded-[20px] bg-secondary/50 p-6 pt-5 relative overflow-hidden min-h-[380px]">
+            <p className="text-[10px] tracking-[0.14em] uppercase text-muted-foreground mb-5">
               // PREVIEW — YOUR PORTFOLIO
             </p>
-            <div className="space-y-3">
-              {[
-                { gradient: "from-emerald-100 to-teal-50", label: "DeFi Protocol", stat: "64% · 12 SOL", badge: "FOUNDER", icon: <Shield className="w-4 h-4 text-emerald-600" />, iconBg: "bg-emerald-100" },
-                { gradient: "from-amber-50 to-orange-50", label: "Community DAO", stat: "32% · 4 SOL", badge: null, icon: <Users className="w-4 h-4 text-amber-600" />, iconBg: "bg-amber-100" },
-                { gradient: "from-violet-50 to-purple-50", label: "Dev Tooling", stat: "88% · 20 SOL", badge: null, icon: <Code className="w-4 h-4 text-violet-600" />, iconBg: "bg-violet-100" },
-              ].map((card, i) => (
-                <div key={i} className={`rounded-xl bg-gradient-to-r ${card.gradient} p-4 flex items-center justify-between`}>
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-lg ${card.iconBg} flex items-center justify-center`}>
-                      {card.icon}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{card.label}</p>
-                      <p className="text-xs text-muted-foreground">{card.stat}</p>
-                    </div>
-                  </div>
-                  {card.badge && (
-                    <span className="text-[9px] tracking-wider font-semibold bg-[#1a2f23] text-white px-2 py-0.5 rounded-full">
-                      {card.badge}
-                    </span>
-                  )}
+            <div className="relative h-[300px]">
+              {/* Card 1 — green, top-left */}
+              <div className="absolute top-0 left-0 w-[58%] h-[130px] rounded-2xl bg-[#2d6b4d] p-5 shadow-lg">
+                <div className="flex items-center gap-2 mt-8">
+                  <div className="h-px flex-1 border-t border-dashed border-white/30" />
+                  <span className="text-[11px] text-white/60 tracking-wider font-mono">project</span>
+                  <div className="h-px flex-1 border-t border-dashed border-white/30" />
                 </div>
-              ))}
+                <p className="text-xs text-white/50 font-mono mt-3">64% &middot; 12 SOL</p>
+              </div>
+              {/* Card 2 — brown/terracotta, overlapping right */}
+              <div className="absolute top-[55px] right-0 w-[55%] h-[130px] rounded-2xl bg-[#a0522d] p-5 shadow-lg">
+                <div className="flex items-center gap-2 mt-8">
+                  <div className="h-px flex-1 border-t border-dashed border-white/30" />
+                  <span className="text-[11px] text-white/60 tracking-wider font-mono">project</span>
+                  <div className="h-px flex-1 border-t border-dashed border-white/30" />
+                </div>
+              </div>
+              {/* Card 3 — white with Qadam "G" logo + FOUNDER badge */}
+              <div className="absolute top-[130px] left-[15%] w-[40%] h-[90px] rounded-2xl bg-white border border-black/[0.06] shadow-sm flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-[#2d6b4d] flex items-center justify-center text-white font-display text-xl">
+                  G
+                </div>
+                <span className="absolute top-3 right-3 text-[9px] tracking-wider font-semibold bg-[#1a2f23] text-white px-2.5 py-0.5 rounded-full">
+                  FOUNDER
+                </span>
+              </div>
+              {/* Card 4 — purple, bottom-right */}
+              <div className="absolute bottom-0 right-[2%] w-[52%] h-[110px] rounded-2xl bg-[#6b3fa0] p-5 shadow-lg">
+                <div className="flex items-center gap-2 mt-4">
+                  <div className="h-px flex-1 border-t border-dashed border-white/30" />
+                  <span className="text-[11px] text-white/60 tracking-wider font-mono">project</span>
+                  <div className="h-px flex-1 border-t border-dashed border-white/30" />
+                </div>
+                <p className="text-xs text-white/50 font-mono mt-3">82% &middot; 24 SOL</p>
+              </div>
             </div>
           </div>
         </motion.div>
       </motion.section>
 
-      {/* ── SECTION 3: How it works — cream container + icons ── */}
+      {/* ── SECTION 3: How it works — NO container, NO icons, just 3 cols ── */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className="max-w-3xl"
       >
-        <div className="bg-secondary/40 rounded-[22px] p-8 md:p-10">
-          <motion.h3 custom={0} variants={fadeUp} className="font-display text-2xl tracking-tight mb-8">
-            How it works
-          </motion.h3>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { step: "01", title: "Pick a tier", desc: "Choose a backing tier that matches your conviction. Earlier = more ownership points.", icon: <Crown className="w-5 h-5 text-amber-500" />, iconBg: "bg-amber-50" },
-              { step: "02", title: "Funds in escrow", desc: "SOL goes to an on-chain vault. Released only when the community approves milestones.", icon: <Lock className="w-5 h-5 text-green-600" />, iconBg: "bg-green-50" },
-              { step: "03", title: "Vote & earn", desc: "Review evidence, cast your vote. Approved milestones release funds and mint your tokens.", icon: <Vote className="w-5 h-5 text-purple-500" />, iconBg: "bg-purple-50" },
-            ].map((item, i) => (
-              <motion.div key={i} custom={i + 1} variants={fadeUp}>
-                <div className={`w-10 h-10 rounded-full ${item.iconBg} flex items-center justify-center mb-3`}>
-                  {item.icon}
-                </div>
-                <p className="text-[11px] tracking-[0.14em] text-amber-500 font-semibold mb-2">{item.step}</p>
-                <p className="font-display text-lg mb-1">{item.title}</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            { step: "01", title: "Pick a tier", desc: "Earlier = bigger share. Founders > Early Backers > Supporters." },
+            { step: "02", title: "Funds in escrow", desc: "Your SOL stays locked on-chain until the community approves the milestone." },
+            { step: "03", title: "Vote & earn", desc: "Each milestone triggers a vote. Your weight is proportional to your stake." },
+          ].map((item, i) => (
+            <motion.div key={i} custom={i + 1} variants={fadeUp}>
+              <p className="text-[11px] tracking-[0.14em] text-muted-foreground font-semibold mb-2">{item.step}</p>
+              <p className="font-display text-lg mb-1">{item.title}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+            </motion.div>
+          ))}
         </div>
       </motion.section>
 
-      {/* ── SECTION 4: FAQ ── */}
+      {/* ── SECTION 4: Picked for you — live campaign cards ── */}
+      {liveCampaigns.length > 0 && (
+        <motion.section
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <motion.h3 custom={0} variants={fadeUp} className="font-display text-[32px] tracking-tight">
+                Picked <span className="italic">for you</span>
+              </motion.h3>
+              <motion.p custom={1} variants={fadeUp} className="text-muted-foreground mt-1">
+                Live campaigns matching your wallet activity and Solana history.
+              </motion.p>
+            </div>
+            <motion.div custom={1} variants={fadeUp}>
+              <Link href="/discover" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
+                See all {liveCampaigns.length} live <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </motion.div>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {liveCampaigns.slice(0, 3).map((c, i) => (
+              <motion.div key={c.id} custom={i + 2} variants={fadeUp}>
+                <Link href={`/campaigns/${c.id}`}>
+                  <div className="rounded-[18px] border border-black/[0.06] overflow-hidden hover:-translate-y-0.5 transition-all duration-200">
+                    {/* Cover image / color block */}
+                    <div className={`h-[140px] relative ${
+                      i === 0 ? "bg-[#2d6b4d]" : i === 1 ? "bg-[#a0522d]" : "bg-[#6b3fa0]"
+                    }`}>
+                      {c.cover_image_url && (
+                        <img src={c.cover_image_url} alt="" className="w-full h-full object-cover" />
+                      )}
+                      <div className="absolute top-3 left-3 flex items-center gap-2">
+                        <span className="text-[9px] tracking-[0.1em] uppercase font-semibold bg-black/40 text-white px-2.5 py-1 rounded-full backdrop-blur-sm">
+                          {c.category || "PROJECT"}
+                        </span>
+                      </div>
+                      <div className="absolute top-3 right-3 flex items-center gap-1.5 text-[10px] font-medium bg-black/40 text-white px-2 py-0.5 rounded-full backdrop-blur-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                        LIVE
+                      </div>
+                    </div>
+                    {/* Card body */}
+                    <div className="p-4">
+                      <p className="font-display text-base mb-1 truncate">{c.title}</p>
+                      <p className="text-xs text-muted-foreground mb-3 font-mono">
+                        {c.creator_display_name || c.creator_wallet?.slice(0, 8) + ".sol"}
+                      </p>
+                      {/* Progress bar */}
+                      <div className="h-1.5 w-full rounded-full bg-foreground/[0.06] mb-2">
+                        <div
+                          className="h-full rounded-full bg-[#1a2f23]"
+                          style={{ width: `${Math.min(100, Math.round((c.raised_lamports / c.goal_lamports) * 100))}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-mono font-semibold">
+                          {formatSol(c.raised_lamports)} <span className="text-muted-foreground font-normal">/ {formatSol(c.goal_lamports)}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+      )}
+
+      {/* ── SECTION 5: FAQ — 2x2 grid, NOT accordion ── */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className="max-w-2xl"
       >
-        <div className="border-t border-foreground/10 pt-12">
-          <motion.h3 custom={0} variants={fadeUp} className="font-display text-2xl tracking-tight">
-            What backing means on Qadam
-          </motion.h3>
-          <p className="text-sm text-muted-foreground mt-1 mb-6">Common questions from new backers</p>
-          <div className="space-y-0 divide-y divide-black/[0.06]">
-            {faqs.map((faq, i) => (
-              <motion.div key={i} custom={i + 1} variants={fadeUp}>
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between py-4 text-left"
-                >
-                  <span className="font-medium text-[15px]">{faq.q}</span>
-                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
-                </button>
-                {openFaq === i && (
-                  <p className="pb-4 text-sm text-muted-foreground leading-relaxed pr-8">
-                    {faq.a}
-                  </p>
-                )}
-              </motion.div>
-            ))}
-          </div>
+        <motion.h3 custom={0} variants={fadeUp} className="font-display text-[32px] tracking-tight mb-8">
+          What backing means on Qadam
+        </motion.h3>
+        <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
+          {[
+            { q: "Where does my SOL go?", a: "Into the campaign\u2019s escrow contract on Solana mainnet. Released only when a milestone passes community vote." },
+            { q: "What if the project never ships?", a: "Remaining escrow is returned to backers pro-rata. The community vote enforces this \u2014 it\u2019s not a promise, it\u2019s a contract." },
+            { q: "How do tiers work?", a: "First 50 backers usually get 100% share, next 200 get 70%, the rest 50%. Each project sets its own structure." },
+            { q: "How is voting weight calculated?", a: "Your weight \u2248 (your stake \u00d7 tier multiplier). Quorum is typically 20%, approval threshold 50%." },
+          ].map((item, i) => (
+            <motion.div key={i} custom={i + 1} variants={fadeUp} className="border-t border-foreground/10 pt-4">
+              <p className="font-semibold text-[15px] mb-2">{item.q}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{item.a}</p>
+            </motion.div>
+          ))}
         </div>
       </motion.section>
     </div>
