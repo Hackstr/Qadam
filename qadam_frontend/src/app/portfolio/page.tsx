@@ -165,7 +165,7 @@ function PortfolioEmptyState() {
 
   return (
     <div className="space-y-16 pb-20">
-      {/* SECTION 1 — Hero */}
+      {/* ── SECTION 1: Hero in cream container ── */}
       <motion.section
         initial="hidden"
         animate="visible"
@@ -175,7 +175,7 @@ function PortfolioEmptyState() {
           <motion.p
             custom={0}
             variants={fadeUp}
-            className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground mb-4"
+            className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-4"
           >
             YOUR PORTFOLIO
           </motion.p>
@@ -184,31 +184,41 @@ function PortfolioEmptyState() {
             variants={fadeUp}
             className="font-display text-[52px] leading-[1.05] tracking-tight mb-4"
           >
-            Nothing <span className="italic text-amber-500">backed</span> yet.
+            Nothing <span className="italic">backed</span> yet.
           </motion.h1>
           <motion.p
             custom={2}
             variants={fadeUp}
-            className="text-lg text-muted-foreground leading-relaxed max-w-lg mb-8"
+            className="text-lg text-muted-foreground leading-relaxed max-w-lg mb-6"
           >
             Once you back a project, this becomes your portfolio — votes, tokens, milestone updates, all in one place.
           </motion.p>
-          <div className="h-px bg-foreground/10 mt-6" />
+          {/* Backed / Watchlist tabs */}
+          <motion.div custom={3} variants={fadeUp} className="flex items-center gap-1 mb-6">
+            <span className="text-sm font-medium bg-foreground text-background px-4 py-1.5 rounded-full">
+              Backed
+            </span>
+            <span className="text-sm text-muted-foreground px-3 py-1.5">
+              Watchlist &middot; 0
+            </span>
+          </motion.div>
+          <div className="h-px bg-foreground/10" />
         </div>
       </motion.section>
 
-      {/* SECTION 2 — CTA Block */}
+      {/* ── SECTION 2: CTA + Preview card ── */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         className="grid md:grid-cols-2 gap-12 items-start"
       >
+        {/* Left — text + buttons */}
         <div>
           <motion.p
             custom={0}
             variants={fadeUp}
-            className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground mb-4 flex items-center gap-2"
+            className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-4 flex items-center gap-2"
           >
             <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
             STEP INTO THE ROOM
@@ -218,7 +228,8 @@ function PortfolioEmptyState() {
             variants={fadeUp}
             className="font-display text-[44px] leading-[1.08] tracking-tight mb-4"
           >
-            Find projects worth <span className="italic text-amber-500">betting on.</span>
+            Find projects worth{" "}
+            <span className="italic text-amber-600">betting on.</span>
           </motion.h2>
           <motion.p
             custom={2}
@@ -229,7 +240,7 @@ function PortfolioEmptyState() {
           </motion.p>
           <motion.div custom={3} variants={fadeUp} className="flex flex-wrap gap-3">
             <Link href="/discover">
-              <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full px-6" size="lg">
+              <Button className="gap-2 bg-[#1a2f23] hover:bg-[#243d2e] text-white rounded-full px-6" size="lg">
                 Explore Campaigns <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -241,10 +252,10 @@ function PortfolioEmptyState() {
           </motion.div>
         </div>
 
-        {/* Preview card */}
+        {/* Right — white preview card with list rows */}
         <motion.div custom={2} variants={fadeUp}>
           <div className="rounded-[18px] border border-black/[0.06] bg-white p-5 shadow-sm">
-            <p className="text-[10px] tracking-[0.12em] uppercase text-muted-foreground mb-4">
+            <p className="text-[10px] tracking-[0.14em] uppercase text-muted-foreground mb-4">
               // PREVIEW — YOUR PORTFOLIO
             </p>
             <div className="space-y-3">
@@ -275,7 +286,7 @@ function PortfolioEmptyState() {
         </motion.div>
       </motion.section>
 
-      {/* SECTION 3 — How It Works */}
+      {/* ── SECTION 3: How it works — cream container + icons ── */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -289,7 +300,7 @@ function PortfolioEmptyState() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { step: "01", title: "Pick a tier", desc: "Choose a backing tier that matches your conviction. Earlier = more ownership points.", icon: <Crown className="w-5 h-5 text-amber-500" />, iconBg: "bg-amber-50" },
-              { step: "02", title: "Funds in escrow", desc: "SOL goes to an on-chain vault. Released only when the community approves milestones.", icon: <Lock className="w-5 h-5 text-green-500" />, iconBg: "bg-green-50" },
+              { step: "02", title: "Funds in escrow", desc: "SOL goes to an on-chain vault. Released only when the community approves milestones.", icon: <Lock className="w-5 h-5 text-green-600" />, iconBg: "bg-green-50" },
               { step: "03", title: "Vote & earn", desc: "Review evidence, cast your vote. Approved milestones release funds and mint your tokens.", icon: <Vote className="w-5 h-5 text-purple-500" />, iconBg: "bg-purple-50" },
             ].map((item, i) => (
               <motion.div key={i} custom={i + 1} variants={fadeUp}>
@@ -305,7 +316,7 @@ function PortfolioEmptyState() {
         </div>
       </motion.section>
 
-      {/* SECTION 4 — FAQ */}
+      {/* ── SECTION 4: FAQ ── */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -317,24 +328,24 @@ function PortfolioEmptyState() {
             What backing means on Qadam
           </motion.h3>
           <p className="text-sm text-muted-foreground mt-1 mb-6">Common questions from new backers</p>
-        <div className="space-y-0 divide-y divide-black/[0.06]">
-          {faqs.map((faq, i) => (
-            <motion.div key={i} custom={i + 1} variants={fadeUp}>
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full flex items-center justify-between py-4 text-left"
-              >
-                <span className="font-medium text-[15px]">{faq.q}</span>
-                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
-              </button>
-              {openFaq === i && (
-                <p className="pb-4 text-sm text-muted-foreground leading-relaxed pr-8">
-                  {faq.a}
-                </p>
-              )}
-            </motion.div>
-          ))}
-        </div>
+          <div className="space-y-0 divide-y divide-black/[0.06]">
+            {faqs.map((faq, i) => (
+              <motion.div key={i} custom={i + 1} variants={fadeUp}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between py-4 text-left"
+                >
+                  <span className="font-medium text-[15px]">{faq.q}</span>
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
+                </button>
+                {openFaq === i && (
+                  <p className="pb-4 text-sm text-muted-foreground leading-relaxed pr-8">
+                    {faq.a}
+                  </p>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </motion.section>
     </div>

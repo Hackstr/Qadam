@@ -15,7 +15,7 @@ import { DailyNudge } from "@/components/ai/daily-nudge";
 import {
   Loader2, Plus, CheckCircle2, ArrowRight, Rocket,
   BarChart2, Share2, ExternalLink, PenLine, ChevronDown,
-  Code, Users, Cpu, Lock, Banknote,
+  Code, Users, Cpu,
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -283,93 +283,176 @@ function DashboardEmptyState() {
 
   return (
     <div className="space-y-16 pb-20">
-      {/* SECTION 1 — Hero (2-col) */}
+      {/* ── SECTION 1: Hero — text left, tabs right ── */}
       <motion.section
         initial="hidden"
         animate="visible"
-        className="grid md:grid-cols-2 gap-12 items-start"
+        className="flex flex-col md:flex-row md:items-end md:justify-between gap-6"
       >
-        <div className="bg-secondary/40 rounded-[22px] p-8 md:p-10">
+        <div>
           <motion.p
             custom={0}
             variants={fadeUp}
-            className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground mb-4"
+            className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-4"
           >
-            MY CAMPAIGNS
+            YOUR DASHBOARD
           </motion.p>
           <motion.h1
             custom={1}
             variants={fadeUp}
-            className="font-display text-[44px] leading-[1.08] tracking-tight mb-6"
+            className="font-display text-[52px] leading-[1.05] tracking-tight mb-4"
           >
-            Build something the community <span className="italic text-amber-500">believes in.</span>
+            Time to <span className="italic">launch</span>?
           </motion.h1>
+          <motion.p
+            custom={2}
+            variants={fadeUp}
+            className="text-lg text-muted-foreground leading-relaxed max-w-lg"
+          >
+            Define your idea, set milestones, raise on-chain. You&apos;ll be funded as you deliver — not before.
+          </motion.p>
+        </div>
+        <motion.div custom={3} variants={fadeUp} className="flex items-center gap-1 shrink-0">
+          <span className="text-sm font-medium bg-foreground text-background px-4 py-1.5 rounded-full">
+            All
+          </span>
+          {["Drafts", "Live", "Past"].map((tab) => (
+            <span key={tab} className="text-sm text-muted-foreground px-3 py-1.5">
+              {tab} &middot; 0
+            </span>
+          ))}
+        </motion.div>
+      </motion.section>
 
-          {/* 3-step rail */}
-          <motion.div custom={2} variants={fadeUp} className="flex items-center gap-0 mb-8">
-            {[
-              { label: "DRAFT", icon: <PenLine className="w-3.5 h-3.5 text-background" /> },
-              { label: "LAUNCH", icon: <Rocket className="w-3.5 h-3.5 text-background" /> },
-              { label: "DELIVER", icon: <Banknote className="w-3.5 h-3.5 text-background" /> },
-            ].map((step, i) => (
-              <div key={step.label} className="flex items-center">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-foreground flex items-center justify-center">
-                    {step.icon}
-                  </div>
-                  <span className="text-[11px] tracking-[0.1em] font-semibold text-[#1a2f23]">
-                    {step.label}
-                  </span>
-                </div>
-                {i < 2 && <div className="w-6 h-px bg-black/10 mx-2 border-dashed border-t border-black/10" />}
-              </div>
-            ))}
-          </motion.div>
-
-          <motion.div custom={3} variants={fadeUp}>
-            <Link href="/create" className="inline-flex items-center gap-2 text-amber-600 font-medium hover:text-amber-700 transition-colors">
-              Create your first campaign <ArrowRight className="h-4 w-4" />
+      {/* ── SECTION 2: CTA + Draft mockup card ── */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="grid md:grid-cols-2 gap-12 items-start"
+      >
+        {/* Left — text + buttons */}
+        <div>
+          <motion.p
+            custom={0}
+            variants={fadeUp}
+            className="text-[11px] tracking-[0.18em] uppercase text-muted-foreground mb-4 flex items-center gap-2"
+          >
+            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+            YOU&apos;RE THE CREATOR
+          </motion.p>
+          <motion.h2
+            custom={1}
+            variants={fadeUp}
+            className="font-display text-[44px] leading-[1.08] tracking-tight mb-4"
+          >
+            Build with the{" "}
+            <span className="italic text-amber-600">community</span>, not against them.
+          </motion.h2>
+          <motion.p
+            custom={2}
+            variants={fadeUp}
+            className="text-muted-foreground leading-relaxed mb-8 max-w-md"
+          >
+            Set realistic milestones. Get the first one funded. Ship. Get the next one funded. Honesty compounds — and on Qadam, the contract enforces it.
+          </motion.p>
+          <motion.div custom={3} variants={fadeUp} className="flex flex-wrap gap-3">
+            <Link href="/create">
+              <Button className="gap-2 bg-[#1a2f23] hover:bg-[#243d2e] text-white rounded-full px-6" size="lg">
+                <Plus className="h-4 w-4" /> Create your first campaign
+              </Button>
+            </Link>
+            <Link href="/how-it-works">
+              <Button variant="outline" className="rounded-full px-6" size="lg">
+                Read the playbook
+              </Button>
             </Link>
           </motion.div>
         </div>
 
-        {/* Draft mockup card */}
+        {/* Right — dark draft mockup card */}
         <motion.div custom={2} variants={fadeUp} className="relative">
-          <div className="rounded-[18px] border border-black/[0.06] bg-white p-6 shadow-sm">
-            <div className="space-y-4">
-              <div>
-                <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Campaign Title</div>
-                <div className="h-4 w-3/4 rounded bg-foreground/[0.06]" />
-              </div>
-              <div>
-                <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Story</div>
-                <div className="space-y-1.5">
-                  <div className="h-3 w-full rounded bg-foreground/[0.04]" />
-                  <div className="h-3 w-5/6 rounded bg-foreground/[0.04]" />
-                  <div className="h-3 w-4/6 rounded bg-foreground/[0.04]" />
-                </div>
-              </div>
-              <div className="h-px bg-foreground/[0.06]" />
-              <div>
-                <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Milestones</div>
-                <div className="flex gap-2">
-                  <div className="h-2 flex-1 rounded-full bg-foreground/[0.06]" />
-                  <div className="h-2 flex-1 rounded-full bg-foreground/[0.04]" />
-                  <div className="h-2 flex-1 rounded-full bg-foreground/[0.04]" />
-                </div>
+          <div className="rounded-[20px] bg-[#2a2a26] p-6 text-white/80 shadow-lg">
+            {/* Header row */}
+            <div className="flex items-center justify-between mb-5">
+              <span className="text-[10px] tracking-[0.14em] uppercase text-white/40">
+                &middot; DRAFT &middot;
+              </span>
+              <span className="text-[10px] tracking-[0.1em] uppercase text-white/30">
+                DAY 0 OF 30
+              </span>
+            </div>
+            {/* Title placeholder */}
+            <div className="space-y-2 mb-6">
+              <div className="h-4 w-3/4 rounded bg-white/[0.08]" />
+              <div className="h-3 w-1/2 rounded bg-white/[0.05]" />
+              <div className="h-3 w-2/3 rounded bg-white/[0.05]" />
+            </div>
+            {/* Story section */}
+            <div className="border-t border-white/[0.08] pt-4 mb-5">
+              <p className="text-[10px] tracking-[0.14em] uppercase text-white/30 mb-3">
+                // STORY
+              </p>
+              <div className="space-y-1.5">
+                <div className="h-3 w-full rounded bg-white/[0.06]" />
+                <div className="h-3 w-5/6 rounded bg-white/[0.06]" />
+                <div className="h-3 w-3/4 rounded bg-white/[0.05]" />
               </div>
             </div>
+            {/* Milestones section */}
+            <div className="border-t border-white/[0.08] pt-4 mb-5">
+              <p className="text-[10px] tracking-[0.14em] uppercase text-white/30 mb-3">
+                // MILESTONES &middot; 0
+              </p>
+              <div className="space-y-2.5">
+                {[1, 2, 3].map((n) => (
+                  <div key={n} className="flex items-center gap-3">
+                    <span className="text-xs text-white/25 w-3 tabular-nums">{n}</span>
+                    <div className="h-2.5 flex-1 rounded bg-white/[0.06]" />
+                    <span className="text-[10px] text-white/20">&mdash; SOL</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Waiting to be filled */}
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+              <span className="text-[11px] text-white/40">Waiting to be filled</span>
+            </div>
           </div>
-          {/* Floater button */}
+          {/* Big green floater button */}
           <Link href="/create">
-            <div className="absolute -bottom-3 -right-3 w-10 h-10 rounded-full bg-[#1a2f23] flex items-center justify-center shadow-lg hover:-translate-y-0.5 transition-transform cursor-pointer">
-              <ArrowRight className="h-4 w-4 text-white -rotate-45" />
+            <div className="absolute -bottom-4 -right-4 w-14 h-14 rounded-full bg-[#1a2f23] flex items-center justify-center shadow-xl hover:-translate-y-0.5 transition-transform cursor-pointer">
+              <ArrowRight className="h-5 w-5 text-white -rotate-45" />
             </div>
           </Link>
         </motion.div>
       </motion.section>
 
-      {/* SECTION 2 — Templates */}
+      {/* ── SECTION 3: Three-step process ── */}
+      <motion.section
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+      >
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            { step: "01", label: "DRAFT", title: "5 steps, ~20 min", desc: "Idea, story, team, milestones, preview. Auto-saved, you can leave anytime." },
+            { step: "02", label: "LAUNCH", title: "0.4 SOL deposit", desc: "Refundable. Keeps spam off the platform. Smart contract goes live on Solana." },
+            { step: "03", label: "DELIVER", title: "Ship, vote, repeat", desc: "Each milestone you ship triggers a community vote. Pass \u2192 funds release." },
+          ].map((item, i) => (
+            <motion.div key={i} custom={i + 1} variants={fadeUp}>
+              <p className="text-[11px] tracking-[0.14em] text-muted-foreground font-semibold mb-2">
+                {item.step} &middot; {item.label}
+              </p>
+              <p className="font-display text-lg mb-1">{item.title}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* ── SECTION 4: Templates ── */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -387,7 +470,7 @@ function DashboardEmptyState() {
                     {tpl.icon}
                   </div>
                   <p className="font-display text-lg mb-1">{tpl.name}</p>
-                  <p className="text-sm text-muted-foreground">avg raise · {tpl.avg}</p>
+                  <p className="text-sm text-muted-foreground">avg raise &middot; {tpl.avg}</p>
                 </div>
               </Link>
             </motion.div>
@@ -395,7 +478,7 @@ function DashboardEmptyState() {
         </div>
       </motion.section>
 
-      {/* SECTION 3 — FAQ */}
+      {/* ── SECTION 5: FAQ ── */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -407,24 +490,24 @@ function DashboardEmptyState() {
             Before you launch
           </motion.h3>
           <p className="text-sm text-muted-foreground mt-1 mb-6">Common questions from new creators</p>
-        <div className="space-y-0 divide-y divide-black/[0.06]">
-          {faqs.map((faq, i) => (
-            <motion.div key={i} custom={i + 1} variants={fadeUp}>
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full flex items-center justify-between py-4 text-left"
-              >
-                <span className="font-medium text-[15px]">{faq.q}</span>
-                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
-              </button>
-              {openFaq === i && (
-                <p className="pb-4 text-sm text-muted-foreground leading-relaxed pr-8">
-                  {faq.a}
-                </p>
-              )}
-            </motion.div>
-          ))}
-        </div>
+          <div className="space-y-0 divide-y divide-black/[0.06]">
+            {faqs.map((faq, i) => (
+              <motion.div key={i} custom={i + 1} variants={fadeUp}>
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  className="w-full flex items-center justify-between py-4 text-left"
+                >
+                  <span className="font-medium text-[15px]">{faq.q}</span>
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${openFaq === i ? "rotate-180" : ""}`} />
+                </button>
+                {openFaq === i && (
+                  <p className="pb-4 text-sm text-muted-foreground leading-relaxed pr-8">
+                    {faq.a}
+                  </p>
+                )}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </motion.section>
     </div>
