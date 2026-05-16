@@ -72,8 +72,13 @@ export default function PortfolioPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 animate-page-enter">
-      <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-1">Your Portfolio</h1>
-      <p className="text-muted-foreground mb-8">Track your backed projects, vote on milestones, claim tokens.</p>
+      {/* Header only when user has positions */}
+      {positions.length > 0 && (
+        <>
+          <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-1">Your Portfolio</h1>
+          <p className="text-muted-foreground mb-8">Track your backed projects, vote on milestones, claim tokens.</p>
+        </>
+      )}
 
       {/* Stats — only show when there are positions */}
       {positions.length > 0 && (

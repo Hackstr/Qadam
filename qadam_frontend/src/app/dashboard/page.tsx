@@ -101,20 +101,19 @@ function DashboardContent() {
         </div>
       )}
 
-      {/* Header — personalized */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
-        <div>
-          <h1 className="font-display text-3xl md:text-4xl tracking-tight">
-            {displayName ? `Welcome back, ${displayName}` : "My Campaigns"}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {myCampaigns.length > 0
-              ? "Here's what's happening with your campaigns."
-              : "Create your first campaign and start building."
-            }
-          </p>
+      {/* Header — only when campaigns exist */}
+      {myCampaigns.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
+          <div>
+            <h1 className="font-display text-3xl md:text-4xl tracking-tight">
+              {displayName ? `Welcome back, ${displayName}` : "My Campaigns"}
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Here&apos;s what&apos;s happening with your campaigns.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {isLoading ? (
         <div className="flex justify-center py-20">
@@ -276,9 +275,9 @@ function DashboardEmptyState() {
   ]
 
   const templates = [
-    { name: "Software", avg: "42 SOL", gradient: "from-emerald-50 to-teal-50" },
-    { name: "Community / DAO", avg: "28 SOL", gradient: "from-amber-50 to-orange-50" },
-    { name: "Hardware", avg: "85 SOL", gradient: "from-violet-50 to-purple-50" },
+    { name: "Software", avg: "42 SOL", gradient: "from-emerald-100 to-teal-100" },
+    { name: "Community / DAO", avg: "28 SOL", gradient: "from-amber-100 to-orange-100" },
+    { name: "Hardware", avg: "85 SOL", gradient: "from-violet-100 to-purple-100" },
   ]
 
   return (
