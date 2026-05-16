@@ -15,6 +15,7 @@ import { DailyNudge } from "@/components/ai/daily-nudge";
 import {
   Loader2, Plus, CheckCircle2, ArrowRight, Rocket,
   BarChart2, Share2, ExternalLink, PenLine, ChevronDown,
+  Code, Users, Cpu, Lock, Banknote,
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -275,20 +276,20 @@ function DashboardEmptyState() {
   ]
 
   const templates = [
-    { name: "Software", avg: "42 SOL", gradient: "from-emerald-100 to-teal-100" },
-    { name: "Community / DAO", avg: "28 SOL", gradient: "from-amber-100 to-orange-100" },
-    { name: "Hardware", avg: "85 SOL", gradient: "from-violet-100 to-purple-100" },
+    { name: "Software", avg: "42 SOL", gradient: "from-emerald-100 to-teal-100", icon: <Code className="w-5 h-5 text-emerald-600" />, iconBg: "bg-emerald-50" },
+    { name: "Community / DAO", avg: "28 SOL", gradient: "from-amber-100 to-orange-100", icon: <Users className="w-5 h-5 text-amber-600" />, iconBg: "bg-amber-50" },
+    { name: "Hardware", avg: "85 SOL", gradient: "from-violet-100 to-purple-100", icon: <Cpu className="w-5 h-5 text-violet-600" />, iconBg: "bg-violet-50" },
   ]
 
   return (
-    <div className="space-y-24 pb-20">
+    <div className="space-y-16 pb-20">
       {/* SECTION 1 — Hero (2-col) */}
       <motion.section
         initial="hidden"
         animate="visible"
         className="grid md:grid-cols-2 gap-12 items-start"
       >
-        <div>
+        <div className="bg-secondary/40 rounded-[22px] p-8 md:p-10">
           <motion.p
             custom={0}
             variants={fadeUp}
@@ -306,12 +307,21 @@ function DashboardEmptyState() {
 
           {/* 3-step rail */}
           <motion.div custom={2} variants={fadeUp} className="flex items-center gap-0 mb-8">
-            {["DRAFT", "LAUNCH", "DELIVER"].map((step, i) => (
-              <div key={step} className="flex items-center">
-                <span className="px-3 py-1 rounded-full bg-[#1a2f23]/5 text-[11px] tracking-[0.1em] font-semibold text-[#1a2f23]">
-                  {step}
-                </span>
-                {i < 2 && <div className="w-6 h-px bg-black/10" />}
+            {[
+              { label: "DRAFT", icon: <PenLine className="w-3.5 h-3.5 text-background" /> },
+              { label: "LAUNCH", icon: <Rocket className="w-3.5 h-3.5 text-background" /> },
+              { label: "DELIVER", icon: <Banknote className="w-3.5 h-3.5 text-background" /> },
+            ].map((step, i) => (
+              <div key={step.label} className="flex items-center">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-foreground flex items-center justify-center">
+                    {step.icon}
+                  </div>
+                  <span className="text-[11px] tracking-[0.1em] font-semibold text-[#1a2f23]">
+                    {step.label}
+                  </span>
+                </div>
+                {i < 2 && <div className="w-6 h-px bg-black/10 mx-2 border-dashed border-t border-black/10" />}
               </div>
             ))}
           </motion.div>
@@ -327,22 +337,26 @@ function DashboardEmptyState() {
         <motion.div custom={2} variants={fadeUp} className="relative">
           <div className="rounded-[18px] border border-black/[0.06] bg-white p-6 shadow-sm">
             <div className="space-y-4">
-              <div className="h-5 w-2/3 rounded bg-gray-100" />
-              <div className="space-y-2">
-                <div className="h-3 w-full rounded bg-gray-50" />
-                <div className="h-3 w-5/6 rounded bg-gray-50" />
-                <div className="h-3 w-4/6 rounded bg-gray-50" />
+              <div>
+                <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Campaign Title</div>
+                <div className="h-4 w-3/4 rounded bg-foreground/[0.06]" />
               </div>
-              <div className="h-px bg-black/[0.04]" />
-              <div className="h-4 w-1/3 rounded bg-gray-100" />
-              <div className="space-y-2">
-                <div className="h-3 w-full rounded bg-gray-50" />
-                <div className="h-3 w-3/4 rounded bg-gray-50" />
+              <div>
+                <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Story</div>
+                <div className="space-y-1.5">
+                  <div className="h-3 w-full rounded bg-foreground/[0.04]" />
+                  <div className="h-3 w-5/6 rounded bg-foreground/[0.04]" />
+                  <div className="h-3 w-4/6 rounded bg-foreground/[0.04]" />
+                </div>
               </div>
-              <div className="flex items-center justify-center">
-                <span className="text-[10px] tracking-wider text-muted-foreground/60 animate-pulse">
-                  Waiting to be filled
-                </span>
+              <div className="h-px bg-foreground/[0.06]" />
+              <div>
+                <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Milestones</div>
+                <div className="flex gap-2">
+                  <div className="h-2 flex-1 rounded-full bg-foreground/[0.06]" />
+                  <div className="h-2 flex-1 rounded-full bg-foreground/[0.04]" />
+                  <div className="h-2 flex-1 rounded-full bg-foreground/[0.04]" />
+                </div>
               </div>
             </div>
           </div>
@@ -355,27 +369,7 @@ function DashboardEmptyState() {
         </motion.div>
       </motion.section>
 
-      {/* SECTION 2 — Tabs */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }}
-      >
-        <motion.div custom={0} variants={fadeUp} className="flex items-center gap-1 p-1 rounded-full bg-black/[0.03] w-fit">
-          {["All", "Drafts 0", "Live 0", "Past 0"].map((tab, i) => (
-            <span
-              key={tab}
-              className={`px-4 py-1.5 rounded-full text-sm ${
-                i === 0 ? "bg-[#1a2f23] text-white font-medium" : "text-muted-foreground"
-              }`}
-            >
-              {tab}
-            </span>
-          ))}
-        </motion.div>
-      </motion.section>
-
-      {/* SECTION 3 — Templates */}
+      {/* SECTION 2 — Templates */}
       <motion.section
         initial="hidden"
         whileInView="visible"
@@ -389,7 +383,9 @@ function DashboardEmptyState() {
             <motion.div key={i} custom={i + 1} variants={fadeUp}>
               <Link href="/create">
                 <div className={`rounded-[18px] border border-black/[0.06] bg-gradient-to-br ${tpl.gradient} p-6 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer`}>
-                  <div className="w-10 h-10 rounded-xl bg-white/60 border border-black/[0.04] mb-4" />
+                  <div className={`w-10 h-10 rounded-xl ${tpl.iconBg} border border-black/[0.04] mb-4 flex items-center justify-center`}>
+                    {tpl.icon}
+                  </div>
                   <p className="font-display text-lg mb-1">{tpl.name}</p>
                   <p className="text-sm text-muted-foreground">avg raise · {tpl.avg}</p>
                 </div>
@@ -399,16 +395,18 @@ function DashboardEmptyState() {
         </div>
       </motion.section>
 
-      {/* SECTION 4 — FAQ */}
+      {/* SECTION 3 — FAQ */}
       <motion.section
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         className="max-w-2xl"
       >
-        <motion.h3 custom={0} variants={fadeUp} className="font-display text-2xl tracking-tight mb-6">
-          Before you launch
-        </motion.h3>
+        <div className="border-t border-foreground/10 pt-12">
+          <motion.h3 custom={0} variants={fadeUp} className="font-display text-2xl tracking-tight">
+            Before you launch
+          </motion.h3>
+          <p className="text-sm text-muted-foreground mt-1 mb-6">Common questions from new creators</p>
         <div className="space-y-0 divide-y divide-black/[0.06]">
           {faqs.map((faq, i) => (
             <motion.div key={i} custom={i + 1} variants={fadeUp}>
@@ -426,6 +424,7 @@ function DashboardEmptyState() {
               )}
             </motion.div>
           ))}
+        </div>
         </div>
       </motion.section>
     </div>

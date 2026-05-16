@@ -13,6 +13,7 @@ import { PositionCard } from "@/components/qadam/position-card";
 import {
   Loader2, Wallet, RotateCcw,
   TrendingUp, Coins, ArrowRight, ChevronDown,
+  Shield, Users, Code, Crown, Lock, Vote,
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -163,42 +164,37 @@ function PortfolioEmptyState() {
   ]
 
   return (
-    <div className="space-y-24 pb-20">
+    <div className="space-y-16 pb-20">
       {/* SECTION 1 — Hero */}
       <motion.section
         initial="hidden"
         animate="visible"
         className="max-w-2xl"
       >
-        <motion.p
-          custom={0}
-          variants={fadeUp}
-          className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground mb-4"
-        >
-          YOUR PORTFOLIO
-        </motion.p>
-        <motion.h1
-          custom={1}
-          variants={fadeUp}
-          className="font-display text-[52px] leading-[1.05] tracking-tight mb-4"
-        >
-          Nothing <span className="italic text-amber-500">backed</span> yet.
-        </motion.h1>
-        <motion.p
-          custom={2}
-          variants={fadeUp}
-          className="text-lg text-muted-foreground leading-relaxed max-w-lg mb-8"
-        >
-          Once you back a project, this becomes your portfolio — votes, tokens, milestone updates, all in one place.
-        </motion.p>
-        <motion.div custom={3} variants={fadeUp} className="flex items-center gap-3">
-          <span className="px-4 py-1.5 rounded-full bg-[#1a2f23] text-white text-sm font-medium">
-            Backed
-          </span>
-          <span className="px-4 py-1.5 rounded-full text-sm text-muted-foreground">
-            Watchlist · 0
-          </span>
-        </motion.div>
+        <div className="bg-secondary/40 rounded-[22px] p-8 md:p-10">
+          <motion.p
+            custom={0}
+            variants={fadeUp}
+            className="text-[11px] tracking-[0.14em] uppercase text-muted-foreground mb-4"
+          >
+            YOUR PORTFOLIO
+          </motion.p>
+          <motion.h1
+            custom={1}
+            variants={fadeUp}
+            className="font-display text-[52px] leading-[1.05] tracking-tight mb-4"
+          >
+            Nothing <span className="italic text-amber-500">backed</span> yet.
+          </motion.h1>
+          <motion.p
+            custom={2}
+            variants={fadeUp}
+            className="text-lg text-muted-foreground leading-relaxed max-w-lg mb-8"
+          >
+            Once you back a project, this becomes your portfolio — votes, tokens, milestone updates, all in one place.
+          </motion.p>
+          <div className="h-px bg-foreground/10 mt-6" />
+        </div>
       </motion.section>
 
       {/* SECTION 2 — CTA Block */}
@@ -253,13 +249,15 @@ function PortfolioEmptyState() {
             </p>
             <div className="space-y-3">
               {[
-                { gradient: "from-emerald-100 to-teal-50", label: "DeFi Protocol", stat: "64% · 12 SOL", badge: "FOUNDER" },
-                { gradient: "from-amber-50 to-orange-50", label: "Community DAO", stat: "32% · 4 SOL", badge: null },
-                { gradient: "from-violet-50 to-purple-50", label: "Dev Tooling", stat: "88% · 20 SOL", badge: null },
+                { gradient: "from-emerald-100 to-teal-50", label: "DeFi Protocol", stat: "64% · 12 SOL", badge: "FOUNDER", icon: <Shield className="w-4 h-4 text-emerald-600" />, iconBg: "bg-emerald-100" },
+                { gradient: "from-amber-50 to-orange-50", label: "Community DAO", stat: "32% · 4 SOL", badge: null, icon: <Users className="w-4 h-4 text-amber-600" />, iconBg: "bg-amber-100" },
+                { gradient: "from-violet-50 to-purple-50", label: "Dev Tooling", stat: "88% · 20 SOL", badge: null, icon: <Code className="w-4 h-4 text-violet-600" />, iconBg: "bg-violet-100" },
               ].map((card, i) => (
                 <div key={i} className={`rounded-xl bg-gradient-to-r ${card.gradient} p-4 flex items-center justify-between`}>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/60 border border-black/[0.04]" />
+                    <div className={`w-8 h-8 rounded-lg ${card.iconBg} flex items-center justify-center`}>
+                      {card.icon}
+                    </div>
                     <div>
                       <p className="text-sm font-medium">{card.label}</p>
                       <p className="text-xs text-muted-foreground">{card.stat}</p>
@@ -284,21 +282,26 @@ function PortfolioEmptyState() {
         viewport={{ once: true, margin: "-100px" }}
         className="max-w-3xl"
       >
-        <motion.h3 custom={0} variants={fadeUp} className="font-display text-2xl tracking-tight mb-8">
-          How it works
-        </motion.h3>
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            { step: "01", title: "Pick a tier", desc: "Choose a backing tier that matches your conviction. Earlier = more ownership points." },
-            { step: "02", title: "Funds in escrow", desc: "SOL goes to an on-chain vault. Released only when the community approves milestones." },
-            { step: "03", title: "Vote & earn", desc: "Review evidence, cast your vote. Approved milestones release funds and mint your tokens." },
-          ].map((item, i) => (
-            <motion.div key={i} custom={i + 1} variants={fadeUp}>
-              <p className="text-[11px] tracking-[0.14em] text-amber-500 font-semibold mb-2">{item.step}</p>
-              <p className="font-display text-lg mb-1">{item.title}</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-            </motion.div>
-          ))}
+        <div className="bg-secondary/40 rounded-[22px] p-8 md:p-10">
+          <motion.h3 custom={0} variants={fadeUp} className="font-display text-2xl tracking-tight mb-8">
+            How it works
+          </motion.h3>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { step: "01", title: "Pick a tier", desc: "Choose a backing tier that matches your conviction. Earlier = more ownership points.", icon: <Crown className="w-5 h-5 text-amber-500" />, iconBg: "bg-amber-50" },
+              { step: "02", title: "Funds in escrow", desc: "SOL goes to an on-chain vault. Released only when the community approves milestones.", icon: <Lock className="w-5 h-5 text-green-500" />, iconBg: "bg-green-50" },
+              { step: "03", title: "Vote & earn", desc: "Review evidence, cast your vote. Approved milestones release funds and mint your tokens.", icon: <Vote className="w-5 h-5 text-purple-500" />, iconBg: "bg-purple-50" },
+            ].map((item, i) => (
+              <motion.div key={i} custom={i + 1} variants={fadeUp}>
+                <div className={`w-10 h-10 rounded-full ${item.iconBg} flex items-center justify-center mb-3`}>
+                  {item.icon}
+                </div>
+                <p className="text-[11px] tracking-[0.14em] text-amber-500 font-semibold mb-2">{item.step}</p>
+                <p className="font-display text-lg mb-1">{item.title}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </motion.section>
 
@@ -309,9 +312,11 @@ function PortfolioEmptyState() {
         viewport={{ once: true, margin: "-100px" }}
         className="max-w-2xl"
       >
-        <motion.h3 custom={0} variants={fadeUp} className="font-display text-2xl tracking-tight mb-6">
-          What backing means on Qadam
-        </motion.h3>
+        <div className="border-t border-foreground/10 pt-12">
+          <motion.h3 custom={0} variants={fadeUp} className="font-display text-2xl tracking-tight">
+            What backing means on Qadam
+          </motion.h3>
+          <p className="text-sm text-muted-foreground mt-1 mb-6">Common questions from new backers</p>
         <div className="space-y-0 divide-y divide-black/[0.06]">
           {faqs.map((faq, i) => (
             <motion.div key={i} custom={i + 1} variants={fadeUp}>
@@ -329,6 +334,7 @@ function PortfolioEmptyState() {
               )}
             </motion.div>
           ))}
+        </div>
         </div>
       </motion.section>
     </div>
